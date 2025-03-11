@@ -9,6 +9,7 @@ import "react-quill/dist/quill.snow.css"; // Include styles
 
 const createSubcategory = async (
   name,
+  subTitle,
   text,
   categoryId,
   image,
@@ -22,7 +23,8 @@ const createSubcategory = async (
   const formData = new FormData();
 
   formData.append("name", name);
-  formData.append("text", text);
+  formData.append("text", subTitle);
+  formData.append("description", text);
   formData.append("categoryId", categoryId);
   //   formData.append("subtitle", subtitle);
   if (image) {
@@ -65,6 +67,7 @@ const createSubcategory = async (
 const CreateSubcategory = ({ getSubcategories, categories }) => {
   const [loader, setLoader] = useState(false);
   const [name, setName] = useState("");
+  const [subTitle, setSubTitle] = useState("");
   const [text, setText] = useState("");
   const [categoryId, setCategoryId] = useState("");
   const [isActive, setIsActive] = useState("true");
@@ -88,6 +91,16 @@ const CreateSubcategory = ({ getSubcategories, categories }) => {
             className="form-control"
             value={name}
             onChange={(e) => setName(e.target.value)}
+          />
+        </div>
+
+        <div className="form-group">
+          <label className="text-black font-w500">Sub title</label>
+          <input
+            type="text"
+            className="form-control"
+            value={subTitle}
+            onChange={(e) => setSubTitle(e.target.value)}
           />
         </div>
 
@@ -178,6 +191,7 @@ const CreateSubcategory = ({ getSubcategories, categories }) => {
                 buttonOnClick={() =>
                   createSubcategory(
                     name,
+                    subTitle,
                     text,
                     categoryId,
                     image,
