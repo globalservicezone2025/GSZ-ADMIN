@@ -4,6 +4,8 @@ import { showErrorToast, showSuccessToast } from "../../utils/toast";
 import Button from "../global/Button";
 import Loader from "../global/Loader";
 import Modal from "../global/Modal";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css"; // Include styles
 
 const createSubcategory = async (
   name,
@@ -91,12 +93,7 @@ const CreateSubcategory = ({ getSubcategories, categories }) => {
 
         <div className="form-group">
           <label className="text-black font-w500">Description</label>
-          <input
-            type="text"
-            className="form-control"
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-          />
+          <ReactQuill value={text} onChange={setText} />
         </div>
 
         <div className="form-group">
