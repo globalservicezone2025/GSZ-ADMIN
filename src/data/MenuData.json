@@ -13,14 +13,14 @@
   },
   {
     "id": 4,
-    "name": "Categories",
-    "link": "/categories",
+    "name": "Services",
+    "link": "/services",
     "icon": "flaticon-381-notepad"
   },
   {
     "id": 5,
-    "name": "Subcategories",
-    "link": "/subcategories",
+    "name": "Subservices",
+    "link": "/subservices",
     "icon": "flaticon-381-notepad"
   },
   {

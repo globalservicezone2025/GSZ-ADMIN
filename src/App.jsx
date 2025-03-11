@@ -70,7 +70,7 @@ function App() {
               <Route exact path="/modules" component={Auth(Module)} />
               <Route exact path="/roles" component={Auth(Role)} />
               <Route exact path="/users" component={Auth(User)} />
-              <Route exact path="/categories" component={Auth(Category)} />
+              <Route exact path="/services" component={Auth(Category)} />
               <Route exact path="/campaigns" component={Auth(Campaign)} />
               <Route exact path="/products" component={Auth(Product)} />
               <Route exact path="/suppliers" component={Auth(Supplier)} />
@@ -84,7 +84,7 @@ function App() {
               <Route exact path="/brands" component={Auth(Brand)} />
               <Route
                 exact
-                path="/subcategories"
+                path="/subservices"
                 component={Auth(Subcategory)}
               />
               <Route

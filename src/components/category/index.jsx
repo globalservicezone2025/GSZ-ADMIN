@@ -83,7 +83,7 @@ const CategoryList = () => {
       <div className="col-lg-12">
         <div className="card">
           <CardHeader
-            title={"Categories"}
+            title={"Services"}
             modalId={"#createCategory"}
             buttonText={"+"}
             btnClass={"btnAdd"}
