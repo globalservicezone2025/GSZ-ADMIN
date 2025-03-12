@@ -88,5 +88,11 @@
     "name": "Appointments",
     "link": "/appointments",
     "icon": "flaticon-381-calendar"
+  },
+  {
+    "id": 18,
+    "name": "Pricing",
+    "link": "/pricing",
+    "icon": "flaticon-381-price-tag"
   }
 ]
