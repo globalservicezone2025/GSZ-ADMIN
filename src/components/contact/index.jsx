@@ -4,11 +4,8 @@ import { showErrorToast, showSuccessToast } from "../../utils/toast";
 import "../css/category-list.css";
 import Button from "../global/Button";
 import CardHeader from "../global/CardHeader";
-// import DeleteData from "../global/DeleteData";
 import IndianaDragScroller from "../global/IndianaDragScroller";
 import Searchbar from "../global/Searchbar";
-// import CreateCoupon from "./CreateCoupon";
-// import EditCoupon from "./EditCoupon";
 
 const ContactList = () => {
   const [page, setPage] = useState(1);
@@ -22,11 +19,11 @@ const ContactList = () => {
 
   const [message, setMessage] = useState("");
 
-  const loadMoreCoupon = useCallback(() => {
+  const loadMoreContacts = useCallback(() => {
     setPage(page + 1);
   }, [page]);
 
-  const getCoupons = useCallback(() => {
+  const getContacts = useCallback(() => {
     setLoader(true);
 
     fetchData(
@@ -65,26 +62,20 @@ const ContactList = () => {
   }, [selectedQuery, searchTerm, page, limit]);
 
   useEffect(() => {
-    const getCouponsDebounce = setTimeout(() => {
-      getCoupons();
+    const getContactsDebounce = setTimeout(() => {
+      getContacts();
     }, 500);
 
-    return () => clearTimeout(getCouponsDebounce);
+    return () => clearTimeout(getContactsDebounce);
   }, [selectedQuery, searchTerm, page, limit]);
 
   return (
     <>
-      {/* add modal */}
-      {/* <CreateCoupon getCoupons={getCoupons} /> */}
-
       {/* table */}
       <div className="col-lg-12">
         <div className="card">
           <CardHeader
             title={"Contact Messages"}
-            // modalId={"#createNewsletter"}
-            // buttonText={""}
-            // btnClass={"btnAdd"}
             hasButton={false}
             totalCount={data ? data.length : 0}
           >
@@ -104,69 +95,40 @@ const ContactList = () => {
                   <thead>
                     <tr>
                       <th className="width80">#</th>
-                      <th>Name</th>
+                      <th>First Name</th>
+                      <th>Last Name</th>
                       <th>Email</th>
-                      <th>Subject</th>
-                      <th>Message</th>
+                      <th>Country</th>
+                      <th>Phone Number</th>
+                      <th>Hear From</th>
                       <th>Date</th>
-                      {/* <th>Code</th>
-                      <th>Order Price Limit</th>
-                      <th>Discount Amount</th>
+                      <th>Time</th>
+                      <th>Description</th>
                       <th>Active</th>
-                      <th>Action</th> */}
+                      <th>Service</th>
+                      <th>Created At</th>
                     </tr>
                   </thead>
 
                   <tbody>
                     {data ? (
-                      data?.map((item, index) => (
+                      data.map((item, index) => (
                         <tr key={item.id + index}>
                           <td>
                             <strong>{index + 1}</strong>
                           </td>
-                          <td>{item.name}</td>
+                          <td>{item.firstName}</td>
+                          <td>{item.lastName}</td>
                           <td>{item.email}</td>
-                          <td>{item.subject}</td>
-                          <td>{item.message}</td>
+                          <td>{item.country}</td>
+                          <td>{item.phoneNumber}</td>
+                          <td>{item.hearFrom}</td>
+                          <td>{item.date?.slice(0, 10)}</td>
+                          <td>{item.time?.slice(11, 19)}</td>
+                          <td>{item.description}</td>
+                          <td>{item.isActive ? "Active" : "Inactive"}</td>
+                          <td>{item.subcategory.name}</td>
                           <td>{item.createdAt?.slice(0, 10)}</td>
-                          {/* <td>{item.code}</td>
-                          <td>{item.orderPriceLimit}</td>
-                          <td>{item.discountAmount}</td> */}
-                          {/* <td>
-                            {item?.image && (
-                              <img
-                                src={item?.image}
-                                alt="banner image"
-                                style={{
-                                  width: "100px",
-                                  height: "100px",
-                                  objectFit: "contain",
-                                }}
-                              />
-                            )}
-                          </td> */}
-                          {/* <td>{item.isActive ? "Active" : "Inactive"}</td> */}
-
-                          {/* <td>
-                            <ActionButton>
-                              <ActionButtonMenu
-                                menuName={"Edit"}
-                                menuTarget={"#editCoupon" + item.id}
-                              />
-                              <ActionButtonMenu
-                                menuName={"Delete"}
-                                menuTarget={"#deleteCoupon" + item.id}
-                              />
-                            </ActionButton>
-                          </td> */}
-                          {/* <EditCoupon item={item} getCoupons={getCoupons} /> */}
-                          {/* <DeleteData
-                            uri={`/api/v1/coupons/${item.id}`}
-                            item={item}
-                            getData={getCoupons}
-                            modalId={`deleteCoupon${item.id}`}
-                            modalHeader={"Delete Coupon"}
-                          /> */}
                         </tr>
                       ))
                     ) : (
@@ -183,16 +145,17 @@ const ContactList = () => {
                   <tfoot>
                     <tr>
                       <th className="width80">#</th>
-                      <th>Name</th>
+                      <th>First Name</th>
+                      <th>Last Name</th>
                       <th>Email</th>
-                      <th>Subject</th>
-                      <th>Message</th>
+                      <th>Country</th>
+                      <th>Phone Number</th>
+                      <th>Hear From</th>
                       <th>Date</th>
-                      {/* <th>Code</th>
-                      <th>Order Price Limit</th>
-                      <th>Discount Amount</th>
+                      <th>Time</th>
+                      <th>Description</th>
                       <th>Active</th>
-                      <th>Action</th> */}
+                      <th>Created At</th>
                     </tr>
                   </tfoot>
                 </table>
@@ -204,7 +167,7 @@ const ContactList = () => {
                     <Button
                       buttonText={"Load more"}
                       fontSize={"11px"}
-                      buttonOnClick={() => loadMoreCoupon()}
+                      buttonOnClick={() => loadMoreContacts()}
                     />
                   </>
                 )}

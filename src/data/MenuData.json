@@ -82,5 +82,11 @@
     "name": "Messages",
     "link": "/messages",
     "icon": "flaticon-381-notepad"
+  },
+  {
+    "id": 17,
+    "name": "Appointments",
+    "link": "/appointments",
+    "icon": "flaticon-381-calendar"
   }
 ]

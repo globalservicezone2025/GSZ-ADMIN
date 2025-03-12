@@ -172,7 +172,7 @@ const Login = () => {
                   <div className="col-xl-12">
                     <div className="auth-form">
                       <h3 className="text-center mb-4 text-white">
-                        Voltech Dashboard
+                        E-Global Service Zone Dashboard
                       </h3>
                       <form className="mt-4">
                         {showOtp ? (

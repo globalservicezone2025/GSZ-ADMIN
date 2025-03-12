@@ -1,3 +1,3 @@
-# voltech-admin-dashboard
+# E-Global Service Zone-admin-dashboard
 
-Admin dashboard for voltech
+Admin dashboard for E-Global Service Zone
