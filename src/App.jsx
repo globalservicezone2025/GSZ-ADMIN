@@ -38,6 +38,7 @@ const Newsletter = lazy(() => import("./pages/Newsletter"));
 const Contact = lazy(() => import("./pages/Contact"));
 const Pricing = lazy(() => import("./pages/Pricing"));
 const Faq = lazy(() => import("./pages/Faq"));
+const Blog = lazy(() => import("./pages/Blog"));
 const Attribute = lazy(() => import("./pages/Attribute"));
 const ProductImage = lazy(() => import("./pages/ProductImage"));
 
@@ -100,6 +101,7 @@ function App() {
               <Route exact path="/messages" component={Auth(Contact)} />
               <Route exact path="/pricing" component={Auth(Pricing)} />
               <Route exact path="/faq" component={Auth(Faq)} />
+              <Route exact path="/blog" component={Auth(Blog)} />
               <Route exact path="/attributes/:id" component={Auth(Attribute)} />
               <Route
                 exact
