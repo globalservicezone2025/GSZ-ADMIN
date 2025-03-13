@@ -94,5 +94,11 @@
     "name": "Pricing",
     "link": "/pricing",
     "icon": "flaticon-381-price-tag"
+  },
+  {
+    "id": 19,
+    "name": "FAQ",
+    "link": "/faq",
+    "icon": "flaticon-381-help"
   }
 ]
