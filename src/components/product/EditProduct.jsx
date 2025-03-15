@@ -4,6 +4,8 @@ import { showErrorToast, showSuccessToast } from "../../utils/toast";
 import Button from "../global/Button";
 import Loader from "../global/Loader";
 import Modal from "../global/Modal";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css"; // Include styles
 
 const editProduct = async (
   name,
@@ -20,6 +22,8 @@ const editProduct = async (
   isFeatured,
   isTrending,
   supplierId,
+  tags,
+  image,
   item,
   setLoader,
   getProducts,
@@ -27,26 +31,27 @@ const editProduct = async (
 ) => {
   setLoader(true);
 
-  const jsonData = await fetchData(`/api/v1/products/${item.id}`, "PUT", {
-    name,
-    shortDescription,
-    longDescription,
-    productCode,
-    barcode,
-    sku,
-    brandId,
-    categoryId,
-    subcategoryId,
-    subsubcategoryId,
-    isActive: isActive.toString(),
-    isFeatured: isFeatured.toString(),
-    isTrending: isTrending.toString(),
-    supplierId,
-  });
+  const formData = new FormData();
+  formData.append("name", name);
+  formData.append("shortDescription", shortDescription);
+  formData.append("longDescription", longDescription);
+  formData.append("productCode", productCode);
+  formData.append("barcode", barcode);
+  formData.append("sku", sku);
+  formData.append("brandId", brandId);
+  formData.append("categoryId", categoryId);
+  formData.append("subcategoryId", subcategoryId);
+  formData.append("subsubcategoryId", subsubcategoryId);
+  formData.append("isActive", isActive.toString());
+  formData.append("isFeatured", isFeatured.toString());
+  formData.append("isTrending", isTrending.toString());
+  formData.append("supplierId", supplierId);
+  formData.append("tags", JSON.stringify(tags));
+  if (image) {
+    formData.append("image", image);
+  }
 
-  console.log({ isTrending });
-  console.log({ isActive });
-  console.log({ isFeatured });
+  const jsonData = await fetchData(`/api/v1/products/${item.id}`, "PUT", formData, true);
 
   const message = jsonData.message;
   const success = jsonData.success;
@@ -54,19 +59,12 @@ const editProduct = async (
   if (!success) {
     setLoader(false);
     showErrorToast(message);
-    // eslint-disable-next-line no-throw-literal
-    throw {
-      message,
-    };
+    throw { message };
   }
 
   setLoader(false);
   showSuccessToast(message);
-
-  //fetch data
   getProducts();
-
-  //close modal
   modalCloseButton.current.click();
 
   return { success, message };
@@ -75,9 +73,7 @@ const editProduct = async (
 const EditProduct = ({ item, getProducts, categories, suppliers, brands }) => {
   const [loader, setLoader] = useState(false);
   const [name, setName] = useState(item.name);
-  const [shortDescription, setShortDescription] = useState(
-    item.shortDescription
-  );
+  const [shortDescription, setShortDescription] = useState(item.shortDescription);
   const [longDescription, setLongDescription] = useState(item.longDescription);
   const [productCode, setProductCode] = useState(item.productCode);
   const [barcode, setBarcode] = useState(item.barcode);
@@ -85,17 +81,30 @@ const EditProduct = ({ item, getProducts, categories, suppliers, brands }) => {
   const [categoryId, setCategoryId] = useState(item.categoryId);
   const [brandId, setBrandId] = useState(item.brandId);
   const [subcategoryId, setSubcategoryId] = useState(item.subcategoryId);
-  const [subsubcategoryId, setSubsubcategoryId] = useState(
-    item.subsubcategoryId
-  );
+  const [subsubcategoryId, setSubsubcategoryId] = useState(item.subsubcategoryId);
   const [subcategories, setSubcategories] = useState([]);
   const [subsubcategories, setSubsubcategories] = useState([]);
-  const [isActive, setIsActive] = useState(item?.isActive);
-  const [isFeatured, setIsFeatured] = useState(item?.isFeatured);
-  const [isTrending, setIsTrending] = useState(item?.isTrending);
-  const [supplierId, setSupplierId] = useState(item?.supplierId);
+  const [isActive, setIsActive] = useState(item.isActive);
+  const [isFeatured, setIsFeatured] = useState(item.isFeatured);
+  const [isTrending, setIsTrending] = useState(item.isTrending);
+  const [supplierId, setSupplierId] = useState(item.supplierId);
+  const [tags, setTags] = useState(item.tags || []);
+  const [image, setImage] = useState(null);
 
   const modalCloseButton = useRef();
+
+  const handleImageChange = (e) => {
+    setImage(e.target.files[0]);
+  };
+
+  const handleTagsChange = (e) => {
+    const tagsArray = e.target.value.split(",").map(tag => tag.trim());
+    if (tagsArray.length <= 5) {
+      setTags(tagsArray);
+    } else {
+      showErrorToast("You can only add up to 5 tags.");
+    }
+  };
 
   const getSubcategoriesByCategory = (catId) => {
     setLoader(true);
@@ -104,7 +113,6 @@ const EditProduct = ({ item, getProducts, categories, suppliers, brands }) => {
       .then((result) => {
         if (result.success) {
           setSubcategories(result.data);
-          console.log(result?.data);
         } else {
           showErrorToast(result.message);
         }
@@ -132,7 +140,6 @@ const EditProduct = ({ item, getProducts, categories, suppliers, brands }) => {
       .then((result) => {
         if (result.success) {
           setSubsubcategories(result.data);
-          console.log(result?.data);
         } else {
           showErrorToast(result.message);
         }
@@ -197,24 +204,18 @@ const EditProduct = ({ item, getProducts, categories, suppliers, brands }) => {
               name="brand"
               id="brand"
               className="form-control"
-              onChange={(e) => {
-                setBrandId(e.target.value);
-                // getSubcategoriesByCategory(e.target.value);
-              }}
+              onChange={(e) => setBrandId(e.target.value)}
             >
               <option value="">Select a brand</option>
-
               {brands &&
                 brands.map((brand, index) => (
-                  <>
-                    <option
-                      value={brand?.id}
-                      key={brand?.id + index}
-                      selected={brandId === brand?.id}
-                    >
-                      {brand?.name}
-                    </option>
-                  </>
+                  <option
+                    value={brand.id}
+                    key={brand.id + index}
+                    selected={brandId === brand.id}
+                  >
+                    {brand.name}
+                  </option>
                 ))}
             </select>
           </div>
@@ -231,18 +232,15 @@ const EditProduct = ({ item, getProducts, categories, suppliers, brands }) => {
               }}
             >
               <option value="">Select a category</option>
-
               {categories &&
                 categories.map((category, index) => (
-                  <>
-                    <option
-                      value={category?.id}
-                      key={category?.id + index}
-                      selected={categoryId === category?.id}
-                    >
-                      {category?.name}
-                    </option>
-                  </>
+                  <option
+                    value={category.id}
+                    key={category.id + index}
+                    selected={categoryId === category.id}
+                  >
+                    {category.name}
+                  </option>
                 ))}
             </select>
           </div>
@@ -259,18 +257,15 @@ const EditProduct = ({ item, getProducts, categories, suppliers, brands }) => {
               }}
             >
               <option value="">Select a subcategory</option>
-
               {subcategories &&
                 subcategories.map((subcategory, index) => (
-                  <>
-                    <option
-                      value={subcategory?.id}
-                      key={subcategory?.id + index}
-                      selected={subcategoryId === subcategory?.id}
-                    >
-                      {subcategory?.name}
-                    </option>
-                  </>
+                  <option
+                    value={subcategory.id}
+                    key={subcategory.id + index}
+                    selected={subcategoryId === subcategory.id}
+                  >
+                    {subcategory.name}
+                  </option>
                 ))}
             </select>
           </div>
@@ -284,21 +279,19 @@ const EditProduct = ({ item, getProducts, categories, suppliers, brands }) => {
               onChange={(e) => setSubsubcategoryId(e.target.value)}
             >
               <option value="">Select a Sub-subcategory</option>
-
               {subsubcategories &&
                 subsubcategories.map((subsubcategory, index) => (
-                  <>
-                    <option
-                      value={subsubcategory?.id}
-                      key={subsubcategory?.id + index}
-                      selected={subsubcategoryId === subsubcategory?.id}
-                    >
-                      {subsubcategory?.name}
-                    </option>
-                  </>
+                  <option
+                    value={subsubcategory.id}
+                    key={subsubcategory.id + index}
+                    selected={subsubcategoryId === subsubcategory.id}
+                  >
+                    {subsubcategory.name}
+                  </option>
                 ))}
             </select>
           </div>
+
           <label className="text-black font-w500">Short Description</label>
           <textarea
             rows="3"
@@ -307,12 +300,7 @@ const EditProduct = ({ item, getProducts, categories, suppliers, brands }) => {
             onChange={(e) => setShortDescription(e.target.value)}
           />
           <label className="text-black font-w500">Long Description</label>
-          <textarea
-            rows="6"
-            className="form-control"
-            value={longDescription}
-            onChange={(e) => setLongDescription(e.target.value)}
-          />
+          <ReactQuill value={longDescription} onChange={setLongDescription} />
         </div>
 
         <div className="form-group">
@@ -324,20 +312,36 @@ const EditProduct = ({ item, getProducts, categories, suppliers, brands }) => {
             onChange={(e) => setSupplierId(e.target.value)}
           >
             <option value="">Select a supplier</option>
-
             {suppliers &&
               suppliers.map((supplier, index) => (
-                <>
-                  <option
-                    value={supplier?.id}
-                    key={supplier?.id + index}
-                    selected={supplierId === supplier?.id}
-                  >
-                    {supplier?.name}
-                  </option>
-                </>
+                <option
+                  value={supplier.id}
+                  key={supplier.id + index}
+                  selected={supplierId === supplier.id}
+                >
+                  {supplier.name}
+                </option>
               ))}
           </select>
+        </div>
+
+        <div className="form-group">
+          <label className="text-black font-w500">Tags (separated by commas, max 5)</label>
+          <input
+            type="text"
+            className="form-control"
+            value={tags.join(", ")}
+            onChange={handleTagsChange}
+          />
+        </div>
+
+        <div className="form-group">
+          <label className="text-black font-w500">Image</label>
+          <input
+            type="file"
+            className="form-control"
+            onChange={handleImageChange}
+          />
         </div>
 
         <div className="form-group">
@@ -346,7 +350,7 @@ const EditProduct = ({ item, getProducts, categories, suppliers, brands }) => {
             name="isActive"
             id="isActive"
             className="form-control"
-            onChange={(e) => setIsActive(e.target.value)}
+            onChange={(e) => setIsActive(e.target.value === "true")}
           >
             <option value="true" selected={isActive === true}>
               Yes
@@ -354,15 +358,6 @@ const EditProduct = ({ item, getProducts, categories, suppliers, brands }) => {
             <option value="false" selected={isActive === false}>
               No
             </option>
-
-            {/* {categories &&
-              categories.map((category, index) => (
-                <>
-                  <option value={category?.id} key={category?.id + index}>
-                    {category?.name}
-                  </option>
-                </>
-              ))} */}
           </select>
         </div>
 
@@ -372,24 +367,14 @@ const EditProduct = ({ item, getProducts, categories, suppliers, brands }) => {
             name="isFeatured"
             id="isFeatured"
             className="form-control"
-            onChange={(e) => setIsFeatured(e.target.value)}
+            onChange={(e) => setIsFeatured(e.target.value === "true")}
           >
-            <option value="">Select one</option>
-            <option value="false" selected={isFeatured === false}>
-              No
-            </option>
             <option value="true" selected={isFeatured === true}>
               Yes
             </option>
-
-            {/* {categories &&
-              categories.map((category, index) => (
-                <>
-                  <option value={category?.id} key={category?.id + index}>
-                    {category?.name}
-                  </option>
-                </>
-              ))} */}
+            <option value="false" selected={isFeatured === false}>
+              No
+            </option>
           </select>
         </div>
 
@@ -399,61 +384,49 @@ const EditProduct = ({ item, getProducts, categories, suppliers, brands }) => {
             name="isTrending"
             id="isTrending"
             className="form-control"
-            onChange={(e) => setIsTrending(e.target.value)}
+            onChange={(e) => setIsTrending(e.target.value === "true")}
           >
-            <option value="">Select one</option>
-            <option value="false" selected={isTrending === false}>
-              No
-            </option>
             <option value="true" selected={isTrending === true}>
               Yes
             </option>
-
-            {/* {categories &&
-              categories.map((category, index) => (
-                <>
-                  <option value={category?.id} key={category?.id + index}>
-                    {category?.name}
-                  </option>
-                </>
-              ))} */}
+            <option value="false" selected={isTrending === false}>
+              No
+            </option>
           </select>
         </div>
 
-        {loader === true ? (
-          <>
-            <Loader />
-          </>
+        {loader ? (
+          <Loader />
         ) : (
-          <>
-            <div className="form-group">
-              <Button
-                buttonOnClick={() =>
-                  editProduct(
-                    name,
-                    shortDescription,
-                    longDescription,
-                    productCode,
-                    barcode,
-                    sku,
-                    brandId,
-                    categoryId,
-                    subcategoryId,
-                    subsubcategoryId,
-                    isActive,
-                    isFeatured,
-                    isTrending,
-                    supplierId,
-                    item,
-                    setLoader,
-                    getProducts,
-                    modalCloseButton
-                  )
-                }
-                buttonText={"Update"}
-              />
-            </div>
-          </>
+          <div className="form-group">
+            <Button
+              buttonOnClick={() =>
+                editProduct(
+                  name,
+                  shortDescription,
+                  longDescription,
+                  productCode,
+                  barcode,
+                  sku,
+                  brandId,
+                  categoryId,
+                  subcategoryId,
+                  subsubcategoryId,
+                  isActive,
+                  isFeatured,
+                  isTrending,
+                  supplierId,
+                  tags,
+                  image,
+                  item,
+                  setLoader,
+                  getProducts,
+                  modalCloseButton
+                )
+              }
+              buttonText={"Update"}
+            />
+          </div>
         )}
       </Modal>
     </>

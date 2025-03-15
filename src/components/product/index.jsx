@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useState } from "react";
 import fetchData from "../../libs/api";
 import { showErrorToast, showSuccessToast } from "../../utils/toast";
 import "../css/category-list.css";
-// import CreateProduct from "./CreateProduct";
 import ActionButton from "../global/ActionButton";
 import ActionButtonMenu from "../global/ActionButtonMenu";
 import Button from "../global/Button";
@@ -20,11 +19,6 @@ const ProductList = () => {
 
   const [data, setData] = useState([]);
   const [loader, setLoader] = useState(false);
-
-  const [categories, setCategories] = useState([]);
-  const [campaigns, setCampaigns] = useState([]);
-  const [suppliers, setSuppliers] = useState([]);
-  const [brands, setBrands] = useState([]);
 
   const [selectedQuery, setSelectedQuery] = useState("name");
   const [searchTerm, setSearchTerm] = useState("");
@@ -77,125 +71,13 @@ const ProductList = () => {
     const getProductsDebounce = setTimeout(() => {
       getProducts();
     }, 500);
-    console.log(selectedQuery);
-    console.log(searchTerm);
     return () => clearTimeout(getProductsDebounce);
   }, [selectedQuery, searchTerm, page, limit]);
-
-  //get all categories
-  const getCategories = useCallback(() => {
-    setLoader(true);
-
-    fetchData(`/api/v1/categories`, "GET")
-      .then((result) => {
-        if (result.success) {
-          setCategories(result.data);
-        } else {
-          showErrorToast(result.message);
-        }
-      })
-      .catch((error) => {
-        showErrorToast(error);
-      })
-      .finally(() => {
-        setLoader(false);
-      });
-  }, []);
-
-  useEffect(() => {
-    getCategories();
-
-    return () => setCategories([]);
-  }, []);
-
-  //get all brands
-  const getBrands = useCallback(() => {
-    setLoader(true);
-
-    fetchData(`/api/v1/brands`, "GET")
-      .then((result) => {
-        if (result.success) {
-          setBrands(result.data);
-        } else {
-          showErrorToast(result.message);
-        }
-      })
-      .catch((error) => {
-        showErrorToast(error);
-      })
-      .finally(() => {
-        setLoader(false);
-      });
-  }, []);
-
-  useEffect(() => {
-    getBrands();
-
-    return () => setBrands([]);
-  }, []);
-
-  //get all campaigns
-  const getCampaigns = useCallback(() => {
-    setLoader(true);
-
-    fetchData(`/api/v1/campaigns`, "GET")
-      .then((result) => {
-        if (result.success) {
-          setCampaigns(result.data);
-        } else {
-          showErrorToast(result.message);
-        }
-      })
-      .catch((error) => {
-        showErrorToast(error);
-      })
-      .finally(() => {
-        setLoader(false);
-      });
-  }, []);
-
-  useEffect(() => {
-    getCampaigns();
-
-    return () => setCampaigns([]);
-  }, []);
-
-  //get all suppliers
-  const getSuppliers = useCallback(() => {
-    setLoader(true);
-
-    fetchData(`/api/v1/suppliers`, "GET")
-      .then((result) => {
-        if (result.success) {
-          setSuppliers(result.data);
-        } else {
-          showErrorToast(result.message);
-        }
-      })
-      .catch((error) => {
-        showErrorToast(error);
-      })
-      .finally(() => {
-        setLoader(false);
-      });
-  }, []);
-
-  useEffect(() => {
-    getSuppliers();
-
-    return () => setSuppliers([]);
-  }, []);
 
   return (
     <>
       {/* add modal */}
-      <CreateProduct
-        getProducts={getProducts}
-        categories={categories}
-        campaigns={campaigns}
-        suppliers={suppliers}
-        brands={brands}
-      />
+      <CreateProduct getProducts={getProducts} />
 
       {/* table */}
       <div className="col-lg-12">
@@ -224,27 +106,13 @@ const ProductList = () => {
                     <tr>
                       <th className="width80">#</th>
                       <th>Name</th>
-                      <th>Code</th>
-                      <th>Barcode</th>
-                      <th>User</th>
-                      <th>Brand</th>
-                      <th>Category</th>
-                      <th>Subcategory</th>
-                      <th>Sub2category</th>
-                      <th>Supplier</th>
-                      <th>Variants</th>
-                      <th></th>
-                      <th></th>
-                      <th></th>
-                      <th></th>
-                      <th>Images</th>
-                      {/* <th></th>
-                      <th></th>
-                      <th></th> */}
+                      <th>Main Category</th>
+                      <th>Tags</th>
+                      <th>Image</th>
+                      <th>Link</th>
+                      <th>Description</th>
+                      <th>Price</th>
                       <th>Active?</th>
-                      <th>Featured?</th>
-                      <th>Trending?</th>
-                      <th>View Count</th>
                       <th>Action</th>
                     </tr>
                   </thead>
@@ -257,83 +125,31 @@ const ProductList = () => {
                             <strong>{index + 1}</strong>
                           </td>
                           <td>{item?.name}</td>
-                          <td>{item?.productCode}</td>
-                          <td>{item?.barcode}</td>
-                          {/* <td>{item.name}</td> */}
-                          <td>{item?.user.name}</td>
-                          <td>{item?.brand?.name}</td>
-                          <td>{item?.category.name}</td>
-                          <td>{item?.subcategory?.name}</td>
-                          <td>{item?.subsubcategory?.name}</td>
-                          <td>{item?.supplier?.name}</td>
-                          <td style={{ fontSize: "11px" }} colSpan={5}>
-                            {item?.productAttributes?.map((attr) => {
-                              return (
-                                <li
-                                  style={{ listStyle: "inside" }}
-                                  key={attr?.id}
-                                >
-                                  {attr?.size +
-                                    ", Cost Price: " +
-                                    attr?.costPrice +
-                                    ", Retail Price: " +
-                                    attr?.retailPrice +
-                                    ", Discount Percent: " +
-                                    attr?.discountPercent +
-                                    ", Discounted Retail Price: " +
-                                    attr?.discountedRetailPrice +
-                                    ", Stock Amount: " +
-                                    attr?.stockAmount}
-                                </li>
-                              );
-                            })}
+                          <td>{item?.mainCategory}</td>
+                          <td>{item?.tags.join(", ")}</td>
+                          <td>
+                            {item?.image && (
+                              <img
+                                src={item?.image}
+                                alt="product image"
+                                style={{
+                                  width: "100px",
+                                  height: "100px",
+                                  objectFit: "contain",
+                                }}
+                              />
+                            )}
                           </td>
-                          <td
-                            style={{
-                              fontSize: "11px",
-                              display: "flex",
-                              alignItems: "center",
-                              gap: "4px",
-                            }}
-                            colSpan={4}
-                          >
-                            {item?.images?.map((image) => {
-                              return (
-                                <img
-                                  src={image?.image}
-                                  style={{
-                                    width: "100px",
-                                    height: "100px",
-                                    objectFit: "contain",
-                                  }}
-                                />
-                              );
-                            })}
-                          </td>
+                          <td>{item?.link}</td>
+                          <td>{item?.description}</td>
+                          <td>{item?.price}</td>
                           <td>{item.isActive ? "Active" : "Inactive"}</td>
-                          <td>{item.isFeatured ? "Yes" : "No"}</td>
-                          <td>{item.isTrending ? "Yes" : "No"}</td>
-                          <td>{item.viewCount}</td>
 
                           <td>
                             <ActionButton>
-                              {/* <ActionButtonMenu
-                                menuName={"See Details"}
-                                menuLink={"/dashboard"}
-                              /> */}
                               <ActionButtonMenu
                                 menuName={"Edit"}
                                 menuTarget={"#editProduct" + item.id}
-                              />
-                              <ActionButtonMenu
-                                menuName={"Attributes"}
-                                // menuTarget={"/edit-attribute" + item.id}
-                                menuLink={"/attributes/" + item.id}
-                              />
-                              <ActionButtonMenu
-                                menuName={"Images"}
-                                // menuTarget={"/edit-attribute" + item.id}
-                                menuLink={"/products/images/" + item.id}
                               />
                               <ActionButtonMenu
                                 menuName={"Delete"}
@@ -348,9 +164,6 @@ const ProductList = () => {
                           <EditProduct
                             item={item}
                             getProducts={getProducts}
-                            categories={categories}
-                            suppliers={suppliers}
-                            brands={brands}
                           />
                           <DeleteProduct
                             item={item}
@@ -362,7 +175,6 @@ const ProductList = () => {
                             getData={getProducts}
                             modalId={`sendEmailProduct${item.id}`}
                             modalHeader={"Send mail to subscribers"}
-                            // getProducts={getProducts}
                           />
                         </tr>
                       ))
@@ -381,27 +193,13 @@ const ProductList = () => {
                     <tr>
                       <th className="width80">#</th>
                       <th>Name</th>
-                      <th>Code</th>
-                      <th>Barcode</th>
-                      <th>User</th>
-                      <th>Brand</th>
-                      <th>Category</th>
-                      <th>Subcategory</th>
-                      <th>Sub2category</th>
-                      <th>Supplier</th>
-                      <th>Variants</th>
-                      <th></th>
-                      <th></th>
-                      <th></th>
-                      <th></th>
-                      <th>Images</th>
-                      {/* <th></th>
-                      <th></th>
-                      <th></th> */}
+                      <th>Main Category</th>
+                      <th>Tags</th>
+                      <th>Image</th>
+                      <th>Link</th>
+                      <th>Description</th>
+                      <th>Price</th>
                       <th>Active?</th>
-                      <th>Featured?</th>
-                      <th>Trending?</th>
-                      <th>View Count</th>
                       <th>Action</th>
                     </tr>
                   </tfoot>
