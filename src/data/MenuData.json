@@ -106,5 +106,11 @@
     "name": "Blog",
     "link": "/blog",
     "icon": "flaticon-381-newspaper"
+  },
+  {
+    "id": 21,
+    "name": "Deals",
+    "link": "/deals",
+    "icon": "flaticon-381-percentage"
   }
 ]

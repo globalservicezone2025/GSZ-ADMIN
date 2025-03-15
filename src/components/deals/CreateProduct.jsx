@@ -27,7 +27,7 @@ const createProduct = async (
   const formData = new FormData();
   formData.append("name", name);
   formData.append("isActive", isActive);
-  formData.append("isDeal", false);
+  formData.append("isDeal", true);
   formData.append("createdBy", createdBy);
   formData.append("mainCategory", mainCategory);
   formData.append("tags", JSON.stringify(tags));
@@ -87,8 +87,8 @@ const CreateProduct = ({ getProducts, categories, suppliers, brands }) => {
   return (
     <>
       <Modal
-        modalId={"createProduct"}
-        modalHeader={"Create Product"}
+        modalId={"createDeals"}
+        modalHeader={"Create Deals"}
         modalCloseButton={modalCloseButton}
       >
         <div className="form-group">

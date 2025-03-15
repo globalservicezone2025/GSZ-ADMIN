@@ -4,13 +4,6 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./App.css";
 import Preloader from "./components/Preloader";
-// import HeroSection from "./pages/HeroSection";
-// import Service from "./pages/Service";
-// import Blog from "./pages/Blog";
-// import Location from "./pages/Location";
-// import Publication from "./pages/Publication";
-// import Online from "./pages/Online";
-// import Faq from "./pages/Faq";
 import Footer from "./components/Footer";
 import Header from "./components/Header";
 import NavHeader from "./components/NavHeader";
@@ -41,6 +34,7 @@ const Faq = lazy(() => import("./pages/Faq"));
 const Blog = lazy(() => import("./pages/Blog"));
 const Attribute = lazy(() => import("./pages/Attribute"));
 const ProductImage = lazy(() => import("./pages/ProductImage"));
+const Deals = lazy(() => import("./pages/Deals"));
 
 // const Gallery = lazy(() => import("./pages/Gallery"));
 // const Profile = lazy(() => import("./pages/Profile"));
@@ -76,6 +70,7 @@ function App() {
               <Route exact path="/services" component={Auth(Category)} />
               <Route exact path="/campaigns" component={Auth(Campaign)} />
               <Route exact path="/products" component={Auth(Product)} />
+              <Route exact path="/deals" component={Auth(Deals)} />
               <Route exact path="/suppliers" component={Auth(Supplier)} />
               <Route
                 exact

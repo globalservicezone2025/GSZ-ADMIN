@@ -1,14 +1,13 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import fetchData from "../../libs/api";
 import { showErrorToast, showSuccessToast } from "../../utils/toast";
-import "../css/product.css";
 import Button from "../global/Button";
 import Loader from "../global/Loader";
 import Modal from "../global/Modal";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css"; // Include styles
 
-const createProduct = async (
+const editProduct = async (
   name,
   isActive,
   createdBy,
@@ -18,27 +17,32 @@ const createProduct = async (
   link,
   description,
   price,
+  item,
   setLoader,
-  modalCloseButton,
-  getProducts
+  getProducts,
+  modalCloseButton
 ) => {
   setLoader(true);
 
   const formData = new FormData();
   formData.append("name", name);
   formData.append("isActive", isActive);
-  formData.append("isDeal", false);
   formData.append("createdBy", createdBy);
   formData.append("mainCategory", mainCategory);
   formData.append("tags", JSON.stringify(tags));
-  formData.append("image", image);
+  if (image) {
+    formData.append("image", image);
+  }
   formData.append("link", link);
   formData.append("description", description);
   formData.append("price", price);
 
-  const jsonData = await fetchData("/api/v1/products", "POST", formData, true);
-
-  console.log(jsonData)
+  const jsonData = await fetchData(
+    `/api/v1/products/${item.id}`,
+    "PUT",
+    formData,
+    true
+  );
 
   const message = jsonData.message;
   const success = jsonData.success;
@@ -57,17 +61,17 @@ const createProduct = async (
   return { success, message };
 };
 
-const CreateProduct = ({ getProducts, categories, suppliers, brands }) => {
+const EditProduct = ({ item, getProducts }) => {
   const [loader, setLoader] = useState(false);
-  const [name, setName] = useState("");
-  const [isActive, setIsActive] = useState(true);
-  const [createdBy, setCreatedBy] = useState("user-id");
-  const [mainCategory, setMainCategory] = useState("");
-  const [tags, setTags] = useState([]);
+  const [name, setName] = useState(item.name);
+  const [isActive, setIsActive] = useState(item.isActive);
+  const [createdBy, setCreatedBy] = useState(item.createdBy || "user-id");
+  const [mainCategory, setMainCategory] = useState(item.mainCategory);
+  const [tags, setTags] = useState(item.tags || []);
   const [image, setImage] = useState(null);
-  const [link, setLink] = useState("");
-  const [description, setDescription] = useState("");
-  const [price, setPrice] = useState(0.0);
+  const [link, setLink] = useState(item.link);
+  const [description, setDescription] = useState(item.description);
+  const [price, setPrice] = useState(item.price);
 
   const modalCloseButton = useRef();
 
@@ -76,7 +80,7 @@ const CreateProduct = ({ getProducts, categories, suppliers, brands }) => {
   };
 
   const handleTagsChange = (e) => {
-    const tagsArray = e.target.value.split(",").map(tag => tag.trim());
+    const tagsArray = e.target.value.split(",").map((tag) => tag.trim());
     if (tagsArray.length <= 5) {
       setTags(tagsArray);
     } else {
@@ -87,8 +91,8 @@ const CreateProduct = ({ getProducts, categories, suppliers, brands }) => {
   return (
     <>
       <Modal
-        modalId={"createProduct"}
-        modalHeader={"Create Product"}
+        modalId={"editProduct" + item.id}
+        modalHeader={"Edit Product"}
         modalCloseButton={modalCloseButton}
       >
         <div className="form-group">
@@ -112,7 +116,9 @@ const CreateProduct = ({ getProducts, categories, suppliers, brands }) => {
         </div>
 
         <div className="form-group">
-          <label className="text-black font-w500">Tags (separated by commas, max 5)</label>
+          <label className="text-black font-w500">
+            Tags (separated by commas, max 5)
+          </label>
           <input
             type="text"
             className="form-control"
@@ -128,6 +134,18 @@ const CreateProduct = ({ getProducts, categories, suppliers, brands }) => {
             className="form-control"
             onChange={handleImageChange}
           />
+          {item.image && (
+            <img
+              src={item.image}
+              alt="product image"
+              style={{
+                width: "100px",
+                height: "100px",
+                objectFit: "contain",
+                marginTop: "10px",
+              }}
+            />
+          )}
         </div>
 
         <div className="form-group">
@@ -163,8 +181,12 @@ const CreateProduct = ({ getProducts, categories, suppliers, brands }) => {
             className="form-control"
             onChange={(e) => setIsActive(e.target.value === "true")}
           >
-            <option value="true">Yes</option>
-            <option value="false">No</option>
+            <option value="true" selected={isActive === true}>
+              Yes
+            </option>
+            <option value="false" selected={isActive === false}>
+              No
+            </option>
           </select>
         </div>
 
@@ -174,7 +196,7 @@ const CreateProduct = ({ getProducts, categories, suppliers, brands }) => {
           <div className="form-group">
             <Button
               buttonOnClick={() =>
-                createProduct(
+                editProduct(
                   name,
                   isActive,
                   createdBy,
@@ -184,12 +206,13 @@ const CreateProduct = ({ getProducts, categories, suppliers, brands }) => {
                   link,
                   description,
                   price,
+                  item,
                   setLoader,
-                  modalCloseButton,
-                  getProducts
+                  getProducts,
+                  modalCloseButton
                 )
               }
-              buttonText={"Submit"}
+              buttonText={"Update"}
             />
           </div>
         )}
@@ -198,4 +221,4 @@ const CreateProduct = ({ getProducts, categories, suppliers, brands }) => {
   );
 };
 
-export default CreateProduct;
+export default EditProduct;
