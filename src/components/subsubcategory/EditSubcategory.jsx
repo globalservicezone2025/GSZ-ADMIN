@@ -1,19 +1,19 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import fetchData from "../../libs/api";
 import { showErrorToast, showSuccessToast } from "../../utils/toast";
 import Button from "../global/Button";
 import Loader from "../global/Loader";
 import Modal from "../global/Modal";
 
-const createSubsubcategory = async (
+const editSubcategory = async (
   name,
   categoryId,
-  subcategoryId,
   image,
   isActive,
+  item,
   setLoader,
-  modalCloseButton,
-  getSubsubcategories
+  getSubcategories,
+  modalCloseButton
 ) => {
   setLoader(true);
 
@@ -21,16 +21,16 @@ const createSubsubcategory = async (
 
   formData.append("name", name);
   formData.append("categoryId", categoryId);
-  formData.append("subcategoryId", subcategoryId);
   //   formData.append("subtitle", subtitle);
-  if (image) {
-    formData.append("image", image);
-  }
   formData.append("isActive", isActive);
 
+  if (image !== item.image) {
+    formData.append("image", image);
+  }
+
   const jsonData = await fetchData(
-    "/api/v1/subsubcategories",
-    "POST",
+    `/api/v1/subcategories/${item.id}`,
+    "PUT",
     formData,
     true
   );
@@ -48,11 +48,10 @@ const createSubsubcategory = async (
   }
 
   setLoader(false);
-
   showSuccessToast(message);
 
   //fetch data
-  getSubsubcategories();
+  getSubcategories();
 
   //close modal
   modalCloseButton.current.click();
@@ -60,52 +59,21 @@ const createSubsubcategory = async (
   return { success, message };
 };
 
-const CreateSubsubcategory = ({ getSubsubcategories, categories }) => {
+const EditSubcategory = ({ item, getSubcategories, categories }) => {
   const [loader, setLoader] = useState(false);
-  const [name, setName] = useState("");
-  const [categoryId, setCategoryId] = useState("");
-  const [subcategoryId, setSubcategoryId] = useState("");
-  const [isActive, setIsActive] = useState("true");
-  const [tempImages, setTempImages] = useState([]);
-  const [image, setImage] = useState("");
-  const [tempImageUrl, setTempImageUrl] = useState("");
-  const [subcategories, setSubcategories] = useState([]);
+  const [name, setName] = useState(item.name);
+  const [categoryId, setCategoryId] = useState(item.categoryId);
+  const [isActive, setIsActive] = useState(item.isActive);
+  const [image, setImage] = useState(item.image);
+  const [tempImageUrl, setTempImageUrl] = useState(item.image);
 
   const modalCloseButton = useRef();
-
-  const getSubcategoriesByCategory = (catId) => {
-    setLoader(true);
-
-    fetchData(`/api/v1/subcategoriesByCategory/${catId}`, "GET")
-      .then((result) => {
-        if (result.success) {
-          setSubcategories(result.data);
-          console.log(result?.data);
-        } else {
-          showErrorToast(result.message);
-        }
-      })
-      .catch((error) => {
-        showErrorToast(error);
-      })
-      .finally(() => {
-        setLoader(false);
-      });
-  };
-
-  useEffect(() => {
-    if (categoryId) {
-      getSubcategoriesByCategory();
-    }
-
-    return () => setSubcategories([]);
-  }, [categoryId]);
 
   return (
     <>
       <Modal
-        modalId={"createSubsubcategory"}
-        modalHeader={"Create Subsubcategory"}
+        modalId={"editSubcategory" + item.id}
+        modalHeader={"Edit Subcategory"}
         modalCloseButton={modalCloseButton}
       >
         <div className="form-group">
@@ -124,43 +92,20 @@ const CreateSubsubcategory = ({ getSubsubcategories, categories }) => {
             name="categoryId"
             id="categoryId"
             className="form-control"
-            onChange={(e) => {
-              setCategoryId(e.target.value);
-              getSubcategoriesByCategory(e.target.value);
-            }}
+            onChange={(e) => setCategoryId(e.target.value)}
           >
             {/* <option value="true">Yes</option>
             <option value="false">No</option> */}
 
-            <option value="">Select category</option>
             {categories &&
               categories.map((category, index) => (
                 <>
-                  <option value={category?.id} key={category?.id + index}>
+                  <option
+                    value={category?.id}
+                    key={category?.id + index}
+                    selected={category?.id === categoryId}
+                  >
                     {category?.name}
-                  </option>
-                </>
-              ))}
-          </select>
-        </div>
-
-        <div className="form-group">
-          <label className="text-black font-w500">Subcategory</label>
-          <select
-            name="subcategoryId"
-            id="subcategoryId"
-            className="form-control"
-            onChange={(e) => setSubcategoryId(e.target.value)}
-          >
-            {/* <option value="true">Yes</option>
-            <option value="false">No</option> */}
-
-            <option value="">Select subcategory</option>
-            {subcategories &&
-              subcategories.map((subcategory, index) => (
-                <>
-                  <option value={subcategory?.id} key={subcategory?.id + index}>
-                    {subcategory?.name}
                   </option>
                 </>
               ))}
@@ -170,22 +115,23 @@ const CreateSubsubcategory = ({ getSubsubcategories, categories }) => {
         <div className="form-group">
           <label className="text-black font-w500">Active?</label>
           <select
-            name="isActive"
-            id="isActive"
-            className="form-control"
+            className="form-control default-select"
             onChange={(e) => setIsActive(e.target.value)}
           >
-            <option value="true">Yes</option>
-            <option value="false">No</option>
-
-            {/* {categories &&
-              categories.map((category, index) => (
-                <>
-                  <option value={category?.id} key={category?.id + index}>
-                    {category?.name}
-                  </option>
-                </>
-              ))} */}
+            <option value={"true"}>Yes</option>
+            <option value={"false"}>No</option>
+            {/* {[
+                            { id: 1, value: true, label: 'Yes' },
+                            { id: 2, value: false, label: 'No' },
+                        ].map((itm, index) => (
+                            <option
+                                key={itm.id}
+                                value={itm.value}
+                                selected={itm.value === item.isCuratedCustomService ? true : false}
+                            >
+                                {itm.label}
+                            </option>
+                        ))} */}
           </select>
         </div>
 
@@ -224,18 +170,18 @@ const CreateSubsubcategory = ({ getSubsubcategories, categories }) => {
             <div className="form-group">
               <Button
                 buttonOnClick={() =>
-                  createSubsubcategory(
+                  editSubcategory(
                     name,
                     categoryId,
-                    subcategoryId,
                     image,
                     isActive,
+                    item,
                     setLoader,
-                    modalCloseButton,
-                    getSubsubcategories
+                    getSubcategories,
+                    modalCloseButton
                   )
                 }
-                buttonText={"Submit"}
+                buttonText={"Update"}
               />
             </div>
           </>
@@ -245,4 +191,4 @@ const CreateSubsubcategory = ({ getSubsubcategories, categories }) => {
   );
 };
 
-export default CreateSubsubcategory;
+export default EditSubcategory;

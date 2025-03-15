@@ -85,16 +85,8 @@ function App() {
               <Route exact path="/orders" component={Auth(Order)} />
               <Route exact path="/banners" component={Auth(Banner)} />
               <Route exact path="/brands" component={Auth(Brand)} />
-              <Route
-                exact
-                path="/subservices"
-                component={Auth(Subcategory)}
-              />
-              <Route
-                exact
-                path="/subsubcategories"
-                component={Auth(Subsubcategory)}
-              />
+              <Route exact path="/subservices" component={Auth(Subcategory)} />
+              <Route exact path="/subsubservices" component={Auth(Subsubcategory)} />
               <Route exact path="/coupons" component={Auth(Coupon)} />
               <Route exact path="/preorders" component={Auth(Preorder)} />
               <Route exact path="/newsletters" component={Auth(Newsletter)} />

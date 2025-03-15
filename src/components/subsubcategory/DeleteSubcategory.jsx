@@ -5,16 +5,16 @@ import Button from "../global/Button";
 import Loader from "../global/Loader";
 import Modal from "../global/Modal";
 
-const deleteSubsubcategory = async (
+const deleteSubcategory = async (
   item,
   setLoader,
-  getSubsubcategories,
+  getSubcategories,
   modalCloseButton
 ) => {
   setLoader(true);
 
   const jsonData = await fetchData(
-    `/api/v1/subsubcategories/${item.id}`,
+    `/api/v1/subcategories/${item.id}`,
     "DELETE"
   );
 
@@ -35,7 +35,7 @@ const deleteSubsubcategory = async (
   showSuccessToast(message);
 
   //fetch data
-  getSubsubcategories();
+  getSubcategories();
 
   //close modal
   modalCloseButton.current.click();
@@ -43,15 +43,15 @@ const deleteSubsubcategory = async (
   return { success, message };
 };
 
-const DeleteSubsubcategory = ({ item, getSubsubcategories }) => {
+const DeleteSubcategory = ({ item, getSubcategories }) => {
   const [loader, setLoader] = useState(false);
   const modalCloseButton = useRef();
 
   return (
     <>
       <Modal
-        modalId={"deleteSubsubcategory" + item.id}
-        modalHeader={"Delete Subsubcategory"}
+        modalId={"deleteSubcategory" + item.id}
+        modalHeader={"Delete Subcategory"}
         modalCloseButton={modalCloseButton}
       >
         <div className="form-group">
@@ -67,10 +67,10 @@ const DeleteSubsubcategory = ({ item, getSubsubcategories }) => {
             <div className="form-group">
               <Button
                 buttonOnClick={() =>
-                  deleteSubsubcategory(
+                  deleteSubcategory(
                     item,
                     setLoader,
-                    getSubsubcategories,
+                    getSubcategories,
                     modalCloseButton
                   )
                 }
@@ -85,4 +85,4 @@ const DeleteSubsubcategory = ({ item, getSubsubcategories }) => {
   );
 };
 
-export default DeleteSubsubcategory;
+export default DeleteSubcategory;

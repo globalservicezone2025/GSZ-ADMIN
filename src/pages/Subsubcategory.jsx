@@ -1,12 +1,12 @@
 import React from "react";
-import SubsubcategoryList from "../components/subsubcategory";
+import SubcategoryList from "../components/subsubcategory";
 
 const Subsubcategory = () => {
   return (
     <div className="content-body">
       <div className="container-fluid">
         <div className="row">
-          <SubsubcategoryList />
+          <SubcategoryList />
         </div>
       </div>
     </div>

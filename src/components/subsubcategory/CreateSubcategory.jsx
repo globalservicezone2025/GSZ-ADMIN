@@ -12,6 +12,7 @@ const createSubcategory = async (
   subTitle,
   text,
   categoryId,
+  subCategoryId,
   image,
   isActive,
   setLoader,
@@ -21,19 +22,18 @@ const createSubcategory = async (
   setLoader(true);
 
   const formData = new FormData();
-
   formData.append("name", name);
-  formData.append("text", subTitle);
-  formData.append("description", '');
+  formData.append("description", subTitle); // Ensure this matches the field name in your model
+  formData.append("text", text); // Ensure this matches the field name in your model
   formData.append("categoryId", categoryId);
-  //   formData.append("subtitle", subtitle);
+  formData.append("subcategoryId", subCategoryId); // Ensure this matches the field name in your model
   if (image) {
     formData.append("image", image);
   }
   formData.append("isActive", isActive);
 
   const jsonData = await fetchData(
-    "/api/v1/subcategories",
+    "/api/v1/subsubcategories",
     "POST",
     formData,
     true
@@ -45,20 +45,12 @@ const createSubcategory = async (
   if (!success) {
     setLoader(false);
     showErrorToast(message);
-    // eslint-disable-next-line no-throw-literal
-    throw {
-      message,
-    };
+    throw { message };
   }
 
   setLoader(false);
-
   showSuccessToast(message);
-
-  //fetch data
   getSubcategories();
-
-  //close modal
   modalCloseButton.current.click();
 
   return { success, message };
@@ -70,12 +62,41 @@ const CreateSubcategory = ({ getSubcategories, categories }) => {
   const [subTitle, setSubTitle] = useState("");
   const [text, setText] = useState("");
   const [categoryId, setCategoryId] = useState("");
+  const [subCategoryId, setSubCategoryId] = useState("");
   const [isActive, setIsActive] = useState("true");
   const [tempImages, setTempImages] = useState([]);
   const [image, setImage] = useState("");
   const [tempImageUrl, setTempImageUrl] = useState("");
+  const [subCategories, setSubCategories] = useState([]);
+  const [subCategoryLoader, setSubCategoryLoader] = useState(false);
 
   const modalCloseButton = useRef();
+
+  const handleCategoryChange = async (e) => {
+    const selectedCategory = e.target.value;
+    setCategoryId(selectedCategory);
+    setSubCategoryId("");
+    if (selectedCategory) {
+      setSubCategoryLoader(true);
+      try {
+        const result = await fetchData(
+          `/api/v1/subcategoriesByCategory/${selectedCategory}`,
+          "GET"
+        );
+        if (result.success) {
+          setSubCategories(result.data);
+        } else {
+          showErrorToast(result.message);
+        }
+      } catch (error) {
+        showErrorToast(error.message);
+      } finally {
+        setSubCategoryLoader(false);
+      }
+    } else {
+      setSubCategories([]);
+    }
+  };
 
   return (
     <>
@@ -105,26 +126,49 @@ const CreateSubcategory = ({ getSubcategories, categories }) => {
         </div>
 
         <div className="form-group">
+          <label className="text-black font-w500">Description</label>
+          <ReactQuill value={text} onChange={setText} />
+        </div>
+
+        <div className="form-group">
           <label className="text-black font-w500">Category</label>
           <select
             name="categoryId"
             id="categoryId"
             className="form-control"
-            onChange={(e) => setCategoryId(e.target.value)}
+            onChange={handleCategoryChange}
           >
-            {/* <option value="true">Yes</option>
-            <option value="false">No</option> */}
-
             <option value="">Select a category</option>
             {categories &&
               categories.map((category, index) => (
-                <>
-                  <option value={category?.id} key={category?.id + index}>
-                    {category?.name}
-                  </option>
-                </>
+                <option value={category.id} key={category.id + index}>
+                  {category.name}
+                </option>
               ))}
           </select>
+        </div>
+
+        <div className="form-group">
+          <label className="text-black font-w500">Subcategory</label>
+          {subCategoryLoader ? (
+            <Loader />
+          ) : (
+            <select
+              name="subCategoryId"
+              id="subCategoryId"
+              className="form-control"
+              onChange={(e) => setSubCategoryId(e.target.value)}
+              value={subCategoryId}
+            >
+              <option value="">Select a subcategory</option>
+              {subCategories &&
+                subCategories.map((subCategory, index) => (
+                  <option value={subCategory.id} key={subCategory.id + index}>
+                    {subCategory.name}
+                  </option>
+                ))}
+            </select>
+          )}
         </div>
 
         <div className="form-group">
@@ -137,15 +181,6 @@ const CreateSubcategory = ({ getSubcategories, categories }) => {
           >
             <option value="true">Yes</option>
             <option value="false">No</option>
-
-            {/* {categories &&
-              categories.map((category, index) => (
-                <>
-                  <option value={category?.id} key={category?.id + index}>
-                    {category?.name}
-                  </option>
-                </>
-              ))} */}
           </select>
         </div>
 
@@ -161,45 +196,40 @@ const CreateSubcategory = ({ getSubcategories, categories }) => {
           />
 
           {tempImageUrl && (
-            <>
-              <img
-                src={tempImageUrl}
-                alt="image"
-                style={{
-                  width: "300px",
-                  height: "300px",
-                  objectFit: "contain",
-                }}
-              />
-            </>
+            <img
+              src={tempImageUrl}
+              alt="image"
+              style={{
+                width: "300px",
+                height: "300px",
+                objectFit: "contain",
+              }}
+            />
           )}
         </div>
 
-        {loader === true ? (
-          <>
-            <Loader />
-          </>
+        {loader ? (
+          <Loader />
         ) : (
-          <>
-            <div className="form-group">
-              <Button
-                buttonOnClick={() =>
-                  createSubcategory(
-                    name,
-                    subTitle,
-                    text,
-                    categoryId,
-                    image,
-                    isActive,
-                    setLoader,
-                    modalCloseButton,
-                    getSubcategories
-                  )
-                }
-                buttonText={"Submit"}
-              />
-            </div>
-          </>
+          <div className="form-group">
+            <Button
+              buttonOnClick={() =>
+                createSubcategory(
+                  name,
+                  subTitle,
+                  text,
+                  categoryId,
+                  subCategoryId,
+                  image,
+                  isActive,
+                  setLoader,
+                  modalCloseButton,
+                  getSubcategories
+                )
+              }
+              buttonText={"Submit"}
+            />
+          </div>
         )}
       </Modal>
     </>

@@ -8,11 +8,11 @@ import Button from "../global/Button";
 import CardHeader from "../global/CardHeader";
 import IndianaDragScroller from "../global/IndianaDragScroller";
 import Searchbar from "../global/Searchbar";
-import CreateSubsubcategory from "./CreateSubsubcategory";
-import DeleteSubsubcategory from "./DeleteSubsubcategory";
-import EditSubsubcategory from "./EditSubsubcategory";
+import CreateSubcategory from "./CreateSubcategory";
+import DeleteSubcategory from "./DeleteSubcategory";
+import EditSubcategory from "./EditSubcategory";
 
-const SubsubcategoryList = () => {
+const SubcategoryList = () => {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(20);
 
@@ -24,12 +24,14 @@ const SubsubcategoryList = () => {
 
   const [message, setMessage] = useState("");
   const [categories, setCategories] = useState([]);
+  const [subCategories, setSubCategories] = useState([]);
+  const [subCategoryLoader, setSubCategoryLoader] = useState(false);
 
-  const loadMoreSubsubcategory = useCallback(() => {
+  const loadMoreSubcategory = useCallback(() => {
     setPage(page + 1);
   }, [page]);
 
-  const getSubsubcategories = useCallback(() => {
+  const getSubcategories = useCallback(() => {
     setLoader(true);
 
     fetchData(
@@ -68,11 +70,11 @@ const SubsubcategoryList = () => {
   }, [selectedQuery, searchTerm, page, limit]);
 
   useEffect(() => {
-    const getSubsubcategoriesDebounce = setTimeout(() => {
-      getSubsubcategories();
+    const getSubcategoriesDebounce = setTimeout(() => {
+      getSubcategories();
     }, 500);
 
-    return () => clearTimeout(getSubsubcategoriesDebounce);
+    return () => clearTimeout(getSubcategoriesDebounce);
   }, [selectedQuery, searchTerm, page, limit]);
 
   //get all categories
@@ -101,11 +103,35 @@ const SubsubcategoryList = () => {
     return () => setCategories([]);
   }, []);
 
+  const handleCategoryChange = async (e) => {
+    const selectedCategory = e.target.value;
+    if (selectedCategory) {
+      setSubCategoryLoader(true);
+      try {
+        const result = await fetchData(
+          `/api/v1/subcategoriesByCategory/${selectedCategory}`,
+          "GET"
+        );
+        if (result.success) {
+          setSubCategories(result.data);
+        } else {
+          showErrorToast(result.message);
+        }
+      } catch (error) {
+        showErrorToast(error.message);
+      } finally {
+        setSubCategoryLoader(false);
+      }
+    } else {
+      setSubCategories([]);
+    }
+  };
+
   return (
     <>
       {/* add modal */}
-      <CreateSubsubcategory
-        getSubsubcategories={getSubsubcategories}
+      <CreateSubcategory
+        getSubcategories={getSubcategories}
         categories={categories}
       />
 
@@ -113,8 +139,8 @@ const SubsubcategoryList = () => {
       <div className="col-lg-12">
         <div className="card">
           <CardHeader
-            title={"Subsubcategories"}
-            modalId={"#createSubsubcategory"}
+            title={"Subservices"}
+            modalId={"#createSubcategory"}
             buttonText={"+"}
             btnClass={"btnAdd"}
             totalCount={data ? data.length : 0}
@@ -160,7 +186,7 @@ const SubsubcategoryList = () => {
                             {item?.image && (
                               <img
                                 src={item?.image}
-                                alt="subsubcategory image"
+                                alt="subcategory image"
                                 style={{
                                   width: "100px",
                                   height: "100px",
@@ -175,22 +201,22 @@ const SubsubcategoryList = () => {
                             <ActionButton>
                               <ActionButtonMenu
                                 menuName={"Edit"}
-                                menuTarget={"#editSubsubcategory" + item.id}
+                                menuTarget={"#editSubcategory" + item.id}
                               />
                               <ActionButtonMenu
                                 menuName={"Delete"}
-                                menuTarget={"#deleteSubsubcategory" + item.id}
+                                menuTarget={"#deleteSubcategory" + item.id}
                               />
                             </ActionButton>
                           </td>
-                          <EditSubsubcategory
+                          <EditSubcategory
                             item={item}
-                            getSubsubcategories={getSubsubcategories}
+                            getSubcategories={getSubcategories}
                             categories={categories}
                           />
-                          <DeleteSubsubcategory
+                          <DeleteSubcategory
                             item={item}
-                            getSubsubcategories={getSubsubcategories}
+                            getSubcategories={getSubcategories}
                           />
                         </tr>
                       ))
@@ -225,7 +251,7 @@ const SubsubcategoryList = () => {
                     <Button
                       buttonText={"Load more"}
                       fontSize={"11px"}
-                      buttonOnClick={() => loadMoreSubsubcategory()}
+                      buttonOnClick={() => loadMoreSubcategory()}
                     />
                   </>
                 )}
@@ -238,4 +264,4 @@ const SubsubcategoryList = () => {
   );
 };
 
-export default SubsubcategoryList;
+export default SubcategoryList;
