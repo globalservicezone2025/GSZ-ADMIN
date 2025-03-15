@@ -9,21 +9,14 @@ import "react-quill/dist/quill.snow.css"; // Include styles
 
 const editProduct = async (
   name,
-  shortDescription,
-  longDescription,
-  productCode,
-  barcode,
-  sku,
-  brandId,
-  categoryId,
-  subcategoryId,
-  subsubcategoryId,
   isActive,
-  isFeatured,
-  isTrending,
-  supplierId,
+  createdBy,
+  mainCategory,
   tags,
   image,
+  link,
+  description,
+  price,
   item,
   setLoader,
   getProducts,
@@ -33,25 +26,23 @@ const editProduct = async (
 
   const formData = new FormData();
   formData.append("name", name);
-  formData.append("shortDescription", shortDescription);
-  formData.append("longDescription", longDescription);
-  formData.append("productCode", productCode);
-  formData.append("barcode", barcode);
-  formData.append("sku", sku);
-  formData.append("brandId", brandId);
-  formData.append("categoryId", categoryId);
-  formData.append("subcategoryId", subcategoryId);
-  formData.append("subsubcategoryId", subsubcategoryId);
-  formData.append("isActive", isActive.toString());
-  formData.append("isFeatured", isFeatured.toString());
-  formData.append("isTrending", isTrending.toString());
-  formData.append("supplierId", supplierId);
+  formData.append("isActive", isActive);
+  formData.append("createdBy", createdBy);
+  formData.append("mainCategory", mainCategory);
   formData.append("tags", JSON.stringify(tags));
   if (image) {
     formData.append("image", image);
   }
+  formData.append("link", link);
+  formData.append("description", description);
+  formData.append("price", price);
 
-  const jsonData = await fetchData(`/api/v1/products/${item.id}`, "PUT", formData, true);
+  const jsonData = await fetchData(
+    `/api/v1/products/${item.id}`,
+    "PUT",
+    formData,
+    true
+  );
 
   const message = jsonData.message;
   const success = jsonData.success;
@@ -70,26 +61,17 @@ const editProduct = async (
   return { success, message };
 };
 
-const EditProduct = ({ item, getProducts, categories, suppliers, brands }) => {
+const EditProduct = ({ item, getProducts }) => {
   const [loader, setLoader] = useState(false);
   const [name, setName] = useState(item.name);
-  const [shortDescription, setShortDescription] = useState(item.shortDescription);
-  const [longDescription, setLongDescription] = useState(item.longDescription);
-  const [productCode, setProductCode] = useState(item.productCode);
-  const [barcode, setBarcode] = useState(item.barcode);
-  const [sku, setSku] = useState(item.sku);
-  const [categoryId, setCategoryId] = useState(item.categoryId);
-  const [brandId, setBrandId] = useState(item.brandId);
-  const [subcategoryId, setSubcategoryId] = useState(item.subcategoryId);
-  const [subsubcategoryId, setSubsubcategoryId] = useState(item.subsubcategoryId);
-  const [subcategories, setSubcategories] = useState([]);
-  const [subsubcategories, setSubsubcategories] = useState([]);
   const [isActive, setIsActive] = useState(item.isActive);
-  const [isFeatured, setIsFeatured] = useState(item.isFeatured);
-  const [isTrending, setIsTrending] = useState(item.isTrending);
-  const [supplierId, setSupplierId] = useState(item.supplierId);
+  const [createdBy, setCreatedBy] = useState(item.createdBy || "user-id");
+  const [mainCategory, setMainCategory] = useState(item.mainCategory);
   const [tags, setTags] = useState(item.tags || []);
   const [image, setImage] = useState(null);
+  const [link, setLink] = useState(item.link);
+  const [description, setDescription] = useState(item.description);
+  const [price, setPrice] = useState(item.price);
 
   const modalCloseButton = useRef();
 
@@ -98,67 +80,13 @@ const EditProduct = ({ item, getProducts, categories, suppliers, brands }) => {
   };
 
   const handleTagsChange = (e) => {
-    const tagsArray = e.target.value.split(",").map(tag => tag.trim());
+    const tagsArray = e.target.value.split(",").map((tag) => tag.trim());
     if (tagsArray.length <= 5) {
       setTags(tagsArray);
     } else {
       showErrorToast("You can only add up to 5 tags.");
     }
   };
-
-  const getSubcategoriesByCategory = (catId) => {
-    setLoader(true);
-
-    fetchData(`/api/v1/subcategoriesByCategory/${catId}`, "GET")
-      .then((result) => {
-        if (result.success) {
-          setSubcategories(result.data);
-        } else {
-          showErrorToast(result.message);
-        }
-      })
-      .catch((error) => {
-        showErrorToast(error);
-      })
-      .finally(() => {
-        setLoader(false);
-      });
-  };
-
-  useEffect(() => {
-    if (categoryId) {
-      getSubcategoriesByCategory(categoryId);
-    }
-
-    return () => setSubcategories([]);
-  }, [categoryId]);
-
-  const getSubsubcategoriesBySubcategory = (subcatId) => {
-    setLoader(true);
-
-    fetchData(`/api/v1/subsubcategoriesBySubcategory/${subcatId}`, "GET")
-      .then((result) => {
-        if (result.success) {
-          setSubsubcategories(result.data);
-        } else {
-          showErrorToast(result.message);
-        }
-      })
-      .catch((error) => {
-        showErrorToast(error);
-      })
-      .finally(() => {
-        setLoader(false);
-      });
-  };
-
-  useEffect(() => {
-    if (subcategoryId) {
-      getSubsubcategoriesBySubcategory(subcategoryId);
-    }
-
-    return () => setSubsubcategories([]);
-  }, [subcategoryId]);
 
   return (
     <>
@@ -168,165 +96,29 @@ const EditProduct = ({ item, getProducts, categories, suppliers, brands }) => {
         modalCloseButton={modalCloseButton}
       >
         <div className="form-group">
-          <label className="text-black font-w500">Product Name</label>
+          <label className="text-black font-w500">Name</label>
           <input
             type="text"
             className="form-control"
             value={name}
             onChange={(e) => setName(e.target.value)}
           />
-
-          <label className="text-black font-w500">Product code</label>
-          <input
-            type="text"
-            className="form-control"
-            value={productCode}
-            onChange={(e) => setProductCode(e.target.value)}
-          />
-          <label className="text-black font-w500">Barcode</label>
-          <input
-            type="text"
-            className="form-control"
-            value={barcode}
-            onChange={(e) => setBarcode(e.target.value)}
-          />
-          <label className="text-black font-w500">SKU</label>
-          <input
-            type="text"
-            className="form-control"
-            value={sku}
-            onChange={(e) => setSku(e.target.value)}
-          />
-
-          <div className="form-group">
-            <label className="text-black font-w500">Brand</label>
-            <select
-              name="brand"
-              id="brand"
-              className="form-control"
-              onChange={(e) => setBrandId(e.target.value)}
-            >
-              <option value="">Select a brand</option>
-              {brands &&
-                brands.map((brand, index) => (
-                  <option
-                    value={brand.id}
-                    key={brand.id + index}
-                    selected={brandId === brand.id}
-                  >
-                    {brand.name}
-                  </option>
-                ))}
-            </select>
-          </div>
-
-          <div className="form-group">
-            <label className="text-black font-w500">Category</label>
-            <select
-              name="category"
-              id="category"
-              className="form-control"
-              onChange={(e) => {
-                setCategoryId(e.target.value);
-                getSubcategoriesByCategory(e.target.value);
-              }}
-            >
-              <option value="">Select a category</option>
-              {categories &&
-                categories.map((category, index) => (
-                  <option
-                    value={category.id}
-                    key={category.id + index}
-                    selected={categoryId === category.id}
-                  >
-                    {category.name}
-                  </option>
-                ))}
-            </select>
-          </div>
-
-          <div className="form-group">
-            <label className="text-black font-w500">Subcategory</label>
-            <select
-              name="subcategory"
-              id="subcategory"
-              className="form-control"
-              onChange={(e) => {
-                setSubcategoryId(e.target.value);
-                getSubsubcategoriesBySubcategory(e.target.value);
-              }}
-            >
-              <option value="">Select a subcategory</option>
-              {subcategories &&
-                subcategories.map((subcategory, index) => (
-                  <option
-                    value={subcategory.id}
-                    key={subcategory.id + index}
-                    selected={subcategoryId === subcategory.id}
-                  >
-                    {subcategory.name}
-                  </option>
-                ))}
-            </select>
-          </div>
-
-          <div className="form-group">
-            <label className="text-black font-w500">Sub-Subcategory</label>
-            <select
-              name="subsubcategory"
-              id="subsubcategory"
-              className="form-control"
-              onChange={(e) => setSubsubcategoryId(e.target.value)}
-            >
-              <option value="">Select a Sub-subcategory</option>
-              {subsubcategories &&
-                subsubcategories.map((subsubcategory, index) => (
-                  <option
-                    value={subsubcategory.id}
-                    key={subsubcategory.id + index}
-                    selected={subsubcategoryId === subsubcategory.id}
-                  >
-                    {subsubcategory.name}
-                  </option>
-                ))}
-            </select>
-          </div>
-
-          <label className="text-black font-w500">Short Description</label>
-          <textarea
-            rows="3"
-            className="form-control"
-            value={shortDescription}
-            onChange={(e) => setShortDescription(e.target.value)}
-          />
-          <label className="text-black font-w500">Long Description</label>
-          <ReactQuill value={longDescription} onChange={setLongDescription} />
         </div>
 
         <div className="form-group">
-          <label className="text-black font-w500">Supplier</label>
-          <select
-            name="supplier"
-            id="supplier"
+          <label className="text-black font-w500">Main Category</label>
+          <input
+            type="text"
             className="form-control"
-            onChange={(e) => setSupplierId(e.target.value)}
-          >
-            <option value="">Select a supplier</option>
-            {suppliers &&
-              suppliers.map((supplier, index) => (
-                <option
-                  value={supplier.id}
-                  key={supplier.id + index}
-                  selected={supplierId === supplier.id}
-                >
-                  {supplier.name}
-                </option>
-              ))}
-          </select>
+            value={mainCategory}
+            onChange={(e) => setMainCategory(e.target.value)}
+          />
         </div>
 
         <div className="form-group">
-          <label className="text-black font-w500">Tags (separated by commas, max 5)</label>
+          <label className="text-black font-w500">
+            Tags (separated by commas, max 5)
+          </label>
           <input
             type="text"
             className="form-control"
@@ -341,6 +133,43 @@ const EditProduct = ({ item, getProducts, categories, suppliers, brands }) => {
             type="file"
             className="form-control"
             onChange={handleImageChange}
+          />
+          {item.image && (
+            <img
+              src={item.image}
+              alt="product image"
+              style={{
+                width: "100px",
+                height: "100px",
+                objectFit: "contain",
+                marginTop: "10px",
+              }}
+            />
+          )}
+        </div>
+
+        <div className="form-group">
+          <label className="text-black font-w500">Link</label>
+          <input
+            type="text"
+            className="form-control"
+            value={link}
+            onChange={(e) => setLink(e.target.value)}
+          />
+        </div>
+
+        <div className="form-group">
+          <label className="text-black font-w500">Description</label>
+          <ReactQuill value={description} onChange={setDescription} />
+        </div>
+
+        <div className="form-group">
+          <label className="text-black font-w500">Price</label>
+          <input
+            type="number"
+            className="form-control"
+            value={price}
+            onChange={(e) => setPrice(parseFloat(e.target.value))}
           />
         </div>
 
@@ -361,40 +190,6 @@ const EditProduct = ({ item, getProducts, categories, suppliers, brands }) => {
           </select>
         </div>
 
-        <div className="form-group">
-          <label className="text-black font-w500">Featured?</label>
-          <select
-            name="isFeatured"
-            id="isFeatured"
-            className="form-control"
-            onChange={(e) => setIsFeatured(e.target.value === "true")}
-          >
-            <option value="true" selected={isFeatured === true}>
-              Yes
-            </option>
-            <option value="false" selected={isFeatured === false}>
-              No
-            </option>
-          </select>
-        </div>
-
-        <div className="form-group">
-          <label className="text-black font-w500">Trending?</label>
-          <select
-            name="isTrending"
-            id="isTrending"
-            className="form-control"
-            onChange={(e) => setIsTrending(e.target.value === "true")}
-          >
-            <option value="true" selected={isTrending === true}>
-              Yes
-            </option>
-            <option value="false" selected={isTrending === false}>
-              No
-            </option>
-          </select>
-        </div>
-
         {loader ? (
           <Loader />
         ) : (
@@ -403,21 +198,14 @@ const EditProduct = ({ item, getProducts, categories, suppliers, brands }) => {
               buttonOnClick={() =>
                 editProduct(
                   name,
-                  shortDescription,
-                  longDescription,
-                  productCode,
-                  barcode,
-                  sku,
-                  brandId,
-                  categoryId,
-                  subcategoryId,
-                  subsubcategoryId,
                   isActive,
-                  isFeatured,
-                  isTrending,
-                  supplierId,
+                  createdBy,
+                  mainCategory,
                   tags,
                   image,
+                  link,
+                  description,
+                  price,
                   item,
                   setLoader,
                   getProducts,
