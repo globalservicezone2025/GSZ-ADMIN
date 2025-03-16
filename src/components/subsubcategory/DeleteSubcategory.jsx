@@ -14,7 +14,7 @@ const deleteSubcategory = async (
   setLoader(true);
 
   const jsonData = await fetchData(
-    `/api/v1/subcategories/${item.id}`,
+    `/api/v1/subsubcategories/${item.id}`,
     "DELETE"
   );
 
