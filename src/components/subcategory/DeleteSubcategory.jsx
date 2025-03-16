@@ -51,7 +51,7 @@ const DeleteSubcategory = ({ item, getSubcategories }) => {
     <>
       <Modal
         modalId={"deleteSubcategory" + item.id}
-        modalHeader={"Delete Subcategory"}
+        modalHeader={"Delete Sub Service"}
         modalCloseButton={modalCloseButton}
       >
         <div className="form-group">

@@ -48,7 +48,7 @@ const DeleteCategory = ({ item, getCategories }) => {
     <>
       <Modal
         modalId={"deleteCategory" + item.id}
-        modalHeader={"Delete Category"}
+        modalHeader={"Delete Service"}
         modalCloseButton={modalCloseButton}
       >
         <div className="form-group">

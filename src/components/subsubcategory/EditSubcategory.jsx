@@ -101,7 +101,7 @@ const EditSubcategory = ({ item, getSubcategories, categories }) => {
     <>
       <Modal
         modalId={"editSubcategory" + item.id}
-        modalHeader={"Edit Subcategory"}
+        modalHeader={"Edit Service Details"}
         modalCloseButton={modalCloseButton}
       >
         <div className="form-group">

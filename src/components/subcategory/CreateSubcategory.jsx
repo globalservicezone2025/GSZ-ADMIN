@@ -81,7 +81,7 @@ const CreateSubcategory = ({ getSubcategories, categories }) => {
     <>
       <Modal
         modalId={"createSubcategory"}
-        modalHeader={"Create Subcategory"}
+        modalHeader={"Create Sub Service"}
         modalCloseButton={modalCloseButton}
       >
         <div className="form-group">

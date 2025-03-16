@@ -76,7 +76,7 @@ const CreateCategory = ({ getCategories }) => {
     <>
       <Modal
         modalId={"createCategory"}
-        modalHeader={"Create Category"}
+        modalHeader={"Create Service"}
         modalCloseButton={modalCloseButton}
       >
         <div className="form-group">

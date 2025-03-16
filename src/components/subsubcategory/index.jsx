@@ -139,7 +139,7 @@ const SubcategoryList = () => {
       <div className="col-lg-12">
         <div className="card">
           <CardHeader
-            title={"Subservices"}
+            title={"Service Details"}
             modalId={"#createSubcategory"}
             buttonText={"+"}
             btnClass={"btnAdd"}
