@@ -6,15 +6,17 @@ const PricingEditModal = ({ pricing, getData }) => {
   const [title, setTitle] = useState(pricing.title);
   const [description, setDescription] = useState(pricing.description);
   const [price, setPrice] = useState(pricing.price);
+  const [type, setType] = useState(pricing.type);
   const [loader, setLoader] = useState(false);
 
   const handleEdit = async () => {
     setLoader(true);
     try {
-      const result = await fetchData(`/v1/pricings/${pricing.id}`, "PUT", {
+      const result = await fetchData(`/api/v1/pricings/${pricing.id}`, "PUT", {
         title,
         description,
         price,
+        type,
       });
       if (result.success) {
         showSuccessToast(result.message);
@@ -58,6 +60,20 @@ const PricingEditModal = ({ pricing, getData }) => {
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                 />
+              </div>
+              <div className="form-group">
+                <label className="text-black font-w500">Type</label>
+                <select
+                  name="type"
+                  id="type"
+                  className="form-control"
+                  value={type}
+                  onChange={(e) => setType(e.target.value)}
+                >
+                  <option value="Basic">Basic</option>
+                  <option value="Standard">Standard</option>
+                  <option value="Premium">Premium</option>
+                </select>
               </div>
               <div className="form-group">
                 <label className="text-black font-w500">Price</label>
