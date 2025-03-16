@@ -11,8 +11,9 @@ import Searchbar from "../global/Searchbar";
 import CreateSubcategory from "./CreateSubcategory";
 import DeleteSubcategory from "./DeleteSubcategory";
 import EditSubcategory from "./EditSubcategory";
+import Loader from "../global/Loader";
 
-const SubcategoryList = () => {
+const SubsubcategoryList = () => {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(20);
 
@@ -27,11 +28,11 @@ const SubcategoryList = () => {
   const [subCategories, setSubCategories] = useState([]);
   const [subCategoryLoader, setSubCategoryLoader] = useState(false);
 
-  const loadMoreSubcategory = useCallback(() => {
+  const loadMoreSubsubcategory = useCallback(() => {
     setPage(page + 1);
   }, [page]);
 
-  const getSubcategories = useCallback(() => {
+  const getSubsubcategories = useCallback(() => {
     setLoader(true);
 
     fetchData(
@@ -70,11 +71,11 @@ const SubcategoryList = () => {
   }, [selectedQuery, searchTerm, page, limit]);
 
   useEffect(() => {
-    const getSubcategoriesDebounce = setTimeout(() => {
-      getSubcategories();
+    const getSubsubcategoriesDebounce = setTimeout(() => {
+      getSubsubcategories();
     }, 500);
 
-    return () => clearTimeout(getSubcategoriesDebounce);
+    return () => clearTimeout(getSubsubcategoriesDebounce);
   }, [selectedQuery, searchTerm, page, limit]);
 
   //get all categories
@@ -131,7 +132,7 @@ const SubcategoryList = () => {
     <>
       {/* add modal */}
       <CreateSubcategory
-        getSubcategories={getSubcategories}
+        getSubsubcategories={getSubsubcategories}
         categories={categories}
       />
 
@@ -155,108 +156,112 @@ const SubcategoryList = () => {
           </CardHeader>
 
           <div className="card-body">
-            <div className="table-responsive">
-              <IndianaDragScroller>
-                <table className="table table-responsive-md">
-                  <thead>
-                    <tr>
-                      <th className="width80">#</th>
-                      <th>Name</th>
-                      <th>Slug</th>
-                      <th>Category</th>
-                      <th>Subcategory</th>
-                      <th>Image</th>
-                      <th>Active?</th>
-                      <th>Action</th>
-                    </tr>
-                  </thead>
+            {loader ? (
+              <Loader />
+            ) : (
+              <div className="table-responsive">
+                <IndianaDragScroller>
+                  <table className="table table-responsive-md">
+                    <thead>
+                      <tr>
+                        <th className="width80">#</th>
+                        <th>Name</th>
+                        <th>Slug</th>
+                        <th>Category</th>
+                        <th>Subcategory</th>
+                        <th>Image</th>
+                        <th>Active?</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
 
-                  <tbody>
-                    {data ? (
-                      data?.map((item, index) => (
-                        <tr key={item.id + index}>
-                          <td>
-                            <strong>{index + 1}</strong>
-                          </td>
-                          <td>{item.name}</td>
-                          <td>{item.slug}</td>
-                          <td>{item?.category?.name}</td>
-                          <td>{item?.subcategory?.name}</td>
-                          <td>
-                            {item?.image && (
-                              <img
-                                src={item?.image}
-                                alt="subcategory image"
-                                style={{
-                                  width: "100px",
-                                  height: "100px",
-                                  objectFit: "contain",
-                                }}
-                              />
-                            )}
-                          </td>
-                          <td>{item.isActive ? "Active" : "Inactive"}</td>
+                    <tbody>
+                      {data ? (
+                        data?.map((item, index) => (
+                          <tr key={item.id + index}>
+                            <td>
+                              <strong>{index + 1}</strong>
+                            </td>
+                            <td>{item.name}</td>
+                            <td>{item.slug}</td>
+                            <td>{item?.category?.name}</td>
+                            <td>{item?.subcategory?.name}</td>
+                            <td>
+                              {item?.image && (
+                                <img
+                                  src={item?.image}
+                                  alt="subcategory image"
+                                  style={{
+                                    width: "100px",
+                                    height: "100px",
+                                    objectFit: "contain",
+                                  }}
+                                />
+                              )}
+                            </td>
+                            <td>{item.isActive ? "Active" : "Inactive"}</td>
 
-                          <td>
-                            <ActionButton>
-                              <ActionButtonMenu
-                                menuName={"Edit"}
-                                menuTarget={"#editSubcategory" + item.id}
-                              />
-                              <ActionButtonMenu
-                                menuName={"Delete"}
-                                menuTarget={"#deleteSubcategory" + item.id}
-                              />
-                            </ActionButton>
-                          </td>
-                          <EditSubcategory
-                            item={item}
-                            getSubcategories={getSubcategories}
-                            categories={categories}
-                          />
-                          <DeleteSubcategory
-                            item={item}
-                            getSubcategories={getSubcategories}
-                          />
-                        </tr>
-                      ))
-                    ) : (
-                      <>
-                        <tr className="col-md-12 text-center">
-                          <td></td>
-                          <td>{message}</td>
-                          <td></td>
-                        </tr>
-                      </>
-                    )}
-                  </tbody>
+                            <td>
+                              <ActionButton>
+                                <ActionButtonMenu
+                                  menuName={"Edit"}
+                                  menuTarget={"#editSubcategory" + item.id}
+                                />
+                                <ActionButtonMenu
+                                  menuName={"Delete"}
+                                  menuTarget={"#deleteSubcategory" + item.id}
+                                />
+                              </ActionButton>
+                            </td>
+                            <EditSubcategory
+                              item={item}
+                              getSubsubcategories={getSubsubcategories}
+                              categories={categories}
+                            />
+                            <DeleteSubcategory
+                              item={item}
+                              getSubsubcategories={getSubsubcategories}
+                            />
+                          </tr>
+                        ))
+                      ) : (
+                        <>
+                          <tr className="col-md-12 text-center">
+                            <td></td>
+                            <td>{message}</td>
+                            <td></td>
+                          </tr>
+                        </>
+                      )}
+                    </tbody>
 
-                  <tfoot>
-                    <tr>
-                      <th className="width80">#</th>
-                      <th>Name</th>
-                      <th>Slug</th>
-                      <th>Category</th>
-                      <th>Subcategory</th>
-                      <th>Image</th>
-                      <th>Active?</th>
-                      <th>Action</th>
-                    </tr>
-                  </tfoot>
-                </table>
-              </IndianaDragScroller>
-              <div className="col-md-12 text-center">
-                {data?.length === limit * page && (
-                  <>
-                    <Button
-                      buttonText={"Load more"}
-                      fontSize={"11px"}
-                      buttonOnClick={() => loadMoreSubcategory()}
-                    />
-                  </>
-                )}
+                    <tfoot>
+                      <tr>
+                        <th className="width80">#</th>
+                        <th>Name</th>
+                        <th>Slug</th>
+                        <th>Category</th>
+                        <th>Subcategory</th>
+                        <th>Image</th>
+                        <th>Active?</th>
+                        <th>Action</th>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </IndianaDragScroller>
+                <div className="col-md-12 text-center">
+                  {data?.length === limit * page && (
+                    <>
+                      <Button
+                        buttonText={"Load more"}
+                        fontSize={"11px"}
+                        buttonOnClick={() => loadMoreSubsubcategory()}
+                      />
+                    </>
+                  )}
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
       </div>
@@ -264,4 +269,4 @@ const SubcategoryList = () => {
   );
 };
 
-export default SubcategoryList;
+export default SubsubcategoryList;
