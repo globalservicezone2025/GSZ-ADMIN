@@ -22,17 +22,19 @@ const createBlog = async (
 ) => {
   setLoader(true);
 
-  const payload = {
-    title,
-    description,
-    image,
-    mainTopic,
-    tags,
-    authorId,
-    socialMediaLinks,
-  };
+  const formData = new FormData();
+  formData.append("title", title);
+  formData.append("description", description);
+  formData.append("mainTopic", mainTopic);
+  formData.append("tags", tags);
+  formData.append("authorId", authorId);
+  formData.append("socialMediaLinks", JSON.stringify(socialMediaLinks));
 
-  const jsonData = await fetchData("/api/v1/blogs", "POST", payload, false);
+  if (image) {
+    formData.append("image", image);
+  }
+
+  const jsonData = await fetchData("/api/v1/blogs", "POST", formData, true);
 
   const message = jsonData.message;
   const success = jsonData.success;
@@ -55,12 +57,14 @@ const CreateBlogModal = ({ getBlogs }) => {
   const [loader, setLoader] = useState(false);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [image, setImage] = useState("");
+  const [image, setImage] = useState(null);
   const [mainTopic, setMainTopic] = useState("");
   const [tags, setTags] = useState([]);
-  const [facebook, setFacebook] = useState("");
-  const [linkedin, setLinkedin] = useState("");
-  const [youtube, setYoutube] = useState("");
+  const [socialMediaLinks, setSocialMediaLinks] = useState({
+    facebook: "",
+    linkedin: "",
+    youtube: "",
+  });
 
   const modalCloseButton = useRef();
 
@@ -74,13 +78,15 @@ const CreateBlogModal = ({ getBlogs }) => {
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setImage(reader.result);
-    };
-    if (file) {
-      reader.readAsDataURL(file);
-    }
+    setImage(file);
+  };
+
+  const handleSocialMediaChange = (e) => {
+    const { name, value } = e.target;
+    setSocialMediaLinks((prevLinks) => ({
+      ...prevLinks,
+      [name]: value,
+    }));
   };
 
   return (
@@ -114,7 +120,7 @@ const CreateBlogModal = ({ getBlogs }) => {
           />
           {image && (
             <img
-              src={image}
+              src={URL.createObjectURL(image)}
               alt="Blog"
               style={{ width: "100px", height: "100px", marginTop: "10px" }}
             />
@@ -146,8 +152,9 @@ const CreateBlogModal = ({ getBlogs }) => {
           <input
             type="text"
             className="form-control"
-            value={facebook}
-            onChange={(e) => setFacebook(e.target.value)}
+            name="facebook"
+            value={socialMediaLinks.facebook}
+            onChange={handleSocialMediaChange}
           />
         </div>
 
@@ -156,8 +163,9 @@ const CreateBlogModal = ({ getBlogs }) => {
           <input
             type="text"
             className="form-control"
-            value={linkedin}
-            onChange={(e) => setLinkedin(e.target.value)}
+            name="linkedin"
+            value={socialMediaLinks.linkedin}
+            onChange={handleSocialMediaChange}
           />
         </div>
 
@@ -166,8 +174,9 @@ const CreateBlogModal = ({ getBlogs }) => {
           <input
             type="text"
             className="form-control"
-            value={youtube}
-            onChange={(e) => setYoutube(e.target.value)}
+            name="youtube"
+            value={socialMediaLinks.youtube}
+            onChange={handleSocialMediaChange}
           />
         </div>
 
@@ -184,7 +193,7 @@ const CreateBlogModal = ({ getBlogs }) => {
                   mainTopic,
                   tags,
                   authorId,
-                  { facebook, linkedin, youtube },
+                  socialMediaLinks,
                   setLoader,
                   modalCloseButton,
                   getBlogs
