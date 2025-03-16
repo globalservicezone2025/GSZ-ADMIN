@@ -11,6 +11,7 @@ import Searchbar from "../global/Searchbar";
 import CreateUser from "./CreateUser";
 import DeleteUser from "./DeleteUser";
 import EditUser from "./EditUser";
+import Loader from "../global/Loader";
 
 const UserList = () => {
   const [page, setPage] = useState(1);
@@ -127,99 +128,94 @@ const UserList = () => {
           </CardHeader>
 
           <div className="card-body">
-            <div className="table-responsive">
-              <IndianaDragScroller>
-                <table className="table table-responsive-md">
-                  <thead>
-                    <tr>
-                      <th className="width80">#</th>
-                      <th>Name</th>
-                      <th>Role</th>
-                      <th>Email</th>
-                      <th>Phone</th>
-                      <th>Address</th>
-                      {/* <th>Total Campaign</th> */}
-                      {/* <th>Total Product</th> */}
-                      {/* <th>Total Supplier</th> */}
-                      <th>Action</th>
-                    </tr>
-                  </thead>
+            {loader ? (
+              <Loader />
+            ) : (
+              <div className="table-responsive">
+                <IndianaDragScroller>
+                  <table className="table table-responsive-md">
+                    <thead>
+                      <tr>
+                        <th className="width80">#</th>
+                        <th>Name</th>
+                        <th>Role</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Address</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
 
-                  <tbody>
-                    {data ? (
-                      data?.map((item, index) => (
-                        <tr key={item.id + index}>
-                          <td>
-                            <strong>{index + 1}</strong>
-                          </td>
-                          <td>{item?.name}</td>
-                          <td>{item?.role?.name}</td>
-                          <td>{item?.email}</td>
-                          <td>{item?.phone}</td>
-                          <td>{item?.address}</td>
-                          {/* <td>{item?.campaigns?.length}</td> */}
-                          {/* <td>{item?.products?.length}</td> */}
-                          {/* <td>{item?.suppliers?.length}</td> */}
+                    <tbody>
+                      {data ? (
+                        data?.map((item, index) => (
+                          <tr key={item.id + index}>
+                            <td>
+                              <strong>{index + 1}</strong>
+                            </td>
+                            <td>{item?.name}</td>
+                            <td>{item?.role?.name}</td>
+                            <td>{item?.email}</td>
+                            <td>{item?.phone}</td>
+                            <td>{item?.address}</td>
 
-                          <td>
-                            <ActionButton>
-                              <ActionButtonMenu
-                                menuName={"Edit"}
-                                menuTarget={"#editUser" + item.id}
-                              />
-                              <ActionButtonMenu
-                                menuName={"Delete"}
-                                menuTarget={"#deleteUser" + item.id}
-                              />
-                            </ActionButton>
-                          </td>
-                          <EditUser
-                            item={item}
-                            getUsers={getUsers}
-                            roles={roles}
-                          />
-                          <DeleteUser item={item} getUsers={getUsers} />
-                        </tr>
-                      ))
-                    ) : (
-                      <>
-                        <tr className="col-md-12 text-center">
-                          <td></td>
-                          <td>{message}</td>
-                          <td></td>
-                        </tr>
-                      </>
-                    )}
-                  </tbody>
+                            <td>
+                              <ActionButton>
+                                <ActionButtonMenu
+                                  menuName={"Edit"}
+                                  menuTarget={"#editUser" + item.id}
+                                />
+                                <ActionButtonMenu
+                                  menuName={"Delete"}
+                                  menuTarget={"#deleteUser" + item.id}
+                                />
+                              </ActionButton>
+                            </td>
+                            <EditUser
+                              item={item}
+                              getUsers={getUsers}
+                              roles={roles}
+                            />
+                            <DeleteUser item={item} getUsers={getUsers} />
+                          </tr>
+                        ))
+                      ) : (
+                        <>
+                          <tr className="col-md-12 text-center">
+                            <td></td>
+                            <td>{message}</td>
+                            <td></td>
+                          </tr>
+                        </>
+                      )}
+                    </tbody>
 
-                  <tfoot>
-                    <tr>
-                      <th className="width80">#</th>
-                      <th>Name</th>
-                      <th>Role</th>
-                      <th>Email</th>
-                      <th>Phone</th>
-                      <th>Address</th>
-                      {/* <th>Total Campaign</th> */}
-                      {/* <th>Total Product</th> */}
-                      {/* <th>Total Supplier</th> */}
-                      <th>Action</th>
-                    </tr>
-                  </tfoot>
-                </table>
-              </IndianaDragScroller>
-              <div className="col-md-12 text-center">
-                {data?.length === limit * page && (
-                  <>
-                    <Button
-                      buttonText={"Load more"}
-                      fontSize={"11px"}
-                      buttonOnClick={() => loadMoreUser()}
-                    />
-                  </>
-                )}
+                    <tfoot>
+                      <tr>
+                        <th className="width80">#</th>
+                        <th>Name</th>
+                        <th>Role</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Address</th>
+                        <th>Action</th>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </IndianaDragScroller>
+                <div className="col-md-12 text-center">
+                  {data?.length === limit * page && (
+                    <>
+                      <Button
+                        buttonText={"Load more"}
+                        fontSize={"11px"}
+                        buttonOnClick={() => loadMoreUser()}
+                      />
+                    </>
+                  )}
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
       </div>

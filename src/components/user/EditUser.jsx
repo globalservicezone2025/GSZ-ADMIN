@@ -6,18 +6,12 @@ import Loader from "../global/Loader";
 import Modal from "../global/Modal";
 
 const editUser = async (
+  item,
   name,
   email,
   phone,
   address,
-  billingAddress,
-  country,
-  city,
   roleId,
-  initialPaymentAmount,
-  initialPaymentDue,
-  installmentTime,
-  item,
   setLoader,
   getUsers,
   modalCloseButton
@@ -29,13 +23,13 @@ const editUser = async (
     email,
     phone,
     address,
-    billingAddress,
-    country,
-    city,
+    billing_address: "",
+    country: "",
+    city: "",
     roleId,
-    initialPaymentAmount,
-    initialPaymentDue,
-    installmentTime,
+    initialPaymentAmount: parseFloat(0),
+    initialPaymentDue: parseFloat(0),
+    installmentTime: parseFloat(0),
   });
 
   const message = jsonData.message;
@@ -44,19 +38,12 @@ const editUser = async (
   if (!success) {
     setLoader(false);
     showErrorToast(message);
-    // eslint-disable-next-line no-throw-literal
-    throw {
-      message,
-    };
+    throw { message };
   }
 
   setLoader(false);
   showSuccessToast(message);
-
-  //fetch data
   getUsers();
-
-  //close modal
   modalCloseButton.current.click();
 
   return { success, message };
@@ -69,16 +56,6 @@ const EditUser = ({ item, getUsers, roles }) => {
   const [email, setEmail] = useState(item.email);
   const [phone, setPhone] = useState(item.phone);
   const [address, setAddress] = useState(item.address);
-  const [billingAddress, setBillingAddress] = useState(item.billingAddress);
-  const [country, setCountry] = useState(item.country);
-  const [city, setCity] = useState(item.city);
-  const [initialPaymentAmount, setInitialPaymentAmount] = useState(
-    item.initialPaymentAmount
-  );
-  const [initialPaymentDue, setInitialPaymentDue] = useState(
-    item.initialPaymentDue
-  );
-  const [installmentTime, setInstallmentTime] = useState(item.installmentTime);
 
   const modalCloseButton = useRef();
 
@@ -101,15 +78,13 @@ const EditUser = ({ item, getUsers, roles }) => {
 
             {roles &&
               roles.map((role, index) => (
-                <>
-                  <option
-                    value={role?.id}
-                    key={role?.id + index}
-                    selected={roleId === role?.id}
-                  >
-                    {role?.name}
-                  </option>
-                </>
+                <option
+                  value={role?.id}
+                  key={role?.id + index}
+                  selected={roleId === role?.id}
+                >
+                  {role?.name}
+                </option>
               ))}
           </select>
         </div>
@@ -149,92 +124,28 @@ const EditUser = ({ item, getUsers, roles }) => {
             onChange={(e) => setAddress(e.target.value)}
           />
         </div>
-        <div className="form-group">
-          <label className="text-black font-w500">Billing Address</label>
-          <input
-            type="text"
-            className="form-control"
-            value={billingAddress}
-            onChange={(e) => setBillingAddress(e.target.value)}
-          />
-        </div>
-        <div className="form-group">
-          <label className="text-black font-w500">Country</label>
-          <input
-            type="text"
-            className="form-control"
-            value={country}
-            onChange={(e) => setCountry(e.target.value)}
-          />
-        </div>
-        <div className="form-group">
-          <label className="text-black font-w500">City</label>
-          <input
-            type="text"
-            className="form-control"
-            value={city}
-            onChange={(e) => setCity(e.target.value)}
-          />
-        </div>
-        <div className="form-group">
-          <label className="text-black font-w500">Initial Payment Amount</label>
-          <input
-            type="text"
-            className="form-control"
-            value={initialPaymentAmount}
-            onChange={(e) => setInitialPaymentAmount(e.target.value)}
-          />
-        </div>
-        <div className="form-group">
-          <label className="text-black font-w500">Initial Payment Due</label>
-          <input
-            type="text"
-            className="form-control"
-            value={initialPaymentDue}
-            onChange={(e) => setInitialPaymentDue(e.target.value)}
-          />
-        </div>
-        <div className="form-group">
-          <label className="text-black font-w500">Installment Time</label>
-          <input
-            type="text"
-            className="form-control"
-            value={installmentTime}
-            onChange={(e) => setInstallmentTime(e.target.value)}
-          />
-        </div>
 
         {loader === true ? (
-          <>
-            <Loader />
-          </>
+          <Loader />
         ) : (
-          <>
-            <div className="form-group">
-              <Button
-                buttonOnClick={() =>
-                  editUser(
-                    name,
-                    email,
-                    phone,
-                    address,
-                    billingAddress,
-                    country,
-                    city,
-                    roleId,
-                    initialPaymentAmount,
-                    initialPaymentDue,
-                    installmentTime,
-                    item,
-                    setLoader,
-                    getUsers,
-                    modalCloseButton
-                  )
-                }
-                buttonText={"Update"}
-              />
-            </div>
-          </>
+          <div className="form-group">
+            <Button
+              buttonOnClick={() =>
+                editUser(
+                  item,
+                  name,
+                  email,
+                  phone,
+                  address,
+                  roleId,
+                  setLoader,
+                  getUsers,
+                  modalCloseButton
+                )
+              }
+              buttonText={"Update"}
+            />
+          </div>
         )}
       </Modal>
     </>

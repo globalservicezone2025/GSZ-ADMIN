@@ -10,56 +10,57 @@ const createUser = async (
   email,
   phone,
   address,
-  billingAddress,
-  country,
-  city,
   roleId,
-  initialPaymentAmount,
-  initialPaymentDue,
-  installmentTime,
+  image,
   setLoader,
   modalCloseButton,
   getUsers
 ) => {
   setLoader(true);
 
-  const jsonData = await fetchData("/api/v1/auth/register", "POST", {
-    name,
-    email,
-    phone,
-    address,
-    billingAddress,
-    country,
-    city,
-    roleId,
-    initialPaymentAmount: parseFloat(initialPaymentAmount),
-    initialPaymentDue: parseFloat(initialPaymentDue),
-    installmentTime: parseFloat(installmentTime),
-  });
-
-  const message = jsonData.message;
-  const success = jsonData.success;
-
-  if (!success) {
-    setLoader(false);
-    showErrorToast(message);
-    // eslint-disable-next-line no-throw-literal
-    throw {
-      message,
-    };
+  const formData = new FormData();
+  formData.append("name", name);
+  formData.append("email", email);
+  formData.append("phone", phone);
+  formData.append("address", address);
+  formData.append("billing_address", address);
+  formData.append("country", address);
+  formData.append("city", "address");
+  formData.append("roleId", roleId);
+  formData.append("initialPaymentAmount", parseFloat(0));
+  formData.append("initialPaymentDue", parseFloat(0));
+  formData.append("installmentTime", parseFloat(0));
+  if (image) {
+    formData.append("image", image);
   }
 
-  setLoader(false);
+  try {
+    const jsonData = await fetchData("/api/register", "POST", formData, true);
 
-  showSuccessToast(message);
+    const message = jsonData.message;
+    const success = jsonData.success;
 
-  //fetch data
-  getUsers();
+    if (!success) {
+      setLoader(false);
+      showErrorToast(message);
+      return { success, message };
+    }
 
-  //close modal
-  modalCloseButton.current.click();
+    setLoader(false);
+    showSuccessToast(message);
 
-  return { success, message };
+    //fetch data
+    getUsers();
+
+    //close modal
+    modalCloseButton.current.click();
+
+    return { success, message };
+  } catch (error) {
+    setLoader(false);
+    showErrorToast("An error occurred while creating the user.");
+    throw error;
+  }
 };
 
 const CreateUser = ({ getUsers, roles }) => {
@@ -69,14 +70,13 @@ const CreateUser = ({ getUsers, roles }) => {
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
-  const [billingAddress, setBillingAddress] = useState("");
-  const [country, setCountry] = useState("");
-  const [city, setCity] = useState("");
-  const [initialPaymentAmount, setInitialPaymentAmount] = useState("");
-  const [initialPaymentDue, setInitialPaymentDue] = useState("");
-  const [installmentTime, setInstallmentTime] = useState("");
+  const [image, setImage] = useState(null);
 
   const modalCloseButton = useRef();
+
+  const handleImageChange = (e) => {
+    setImage(e.target.files[0]);
+  };
 
   return (
     <>
@@ -97,11 +97,9 @@ const CreateUser = ({ getUsers, roles }) => {
 
             {roles &&
               roles.map((role, index) => (
-                <>
-                  <option value={role?.id} key={role?.id + index}>
-                    {role?.name}
-                  </option>
-                </>
+                <option value={role?.id} key={role?.id + index}>
+                  {role?.name}
+                </option>
               ))}
           </select>
         </div>
@@ -142,90 +140,35 @@ const CreateUser = ({ getUsers, roles }) => {
           />
         </div>
         <div className="form-group">
-          <label className="text-black font-w500">Billing Address</label>
+          <label className="text-black font-w500">Image</label>
           <input
-            type="text"
+            type="file"
             className="form-control"
-            value={billingAddress}
-            onChange={(e) => setBillingAddress(e.target.value)}
-          />
-        </div>
-        <div className="form-group">
-          <label className="text-black font-w500">Country</label>
-          <input
-            type="text"
-            className="form-control"
-            value={country}
-            onChange={(e) => setCountry(e.target.value)}
-          />
-        </div>
-        <div className="form-group">
-          <label className="text-black font-w500">City</label>
-          <input
-            type="text"
-            className="form-control"
-            value={city}
-            onChange={(e) => setCity(e.target.value)}
-          />
-        </div>
-        <div className="form-group">
-          <label className="text-black font-w500">Initial Payment Amount</label>
-          <input
-            type="text"
-            className="form-control"
-            value={initialPaymentAmount}
-            onChange={(e) => setInitialPaymentAmount(e.target.value)}
-          />
-        </div>
-        <div className="form-group">
-          <label className="text-black font-w500">Initial Payment Due</label>
-          <input
-            type="text"
-            className="form-control"
-            value={initialPaymentDue}
-            onChange={(e) => setInitialPaymentDue(e.target.value)}
-          />
-        </div>
-        <div className="form-group">
-          <label className="text-black font-w500">Installment Time</label>
-          <input
-            type="text"
-            className="form-control"
-            value={installmentTime}
-            onChange={(e) => setInstallmentTime(e.target.value)}
+            onChange={handleImageChange}
           />
         </div>
 
         {loader === true ? (
-          <>
-            <Loader />
-          </>
+          <Loader />
         ) : (
-          <>
-            <div className="form-group">
-              <Button
-                buttonOnClick={() =>
-                  createUser(
-                    name,
-                    email,
-                    phone,
-                    address,
-                    billingAddress,
-                    country,
-                    city,
-                    roleId,
-                    initialPaymentAmount,
-                    initialPaymentDue,
-                    installmentTime,
-                    setLoader,
-                    modalCloseButton,
-                    getUsers
-                  )
-                }
-                buttonText={"Submit"}
-              />
-            </div>
-          </>
+          <div className="form-group">
+            <Button
+              buttonOnClick={() =>
+                createUser(
+                  name,
+                  email,
+                  phone,
+                  address,
+                  roleId,
+                  image,
+                  setLoader,
+                  modalCloseButton,
+                  getUsers
+                )
+              }
+              buttonText={"Submit"}
+            />
+          </div>
         )}
       </Modal>
     </>
