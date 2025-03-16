@@ -12,6 +12,7 @@ import SendEmail from "../global/SendEmail";
 import CreateProduct from "./CreateProduct";
 import DeleteProduct from "./DeleteProduct";
 import EditProduct from "./EditProduct";
+import Loader from "../global/Loader";
 
 const ProductList = () => {
   const [page, setPage] = useState(1);
@@ -99,124 +100,128 @@ const ProductList = () => {
           </CardHeader>
 
           <div className="card-body">
-            <div className="table-responsive">
-              <IndianaDragScroller>
-                <table className="table table-responsive-md">
-                  <thead>
-                    <tr>
-                      <th className="width80">#</th>
-                      <th>Name</th>
-                      <th>Main Category</th>
-                      <th>Tags</th>
-                      <th>Image</th>
-                      <th>Link</th>
-                      <th>Description</th>
-                      <th>Price</th>
-                      <th>Active?</th>
-                      <th>Action</th>
-                    </tr>
-                  </thead>
+            {loader ? (
+              <Loader />
+            ) : (
+              <div className="table-responsive">
+                <IndianaDragScroller>
+                  <table className="table table-responsive-md">
+                    <thead>
+                      <tr>
+                        <th className="width80">#</th>
+                        <th>Name</th>
+                        <th>Main Category</th>
+                        <th>Tags</th>
+                        <th>Image</th>
+                        <th>Link</th>
+                        <th>Description</th>
+                        <th>Price</th>
+                        <th>Active?</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
 
-                  <tbody>
-                    {data ? (
-                      data?.map((item, index) => (
-                        <tr key={item.id + index}>
-                          <td>
-                            <strong>{index + 1}</strong>
-                          </td>
-                          <td>{item?.name}</td>
-                          <td>{item?.mainCategory}</td>
-                          <td>{item?.tags.join(", ")}</td>
-                          <td>
-                            {item?.image && (
-                              <img
-                                src={item?.image}
-                                alt="product image"
-                                style={{
-                                  width: "100px",
-                                  height: "100px",
-                                  objectFit: "contain",
-                                }}
-                              />
-                            )}
-                          </td>
-                          <td>{item?.link}</td>
-                          <td>{item?.description}</td>
-                          <td>{item?.price}</td>
-                          <td>{item.isActive ? "Active" : "Inactive"}</td>
+                    <tbody>
+                      {data ? (
+                        data?.map((item, index) => (
+                          <tr key={item.id + index}>
+                            <td>
+                              <strong>{index + 1}</strong>
+                            </td>
+                            <td>{item?.name}</td>
+                            <td>{item?.mainCategory}</td>
+                            <td>{item?.tags.join(", ")}</td>
+                            <td>
+                              {item?.image && (
+                                <img
+                                  src={item?.image}
+                                  alt="product image"
+                                  style={{
+                                    width: "100px",
+                                    height: "100px",
+                                    objectFit: "contain",
+                                  }}
+                                />
+                              )}
+                            </td>
+                            <td>{item?.link}</td>
+                            <td>{item?.description}</td>
+                            <td>{item?.price}</td>
+                            <td>{item.isActive ? "Active" : "Inactive"}</td>
 
-                          <td>
-                            <ActionButton>
-                              <ActionButtonMenu
-                                menuName={"Edit"}
-                                menuTarget={"#editProduct" + item.id}
-                              />
-                              <ActionButtonMenu
-                                menuName={"Delete"}
-                                menuTarget={"#deleteProduct" + item.id}
-                              />
-                              <ActionButtonMenu
-                                menuName={"Send Email"}
-                                menuTarget={"#sendEmailProduct" + item.id}
-                              />
-                            </ActionButton>
-                          </td>
-                          <EditProduct
-                            item={item}
-                            getProducts={getProducts}
-                          />
-                          <DeleteProduct
-                            item={item}
-                            getProducts={getProducts}
-                          />
-                          <SendEmail
-                            uri={`/api/v1/products-email/${item.id}`}
-                            item={item}
-                            getData={getProducts}
-                            modalId={`sendEmailProduct${item.id}`}
-                            modalHeader={"Send mail to subscribers"}
-                          />
-                        </tr>
-                      ))
-                    ) : (
-                      <>
-                        <tr className="col-md-12 text-center">
-                          <td></td>
-                          <td>{message}</td>
-                          <td></td>
-                        </tr>
-                      </>
-                    )}
-                  </tbody>
+                            <td>
+                              <ActionButton>
+                                <ActionButtonMenu
+                                  menuName={"Edit"}
+                                  menuTarget={"#editProduct" + item.id}
+                                />
+                                <ActionButtonMenu
+                                  menuName={"Delete"}
+                                  menuTarget={"#deleteProduct" + item.id}
+                                />
+                                <ActionButtonMenu
+                                  menuName={"Send Email"}
+                                  menuTarget={"#sendEmailProduct" + item.id}
+                                />
+                              </ActionButton>
+                            </td>
+                            <EditProduct
+                              item={item}
+                              getProducts={getProducts}
+                            />
+                            <DeleteProduct
+                              item={item}
+                              getProducts={getProducts}
+                            />
+                            <SendEmail
+                              uri={`/api/v1/products-email/${item.id}`}
+                              item={item}
+                              getData={getProducts}
+                              modalId={`sendEmailProduct${item.id}`}
+                              modalHeader={"Send mail to subscribers"}
+                            />
+                          </tr>
+                        ))
+                      ) : (
+                        <>
+                          <tr className="col-md-12 text-center">
+                            <td></td>
+                            <td>{message}</td>
+                            <td></td>
+                          </tr>
+                        </>
+                      )}
+                    </tbody>
 
-                  <tfoot>
-                    <tr>
-                      <th className="width80">#</th>
-                      <th>Name</th>
-                      <th>Main Category</th>
-                      <th>Tags</th>
-                      <th>Image</th>
-                      <th>Link</th>
-                      <th>Description</th>
-                      <th>Price</th>
-                      <th>Active?</th>
-                      <th>Action</th>
-                    </tr>
-                  </tfoot>
-                </table>
-              </IndianaDragScroller>
-              <div className="col-md-12 text-center">
-                {data?.length === limit * page && (
-                  <>
-                    <Button
-                      buttonText={"Load more"}
-                      fontSize={"11px"}
-                      buttonOnClick={() => loadMoreProduct()}
-                    />
-                  </>
-                )}
+                    <tfoot>
+                      <tr>
+                        <th className="width80">#</th>
+                        <th>Name</th>
+                        <th>Main Category</th>
+                        <th>Tags</th>
+                        <th>Image</th>
+                        <th>Link</th>
+                        <th>Description</th>
+                        <th>Price</th>
+                        <th>Active?</th>
+                        <th>Action</th>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </IndianaDragScroller>
+                <div className="col-md-12 text-center">
+                  {data?.length === limit * page && (
+                    <>
+                      <Button
+                        buttonText={"Load more"}
+                        fontSize={"11px"}
+                        buttonOnClick={() => loadMoreProduct()}
+                      />
+                    </>
+                  )}
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
       </div>

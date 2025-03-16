@@ -85,7 +85,7 @@ function App() {
               <Route exact path="/coupons" component={Auth(Coupon)} />
               <Route exact path="/preorders" component={Auth(Preorder)} />
               <Route exact path="/newsletters" component={Auth(Newsletter)} />
-              <Route exact path="/messages" component={Auth(Contact)} />
+              <Route exact path="/serviceorders" component={Auth(Contact)} />
               <Route exact path="/pricing" component={Auth(Pricing)} />
               <Route exact path="/faq" component={Auth(Faq)} />
               <Route exact path="/blog" component={Auth(Blog)} />

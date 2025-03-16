@@ -9,6 +9,7 @@ import Searchbar from "../global/Searchbar";
 import BlogEditModal from "./BlogEditModal";
 import BlogDeleteModal from "./BlogDeleteModal";
 import CreateBlogModal from "./CreateBlogModal";
+import Loader from "../global/Loader";
 
 const BlogList = () => {
   const [page, setPage] = useState(1);
@@ -95,140 +96,144 @@ const BlogList = () => {
           </CardHeader>
 
           <div className="card-body">
-            <div className="table-responsive">
-              <IndianaDragScroller>
-                <table className="table table-responsive-md">
-                  <thead>
-                    <tr>
-                      <th className="width80">#</th>
-                      <th>Title</th>
-                      <th>Main Topic</th>
-                      <th>Image</th>
-                      <th>Last Update</th>
-                      <th>Action</th>
-                    </tr>
-                  </thead>
+            {loader ? (
+              <Loader />
+            ) : (
+              <div className="table-responsive">
+                <IndianaDragScroller>
+                  <table className="table table-responsive-md">
+                    <thead>
+                      <tr>
+                        <th className="width80">#</th>
+                        <th>Title</th>
+                        <th>Main Topic</th>
+                        <th>Image</th>
+                        <th>Last Update</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
 
-                  <tbody>
-                    {data ? (
-                      data.map((item, index) => (
-                        <tr key={item.id + index}>
-                          <td>
-                            <strong>{index + 1}</strong>
-                          </td>
-                          <td>{item.title}</td>
-                          <td>{item.mainTopic}</td>
-                          <td>
-                            {item.image ? (
-                              <img
-                                src={item.image}
-                                alt="Blog"
-                                style={{ width: "50px", height: "50px" }}
-                              />
-                            ) : (
-                              "No Image"
-                            )}
-                          </td>
-                          <td>{new Date(item.updatedAt).toLocaleString()}</td>
-                          <td>
-                            <div className="dropdown">
-                              <button
-                                type="button"
-                                className="btn btn-success light sharp"
-                                data-toggle="dropdown"
-                              >
-                                <svg
-                                  width="20px"
-                                  height="20px"
-                                  viewBox="0 0 24 24"
-                                  version="1.1"
+                    <tbody>
+                      {data ? (
+                        data.map((item, index) => (
+                          <tr key={item.id + index}>
+                            <td>
+                              <strong>{index + 1}</strong>
+                            </td>
+                            <td>{item.title}</td>
+                            <td>{item.mainTopic}</td>
+                            <td>
+                              {item.image ? (
+                                <img
+                                  src={item.image}
+                                  alt="Blog"
+                                  style={{ width: "50px", height: "50px" }}
+                                />
+                              ) : (
+                                "No Image"
+                              )}
+                            </td>
+                            <td>{new Date(item.updatedAt).toLocaleString()}</td>
+                            <td>
+                              <div className="dropdown">
+                                <button
+                                  type="button"
+                                  className="btn btn-success light sharp"
+                                  data-toggle="dropdown"
                                 >
-                                  <g
-                                    stroke="none"
-                                    strokeWidth="1"
-                                    fill="none"
-                                    fillRule="evenodd"
+                                  <svg
+                                    width="20px"
+                                    height="20px"
+                                    viewBox="0 0 24 24"
+                                    version="1.1"
                                   >
-                                    <rect x="0" y="0" width="24" height="24" />
-                                    <circle
-                                      fill="#000000"
-                                      cx="5"
-                                      cy="12"
-                                      r="2"
-                                    />
-                                    <circle
-                                      fill="#000000"
-                                      cx="12"
-                                      cy="12"
-                                      r="2"
-                                    />
-                                    <circle
-                                      fill="#000000"
-                                      cx="19"
-                                      cy="12"
-                                      r="2"
-                                    />
-                                  </g>
-                                </svg>
-                              </button>
-                              <div className="dropdown-menu">
-                                <a
-                                  className="dropdown-item"
-                                  href="true"
-                                  data-toggle="modal"
-                                  data-target={`#blogEditModal${item.id}`}
-                                >
-                                  Edit
-                                </a>
-                                <a
-                                  className="dropdown-item"
-                                  href="true"
-                                  data-toggle="modal"
-                                  data-target={`#blogDeleteModal${item.id}`}
-                                >
-                                  Delete
-                                </a>
+                                    <g
+                                      stroke="none"
+                                      strokeWidth="1"
+                                      fill="none"
+                                      fillRule="evenodd"
+                                    >
+                                      <rect x="0" y="0" width="24" height="24" />
+                                      <circle
+                                        fill="#000000"
+                                        cx="5"
+                                        cy="12"
+                                        r="2"
+                                      />
+                                      <circle
+                                        fill="#000000"
+                                        cx="12"
+                                        cy="12"
+                                        r="2"
+                                      />
+                                      <circle
+                                        fill="#000000"
+                                        cx="19"
+                                        cy="12"
+                                        r="2"
+                                      />
+                                    </g>
+                                  </svg>
+                                </button>
+                                <div className="dropdown-menu">
+                                  <a
+                                    className="dropdown-item"
+                                    href="true"
+                                    data-toggle="modal"
+                                    data-target={`#blogEditModal${item.id}`}
+                                  >
+                                    Edit
+                                  </a>
+                                  <a
+                                    className="dropdown-item"
+                                    href="true"
+                                    data-toggle="modal"
+                                    data-target={`#blogDeleteModal${item.id}`}
+                                  >
+                                    Delete
+                                  </a>
+                                </div>
                               </div>
-                            </div>
-                          </td>
-                        </tr>
-                      ))
-                    ) : (
-                      <>
-                        <tr className="col-md-12 text-center">
-                          <td></td>
-                          <td>{message}</td>
-                          <td></td>
-                        </tr>
-                      </>
-                    )}
-                  </tbody>
+                            </td>
+                          </tr>
+                        ))
+                      ) : (
+                        <>
+                          <tr className="col-md-12 text-center">
+                            <td></td>
+                            <td>{message}</td>
+                            <td></td>
+                          </tr>
+                        </>
+                      )}
+                    </tbody>
 
-                  <tfoot>
-                    <tr>
-                      <th className="width80">#</th>
-                      <th>Title</th>
-                      <th>Main Topic</th>
-                      <th>Image</th>
-                      <th>Last Update</th>
-                      <th>Action</th>
-                    </tr>
-                  </tfoot>
-                </table>
-              </IndianaDragScroller>
+                    <tfoot>
+                      <tr>
+                        <th className="width80">#</th>
+                        <th>Title</th>
+                        <th>Main Topic</th>
+                        <th>Image</th>
+                        <th>Last Update</th>
+                        <th>Action</th>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </IndianaDragScroller>
 
-              <div className="col-md-12 text-center">
-                {data?.length === limit * page && (
-                  <>
-                    <Button
-                      buttonText={"Load more"}
-                      fontSize={"11px"}
-                      buttonOnClick={() => loadMoreBlogs()}
-                    />
-                  </>
-                )}
+                <div className="col-md-12 text-center">
+                  {data?.length === limit * page && (
+                    <>
+                      <Button
+                        buttonText={"Load more"}
+                        fontSize={"11px"}
+                        buttonOnClick={() => loadMoreBlogs()}
+                      />
+                    </>
+                  )}
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
       </div>

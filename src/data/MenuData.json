@@ -30,15 +30,9 @@
     "icon": "flaticon-381-notepad"
   },
   {
-    "id": 11,
-    "name": "Banners",
-    "link": "/banners",
-    "icon": "flaticon-381-networking"
-  },
-  {
     "id": 16,
-    "name": "Messages",
-    "link": "/messages",
+    "name": "Service Orders",
+    "link": "/serviceorders",
     "icon": "flaticon-381-notepad"
   },
   {
@@ -70,5 +64,11 @@
     "name": "Blog",
     "link": "/blog",
     "icon": "flaticon-381-newspaper"
+  },
+  {
+    "id": 11,
+    "name": "Banners",
+    "link": "/banners",
+    "icon": "flaticon-381-networking"
   }
 ]

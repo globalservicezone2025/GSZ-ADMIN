@@ -6,6 +6,7 @@ import Button from "../global/Button";
 import CardHeader from "../global/CardHeader";
 import IndianaDragScroller from "../global/IndianaDragScroller";
 import Searchbar from "../global/Searchbar";
+import Loader from "../global/Loader";
 
 const ContactList = () => {
   const [page, setPage] = useState(1);
@@ -89,90 +90,94 @@ const ContactList = () => {
           </CardHeader>
 
           <div className="card-body">
-            <div className="table-responsive">
-              <IndianaDragScroller>
-                <table className="table table-responsive-md">
-                  <thead>
-                    <tr>
-                      <th className="width80">#</th>
-                      <th>First Name</th>
-                      <th>Last Name</th>
-                      <th>Email</th>
-                      <th>Country</th>
-                      <th>Phone Number</th>
-                      <th>Hear From</th>
-                      <th>Date</th>
-                      <th>Time</th>
-                      <th>Description</th>
-                      <th>Active</th>
-                      <th>Service</th>
-                      <th>Created At</th>
-                    </tr>
-                  </thead>
+            {loader ? (
+              <Loader />
+            ) : (
+              <div className="table-responsive">
+                <IndianaDragScroller>
+                  <table className="table table-responsive-md">
+                    <thead>
+                      <tr>
+                        <th className="width80">#</th>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Email</th>
+                        <th>Country</th>
+                        <th>Phone Number</th>
+                        <th>Hear From</th>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Description</th>
+                        <th>Active</th>
+                        <th>Service</th>
+                        <th>Created At</th>
+                      </tr>
+                    </thead>
 
-                  <tbody>
-                    {data ? (
-                      data.map((item, index) => (
-                        <tr key={item.id + index}>
-                          <td>
-                            <strong>{index + 1}</strong>
-                          </td>
-                          <td>{item.firstName}</td>
-                          <td>{item.lastName}</td>
-                          <td>{item.email}</td>
-                          <td>{item.country}</td>
-                          <td>{item.phoneNumber}</td>
-                          <td>{item.hearFrom}</td>
-                          <td>{item.date?.slice(0, 10)}</td>
-                          <td>{item.time?.slice(11, 19)}</td>
-                          <td>{item.description}</td>
-                          <td>{item.isActive ? "Active" : "Inactive"}</td>
-                          <td>{item.subcategory.name}</td>
-                          <td>{item.createdAt?.slice(0, 10)}</td>
-                        </tr>
-                      ))
-                    ) : (
-                      <>
-                        <tr className="col-md-12 text-center">
-                          <td></td>
-                          <td>{message}</td>
-                          <td></td>
-                        </tr>
-                      </>
-                    )}
-                  </tbody>
+                    <tbody>
+                      {data ? (
+                        data.map((item, index) => (
+                          <tr key={item.id + index}>
+                            <td>
+                              <strong>{index + 1}</strong>
+                            </td>
+                            <td>{item.firstName}</td>
+                            <td>{item.lastName}</td>
+                            <td>{item.email}</td>
+                            <td>{item.country}</td>
+                            <td>{item.phoneNumber}</td>
+                            <td>{item.hearFrom}</td>
+                            <td>{item.date?.slice(0, 10)}</td>
+                            <td>{item.time?.slice(11, 19)}</td>
+                            <td>{item.description}</td>
+                            <td>{item.isActive ? "Active" : "Inactive"}</td>
+                            <td>{item.subcategory.name}</td>
+                            <td>{item.createdAt?.slice(0, 10)}</td>
+                          </tr>
+                        ))
+                      ) : (
+                        <>
+                          <tr className="col-md-12 text-center">
+                            <td></td>
+                            <td>{message}</td>
+                            <td></td>
+                          </tr>
+                        </>
+                      )}
+                    </tbody>
 
-                  <tfoot>
-                    <tr>
-                      <th className="width80">#</th>
-                      <th>First Name</th>
-                      <th>Last Name</th>
-                      <th>Email</th>
-                      <th>Country</th>
-                      <th>Phone Number</th>
-                      <th>Hear From</th>
-                      <th>Date</th>
-                      <th>Time</th>
-                      <th>Description</th>
-                      <th>Active</th>
-                      <th>Created At</th>
-                    </tr>
-                  </tfoot>
-                </table>
-              </IndianaDragScroller>
+                    <tfoot>
+                      <tr>
+                        <th className="width80">#</th>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Email</th>
+                        <th>Country</th>
+                        <th>Phone Number</th>
+                        <th>Hear From</th>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th>Description</th>
+                        <th>Active</th>
+                        <th>Created At</th>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </IndianaDragScroller>
 
-              <div className="col-md-12 text-center">
-                {data?.length === limit * page && (
-                  <>
-                    <Button
-                      buttonText={"Load more"}
-                      fontSize={"11px"}
-                      buttonOnClick={() => loadMoreContacts()}
-                    />
-                  </>
-                )}
+                <div className="col-md-12 text-center">
+                  {data?.length === limit * page && (
+                    <>
+                      <Button
+                        buttonText={"Load more"}
+                        fontSize={"11px"}
+                        buttonOnClick={() => loadMoreContacts()}
+                      />
+                    </>
+                  )}
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
       </div>

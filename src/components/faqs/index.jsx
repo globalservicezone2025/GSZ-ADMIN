@@ -10,6 +10,7 @@ import Searchbar from "../global/Searchbar";
 import FaqEditModal from "./FaqEditModal";
 import FaqDeleteModal from "./FaqDeleteModal";
 import CreateFaqModal from "./CreateFaqModal";
+import Loader from "../global/Loader";
 
 const FaqList = () => {
   const [page, setPage] = useState(1);
@@ -141,153 +142,157 @@ const FaqList = () => {
           </CardHeader>
 
           <div className="card-body">
-            <div className="table-responsive">
-              <IndianaDragScroller>
-                <table className="table table-responsive-md">
-                  <thead>
-                    <tr>
-                      <th className="width80">#</th>
-                      <th>Category</th>
-                      <th>Subcategory</th>
-                      <th>Question</th>
-                      <th>Answer</th>
-                      <th>Is Active</th>
-                      <th>Action</th>
-                    </tr>
-                  </thead>
+            {loader ? (
+              <Loader />
+            ) : (
+              <div className="table-responsive">
+                <IndianaDragScroller>
+                  <table className="table table-responsive-md">
+                    <thead>
+                      <tr>
+                        <th className="width80">#</th>
+                        <th>Category</th>
+                        <th>Subcategory</th>
+                        <th>Question</th>
+                        <th>Answer</th>
+                        <th>Is Active</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
 
-                  <tbody>
-                    {data ? (
-                      data.map((item, index) => (
-                        <tr key={item.id + index}>
-                          <td>
-                            <strong>{index + 1}</strong>
-                          </td>
-                          <td>{item.category?.name}</td>
-                          <td>{item.subcategory?.name}</td>
-                          <td>{item.question}</td>
-                          <td>{item.answer}</td>
-                          <td>
-                            <Switch
-                              checked={item.isActive}
-                              onChange={() =>
-                                handleIsActiveChange(item.id, !item.isActive)
-                              }
-                              onColor="#86d3ff"
-                              onHandleColor="#2693e6"
-                              handleDiameter={30}
-                              uncheckedIcon={false}
-                              checkedIcon={false}
-                              boxShadow="0px 1px 5px rgba(0, 0, 0, 0.6)"
-                              activeBoxShadow="0px 0px 1px 10px rgba(0, 0, 0, 0.2)"
-                              height={30}
-                              width={60}
-                              className="react-switch"
-                              id={`switch-${item.id}`}
-                            />
-                          </td>
-                          <td>
-                            <div className="dropdown">
-                              <button
-                                type="button"
-                                className="btn btn-success light sharp"
-                                data-toggle="dropdown"
-                              >
-                                <svg
-                                  width="20px"
-                                  height="20px"
-                                  viewBox="0 0 24 24"
-                                  version="1.1"
+                    <tbody>
+                      {data ? (
+                        data.map((item, index) => (
+                          <tr key={item.id + index}>
+                            <td>
+                              <strong>{index + 1}</strong>
+                            </td>
+                            <td>{item.category?.name}</td>
+                            <td>{item.subcategory?.name}</td>
+                            <td>{item.question}</td>
+                            <td>{item.answer}</td>
+                            <td>
+                              <Switch
+                                checked={item.isActive}
+                                onChange={() =>
+                                  handleIsActiveChange(item.id, !item.isActive)
+                                }
+                                onColor="#86d3ff"
+                                onHandleColor="#2693e6"
+                                handleDiameter={30}
+                                uncheckedIcon={false}
+                                checkedIcon={false}
+                                boxShadow="0px 1px 5px rgba(0, 0, 0, 0.6)"
+                                activeBoxShadow="0px 0px 1px 10px rgba(0, 0, 0, 0.2)"
+                                height={30}
+                                width={60}
+                                className="react-switch"
+                                id={`switch-${item.id}`}
+                              />
+                            </td>
+                            <td>
+                              <div className="dropdown">
+                                <button
+                                  type="button"
+                                  className="btn btn-success light sharp"
+                                  data-toggle="dropdown"
                                 >
-                                  <g
-                                    stroke="none"
-                                    strokeWidth="1"
-                                    fill="none"
-                                    fillRule="evenodd"
+                                  <svg
+                                    width="20px"
+                                    height="20px"
+                                    viewBox="0 0 24 24"
+                                    version="1.1"
                                   >
-                                    <rect x="0" y="0" width="24" height="24" />
-                                    <circle
-                                      fill="#000000"
-                                      cx="5"
-                                      cy="12"
-                                      r="2"
-                                    />
-                                    <circle
-                                      fill="#000000"
-                                      cx="12"
-                                      cy="12"
-                                      r="2"
-                                    />
-                                    <circle
-                                      fill="#000000"
-                                      cx="19"
-                                      cy="12"
-                                      r="2"
-                                    />
-                                  </g>
-                                </svg>
-                              </button>
-                              <div className="dropdown-menu">
-                                <a
-                                  className="dropdown-item"
-                                  href="true"
-                                  data-toggle="modal"
-                                  data-target={`#FaqEditModal${item.id}`}
-                                >
-                                  Edit
-                                </a>
-                                <a
-                                  className="dropdown-item"
-                                  href="true"
-                                  data-toggle="modal"
-                                  data-target={`#FaqDeleteModal${item.id}`}
-                                >
-                                  Delete
-                                </a>
+                                    <g
+                                      stroke="none"
+                                      strokeWidth="1"
+                                      fill="none"
+                                      fillRule="evenodd"
+                                    >
+                                      <rect x="0" y="0" width="24" height="24" />
+                                      <circle
+                                        fill="#000000"
+                                        cx="5"
+                                        cy="12"
+                                        r="2"
+                                      />
+                                      <circle
+                                        fill="#000000"
+                                        cx="12"
+                                        cy="12"
+                                        r="2"
+                                      />
+                                      <circle
+                                        fill="#000000"
+                                        cx="19"
+                                        cy="12"
+                                        r="2"
+                                      />
+                                    </g>
+                                  </svg>
+                                </button>
+                                <div className="dropdown-menu">
+                                  <a
+                                    className="dropdown-item"
+                                    href="true"
+                                    data-toggle="modal"
+                                    data-target={`#FaqEditModal${item.id}`}
+                                  >
+                                    Edit
+                                  </a>
+                                  <a
+                                    className="dropdown-item"
+                                    href="true"
+                                    data-toggle="modal"
+                                    data-target={`#FaqDeleteModal${item.id}`}
+                                  >
+                                    Delete
+                                  </a>
+                                </div>
                               </div>
-                            </div>
-                          </td>
-                          {/* <FaqEditModal faq={item} getData={getFaqs} />
-                          <FaqDeleteModal faqId={item.id} getData={getFaqs} /> */}
-                        </tr>
-                      ))
-                    ) : (
-                      <>
-                        <tr className="col-md-12 text-center">
-                          <td></td>
-                          <td>{message}</td>
-                          <td></td>
-                        </tr>
-                      </>
-                    )}
-                  </tbody>
+                            </td>
+                            <FaqEditModal faq={item} getData={getFaqs} />
+                            <FaqDeleteModal faqId={item.id} getData={getFaqs} />
+                          </tr>
+                        ))
+                      ) : (
+                        <>
+                          <tr className="col-md-12 text-center">
+                            <td></td>
+                            <td>{message}</td>
+                            <td></td>
+                          </tr>
+                        </>
+                      )}
+                    </tbody>
 
-                  <tfoot>
-                    <tr>
-                      <th className="width80">#</th>
-                      <th>Category</th>
-                      <th>Subcategory</th>
-                      <th>Question</th>
-                      <th>Answer</th>
-                      <th>Is Active</th>
-                      <th>Action</th>
-                    </tr>
-                  </tfoot>
-                </table>
-              </IndianaDragScroller>
+                    <tfoot>
+                      <tr>
+                        <th className="width80">#</th>
+                        <th>Category</th>
+                        <th>Subcategory</th>
+                        <th>Question</th>
+                        <th>Answer</th>
+                        <th>Is Active</th>
+                        <th>Action</th>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </IndianaDragScroller>
 
-              <div className="col-md-12 text-center">
-                {data?.length === limit * page && (
-                  <>
-                    <Button
-                      buttonText={"Load more"}
-                      fontSize={"11px"}
-                      buttonOnClick={() => loadMoreFaqs()}
-                    />
-                  </>
-                )}
+                <div className="col-md-12 text-center">
+                  {data?.length === limit * page && (
+                    <>
+                      <Button
+                        buttonText={"Load more"}
+                        fontSize={"11px"}
+                        buttonOnClick={() => loadMoreFaqs()}
+                      />
+                    </>
+                  )}
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
       </div>
