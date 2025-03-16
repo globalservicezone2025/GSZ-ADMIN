@@ -195,6 +195,8 @@ const BlogList = () => {
                                 </div>
                               </div>
                             </td>
+                            <BlogEditModal blog={item} getData={getBlogs} />
+                            <BlogDeleteModal blogId={item.id} getData={getBlogs} />
                           </tr>
                         ))
                       ) : (
