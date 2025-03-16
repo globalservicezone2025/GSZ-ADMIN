@@ -236,7 +236,7 @@ const FaqList = () => {
                                     className="dropdown-item"
                                     href="true"
                                     data-toggle="modal"
-                                    data-target={`#FaqEditModal${item.id}`}
+                                    data-target={`#faqEditModal${item.id}`}
                                   >
                                     Edit
                                   </a>
@@ -244,14 +244,14 @@ const FaqList = () => {
                                     className="dropdown-item"
                                     href="true"
                                     data-toggle="modal"
-                                    data-target={`#FaqDeleteModal${item.id}`}
+                                    data-target={`#faqDeleteModal${item.id}`}
                                   >
                                     Delete
                                   </a>
                                 </div>
                               </div>
                             </td>
-                            <FaqEditModal faq={item} getData={getFaqs} />
+                            <FaqEditModal faq={item} getData={getFaqs} categories={categories} />
                             <FaqDeleteModal faqId={item.id} getData={getFaqs} />
                           </tr>
                         ))
