@@ -10,6 +10,7 @@ import "react-quill/dist/quill.snow.css"; // Include styles
 const createPricing = async (
   categoryId,
   subCategoryId,
+  subSubCategoryId,
   type,
   price,
   title,
@@ -23,6 +24,7 @@ const createPricing = async (
   const payload = {
     categoryId,
     subCategoryId,
+    subSubCategoryId,
     type,
     price,
     title,
@@ -52,12 +54,15 @@ const CreatePricingModal = ({ getPricings, categories }) => {
   const [loader, setLoader] = useState(false);
   const [category, setCategory] = useState("");
   const [subCategory, setSubCategory] = useState("");
+  const [subSubCategory, setSubSubCategory] = useState("");
   const [type, setType] = useState("Basic");
   const [price, setPrice] = useState("");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [subCategories, setSubCategories] = useState([]);
+  const [subSubCategories, setSubSubCategories] = useState([]);
   const [subCategoryLoader, setSubCategoryLoader] = useState(false);
+  const [subSubCategoryLoader, setSubSubCategoryLoader] = useState(false);
 
   const modalCloseButton = useRef();
 
@@ -65,6 +70,7 @@ const CreatePricingModal = ({ getPricings, categories }) => {
     const selectedCategory = e.target.value;
     setCategory(selectedCategory);
     setSubCategory("");
+    setSubSubCategory("");
     if (selectedCategory) {
       setSubCategoryLoader(true);
       try {
@@ -84,6 +90,33 @@ const CreatePricingModal = ({ getPricings, categories }) => {
       }
     } else {
       setSubCategories([]);
+      setSubSubCategories([]);
+    }
+  };
+
+  const handleSubCategoryChange = async (e) => {
+    const selectedSubCategory = e.target.value;
+    setSubCategory(selectedSubCategory);
+    setSubSubCategory("");
+    if (selectedSubCategory) {
+      setSubSubCategoryLoader(true);
+      try {
+        const result = await fetchData(
+          `/api/v1/subSubCategoriesBySubCategory/${selectedSubCategory}`,
+          "GET"
+        );
+        if (result.success) {
+          setSubSubCategories(result.data);
+        } else {
+          showErrorToast(result.message);
+        }
+      } catch (error) {
+        showErrorToast(error.message);
+      } finally {
+        setSubSubCategoryLoader(false);
+      }
+    } else {
+      setSubSubCategories([]);
     }
   };
 
@@ -121,7 +154,7 @@ const CreatePricingModal = ({ getPricings, categories }) => {
               name="subCategory"
               id="subCategory"
               className="form-control"
-              onChange={(e) => setSubCategory(e.target.value)}
+              onChange={handleSubCategoryChange}
               value={subCategory}
             >
               <option value="">Select a subcategory</option>
@@ -129,6 +162,29 @@ const CreatePricingModal = ({ getPricings, categories }) => {
                 subCategories.map((subCategory, index) => (
                   <option value={subCategory.id} key={subCategory.id + index}>
                     {subCategory.name}
+                  </option>
+                ))}
+            </select>
+          )}
+        </div>
+
+        <div className="form-group">
+          <label className="text-black font-w500 mr-2">Sub-Subcategory</label>
+          {subSubCategoryLoader ? (
+            <Loader />
+          ) : (
+            <select
+              name="subSubCategory"
+              id="subSubCategory"
+              className="form-control"
+              onChange={(e) => setSubSubCategory(e.target.value)}
+              value={subSubCategory}
+            >
+              <option value="">Select a sub-subcategory</option>
+              {subSubCategories &&
+                subSubCategories.map((subSubCategory, index) => (
+                  <option value={subSubCategory.id} key={subSubCategory.id + index}>
+                    {subSubCategory.name}
                   </option>
                 ))}
             </select>
@@ -184,6 +240,7 @@ const CreatePricingModal = ({ getPricings, categories }) => {
                 createPricing(
                   category,
                   subCategory,
+                  subSubCategory,
                   type,
                   price,
                   title,

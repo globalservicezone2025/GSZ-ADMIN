@@ -72,7 +72,6 @@ const ContactList = () => {
 
   return (
     <>
-      {/* table */}
       <div className="col-lg-12">
         <div className="card">
           <CardHeader
@@ -115,9 +114,9 @@ const ContactList = () => {
                     </thead>
 
                     <tbody>
-                      {data ? (
+                      {data.length > 0 ? (
                         data.map((item, index) => (
-                          <tr key={item.id + index}>
+                          <tr key={item.id}>
                             <td>
                               <strong>{index + 1}</strong>
                             </td>
@@ -131,18 +130,14 @@ const ContactList = () => {
                             <td>{item.time?.slice(11, 19)}</td>
                             <td>{item.description}</td>
                             <td>{item.isActive ? "Active" : "Inactive"}</td>
-                            <td>{item.subcategory.name}</td>
+                            <td>{item.subsubcategory?.name}</td>
                             <td>{item.createdAt?.slice(0, 10)}</td>
                           </tr>
                         ))
                       ) : (
-                        <>
-                          <tr className="col-md-12 text-center">
-                            <td></td>
-                            <td>{message}</td>
-                            <td></td>
-                          </tr>
-                        </>
+                        <tr className="col-md-12 text-center">
+                          <td colSpan="13">{message}</td>
+                        </tr>
                       )}
                     </tbody>
 
@@ -159,6 +154,7 @@ const ContactList = () => {
                         <th>Time</th>
                         <th>Description</th>
                         <th>Active</th>
+                        <th>Service</th>
                         <th>Created At</th>
                       </tr>
                     </tfoot>
@@ -167,13 +163,11 @@ const ContactList = () => {
 
                 <div className="col-md-12 text-center">
                   {data?.length === limit * page && (
-                    <>
-                      <Button
-                        buttonText={"Load more"}
-                        fontSize={"11px"}
-                        buttonOnClick={() => loadMoreContacts()}
-                      />
-                    </>
+                    <Button
+                      buttonText={"Load more"}
+                      fontSize={"11px"}
+                      buttonOnClick={() => loadMoreContacts()}
+                    />
                   )}
                 </div>
               </div>
