@@ -160,7 +160,7 @@ const FaqEditModal = ({ faq, getData, categories }) => {
           <div className="modal-body">
             <form>
               <div className="form-group">
-                <label className="text-black font-w500">Category</label>
+                <label className="text-black font-w500">Service</label>
                 <select
                   name="category"
                   id="category"
@@ -168,7 +168,7 @@ const FaqEditModal = ({ faq, getData, categories }) => {
                   onChange={handleCategoryChange}
                   value={category}
                 >
-                  <option value="">Select a category</option>
+                  <option value="">Select a service</option>
                   {categories &&
                     categories.map((category, index) => (
                       <option value={category.id} key={category.id + index}>
@@ -179,7 +179,7 @@ const FaqEditModal = ({ faq, getData, categories }) => {
               </div>
 
               <div className="form-group">
-                <label className="text-black font-w500 mr-2">Subcategory</label>
+                <label className="text-black font-w500 mr-2">Sub Service</label>
                 {subCategoryLoader ? (
                   <Loader />
                 ) : (
@@ -190,7 +190,7 @@ const FaqEditModal = ({ faq, getData, categories }) => {
                     onChange={handleSubCategoryChange}
                     value={subCategory}
                   >
-                    <option value="">Select a subcategory</option>
+                    <option value="">Select a sub service</option>
                     {subCategories &&
                       subCategories.map((subCategory, index) => (
                         <option value={subCategory.id} key={subCategory.id + index}>
@@ -202,7 +202,7 @@ const FaqEditModal = ({ faq, getData, categories }) => {
               </div>
 
               <div className="form-group">
-                <label className="text-black font-w500 mr-2">Sub-Subcategory</label>
+                <label className="text-black font-w500 mr-2">Sub-Sub Service</label>
                 {subSubCategoryLoader ? (
                   <Loader />
                 ) : (

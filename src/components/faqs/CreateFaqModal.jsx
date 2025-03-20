@@ -122,14 +122,14 @@ const CreateFaqModal = ({ getFaqs, categories }) => {
         modalCloseButton={modalCloseButton}
       >
         <div className="form-group">
-          <label className="text-black font-w500">Category</label>
+          <label className="text-black font-w500">Service</label>
           <select
             name="category"
             id="category"
             className="form-control"
             onChange={handleCategoryChange}
           >
-            <option value="">Select a category</option>
+            <option value="">Select a service</option>
             {categories &&
               categories.map((category, index) => (
                 <option value={category.id} key={category.id + index}>
@@ -140,7 +140,7 @@ const CreateFaqModal = ({ getFaqs, categories }) => {
         </div>
 
         <div className="form-group">
-          <label className="text-black font-w500 mr-2">Subcategory</label>
+          <label className="text-black font-w500 mr-2">Sub Service</label>
           {subCategoryLoader ? (
             <Loader />
           ) : (
@@ -151,7 +151,7 @@ const CreateFaqModal = ({ getFaqs, categories }) => {
               onChange={handleSubCategoryChange}
               value={subCategory}
             >
-              <option value="">Select a subcategory</option>
+              <option value="">Select a sub service</option>
               {subCategories &&
                 subCategories.map((subCategory, index) => (
                   <option value={subCategory.id} key={subCategory.id + index}>
@@ -163,7 +163,7 @@ const CreateFaqModal = ({ getFaqs, categories }) => {
         </div>
 
         <div className="form-group">
-          <label className="text-black font-w500 mr-2">Sub-Subcategory</label>
+          <label className="text-black font-w500 mr-2">Sub-Sub Service</label>
           {subSubCategoryLoader ? (
             <Loader />
           ) : (
@@ -174,7 +174,7 @@ const CreateFaqModal = ({ getFaqs, categories }) => {
               onChange={(e) => setSubSubCategory(e.target.value)}
               value={subSubCategory}
             >
-              <option value="">Select a sub-subcategory</option>
+              <option value="">Select a sub-sub service</option>
               {subSubCategories &&
                 subSubCategories.map((subSubCategory, index) => (
                   <option value={subSubCategory.id} key={subSubCategory.id + index}>

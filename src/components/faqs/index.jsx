@@ -151,8 +151,8 @@ const FaqList = () => {
                     <thead>
                       <tr>
                         <th className="width80">#</th>
-                        <th>Category</th>
-                        <th>Subcategory</th>
+                        <th>Service</th>
+                        <th>Sub Service</th>
                         <th>Question</th>
                         <th>Answer</th>
                         <th>Is Active</th>

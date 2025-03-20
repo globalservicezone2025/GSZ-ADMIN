@@ -77,31 +77,11 @@ const UserList = () => {
     return () => clearTimeout(getUsersDebounce);
   }, [selectedQuery, searchTerm, page, limit]);
 
-  // //get all roles
-  // const getRoles = useCallback(() => {
-  //   setLoader(true);
-
-  //   fetchData(`/api/v1/auth/roles`, "GET")
-  //     .then((result) => {
-  //       if (result.success) {
-  //         setRoles(result.data);
-  //       } else {
-  //         showErrorToast(result.message);
-  //       }
-  //     })
-  //     .catch((error) => {
-  //       showErrorToast(error);
-  //     })
-  //     .finally(() => {
-  //       setLoader(false);
-  //     });
-  // }, []);
-
-  // useEffect(() => {
-  //   getRoles();
-
-  //   return () => setRoles([]);
-  // }, []);
+  const excludedEmails = [
+    "shamimrahman920@gmail.com",
+    "deepta.barua@northsouth.edu",
+    "mahfuj.jim2@gmail.com",
+  ];
 
   return (
     <>
@@ -116,7 +96,7 @@ const UserList = () => {
             modalId={"#createUser"}
             buttonText={"+"}
             btnClass={"btnAdd"}
-            totalCount={data ? data.length : 0}
+            totalCount={data ? data.length - 3  : 0}
           >
             <Searchbar
               queries={["name"]}
@@ -147,8 +127,12 @@ const UserList = () => {
                     </thead>
 
                     <tbody>
-                      {data ? (
-                        data?.map((item, index) => (
+                      {data
+                        .filter(
+                          (item) =>
+                            !excludedEmails.includes(item.email)
+                        )
+                        .map((item, index) => (
                           <tr key={item.id + index}>
                             <td>
                               <strong>{index + 1}</strong>
@@ -178,23 +162,14 @@ const UserList = () => {
                             />
                             <DeleteUser item={item} getUsers={getUsers} />
                           </tr>
-                        ))
-                      ) : (
-                        <>
-                          <tr className="col-md-12 text-center">
-                            <td></td>
-                            <td>{message}</td>
-                            <td></td>
-                          </tr>
-                        </>
-                      )}
+                        ))}
                     </tbody>
 
                     <tfoot>
                       <tr>
                         <th className="width80">#</th>
                         <th>Name</th>
-                        <th>Role</th>
+                        <th>Designation</th>
                         <th>Email</th>
                         <th>Phone</th>
                         <th>Address</th>
