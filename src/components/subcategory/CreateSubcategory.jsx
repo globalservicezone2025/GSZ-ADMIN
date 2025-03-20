@@ -105,7 +105,7 @@ const CreateSubcategory = ({ getSubcategories, categories }) => {
         </div>
 
         <div className="form-group">
-          <label className="text-black font-w500">Category</label>
+          <label className="text-black font-w500">Service</label>
           <select
             name="categoryId"
             id="categoryId"
@@ -115,7 +115,7 @@ const CreateSubcategory = ({ getSubcategories, categories }) => {
             {/* <option value="true">Yes</option>
             <option value="false">No</option> */}
 
-            <option value="">Select a category</option>
+            <option value="">Select a service</option>
             {categories &&
               categories.map((category, index) => (
                 <>

@@ -110,12 +110,12 @@ const ProductList = () => {
                       <tr>
                         <th className="width80">#</th>
                         <th>Name</th>
-                        <th>Main Category</th>
-                        <th>Tags</th>
+                        {/* <th>Main Category</th> */}
+                        {/* <th>Tags</th> */}
                         <th>Image</th>
                         <th>Link</th>
                         <th>Description</th>
-                        <th>Price</th>
+                        {/* <th>Price</th> */}
                         <th>Active?</th>
                         <th>Action</th>
                       </tr>
@@ -129,8 +129,8 @@ const ProductList = () => {
                               <strong>{index + 1}</strong>
                             </td>
                             <td>{item?.name}</td>
-                            <td>{item?.mainCategory}</td>
-                            <td>{item?.tags.join(", ")}</td>
+                            {/* <td>{item?.mainCategory}</td> */}
+                            {/* <td>{item?.tags.join(", ")}</td> */}
                             <td>
                               {item?.image && (
                                 <img
@@ -146,7 +146,7 @@ const ProductList = () => {
                             </td>
                             <td>{item?.link}</td>
                             <td>{item?.description}</td>
-                            <td>{item?.price}</td>
+                            {/* <td>{item?.price}</td> */}
                             <td>{item.isActive ? "Active" : "Inactive"}</td>
 
                             <td>
@@ -197,12 +197,12 @@ const ProductList = () => {
                       <tr>
                         <th className="width80">#</th>
                         <th>Name</th>
-                        <th>Main Category</th>
-                        <th>Tags</th>
+                        {/* <th>Main Category</th> */}
+                        {/* <th>Tags</th> */}
                         <th>Image</th>
                         <th>Link</th>
                         <th>Description</th>
-                        <th>Price</th>
+                        {/* <th>Price</th> */}
                         <th>Active?</th>
                         <th>Action</th>
                       </tr>

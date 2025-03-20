@@ -167,8 +167,8 @@ const SubsubcategoryList = () => {
                         <th className="width80">#</th>
                         <th>Name</th>
                         <th>Slug</th>
-                        <th>Category</th>
-                        <th>Subcategory</th>
+                        <th>Service</th>
+                        <th>Sub Service</th>
                         <th>Image</th>
                         <th>Active?</th>
                         <th>Action</th>

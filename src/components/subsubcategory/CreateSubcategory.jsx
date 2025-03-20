@@ -131,7 +131,7 @@ const CreateSubcategory = ({ getSubcategories, categories }) => {
         </div>
 
         <div className="form-group">
-          <label className="text-black font-w500">Category</label>
+          <label className="text-black font-w500">Service</label>
           <select
             name="categoryId"
             id="categoryId"
@@ -149,7 +149,7 @@ const CreateSubcategory = ({ getSubcategories, categories }) => {
         </div>
 
         <div className="form-group">
-          <label className="text-black font-w500">Subcategory</label>
+          <label className="text-black font-w500">Sub Service</label>
           {subCategoryLoader ? (
             <Loader />
           ) : (
@@ -160,7 +160,7 @@ const CreateSubcategory = ({ getSubcategories, categories }) => {
               onChange={(e) => setSubCategoryId(e.target.value)}
               value={subCategoryId}
             >
-              <option value="">Select a subcategory</option>
+              <option value="">Select a sub service</option>
               {subCategories &&
                 subCategories.map((subCategory, index) => (
                   <option value={subCategory.id} key={subCategory.id + index}>

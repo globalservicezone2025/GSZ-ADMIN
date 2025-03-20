@@ -28,13 +28,13 @@ const createProduct = async (
   formData.append("name", name);
   formData.append("isActive", isActive);
   formData.append("isDeal", true);
-  formData.append("createdBy", createdBy);
-  formData.append("mainCategory", mainCategory);
-  formData.append("tags", JSON.stringify(tags));
+  formData.append("createdBy", "");
+  formData.append("mainCategory", "");
+  formData.append("tags", "");
   formData.append("image", image);
   formData.append("link", link);
   formData.append("description", description);
-  formData.append("price", price);
+  formData.append("price", 0);
 
   const jsonData = await fetchData("/api/v1/products", "POST", formData, true);
 
@@ -101,7 +101,7 @@ const CreateProduct = ({ getProducts, categories, suppliers, brands }) => {
           />
         </div>
 
-        <div className="form-group">
+        {/* <div className="form-group">
           <label className="text-black font-w500">Main Category</label>
           <input
             type="text"
@@ -109,9 +109,9 @@ const CreateProduct = ({ getProducts, categories, suppliers, brands }) => {
             value={mainCategory}
             onChange={(e) => setMainCategory(e.target.value)}
           />
-        </div>
+        </div> */}
 
-        <div className="form-group">
+        {/* <div className="form-group">
           <label className="text-black font-w500">Tags (separated by commas, max 5)</label>
           <input
             type="text"
@@ -119,7 +119,7 @@ const CreateProduct = ({ getProducts, categories, suppliers, brands }) => {
             value={tags.join(", ")}
             onChange={handleTagsChange}
           />
-        </div>
+        </div> */}
 
         <div className="form-group">
           <label className="text-black font-w500">Image</label>
@@ -145,7 +145,7 @@ const CreateProduct = ({ getProducts, categories, suppliers, brands }) => {
           <ReactQuill value={description} onChange={setDescription} />
         </div>
 
-        <div className="form-group">
+        {/* <div className="form-group">
           <label className="text-black font-w500">Price</label>
           <input
             type="number"
@@ -153,7 +153,7 @@ const CreateProduct = ({ getProducts, categories, suppliers, brands }) => {
             value={price}
             onChange={(e) => setPrice(parseFloat(e.target.value))}
           />
-        </div>
+        </div> */}
 
         <div className="form-group">
           <label className="text-black font-w500">Active?</label>

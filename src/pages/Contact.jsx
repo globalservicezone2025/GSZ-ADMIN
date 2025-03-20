@@ -1,12 +1,12 @@
 import React from "react";
 import ContactList from "../components/contact";
 
-const Contact = () => {
+const Contact = ({ isFreeContact = false }) => {
   return (
     <div className="content-body">
       <div className="container-fluid">
         <div className="row">
-          <ContactList />
+          <ContactList isFreeContact={isFreeContact} />
         </div>
       </div>
     </div>

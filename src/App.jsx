@@ -36,15 +36,12 @@ const Attribute = lazy(() => import("./pages/Attribute"));
 const ProductImage = lazy(() => import("./pages/ProductImage"));
 const Deals = lazy(() => import("./pages/Deals"));
 
-// const Gallery = lazy(() => import("./pages/Gallery"));
-// const Profile = lazy(() => import("./pages/Profile"));
-// const Inbox = lazy(() => import("./pages/Inbox"));
-// const Review = lazy(() => import("./pages/Review"));
-// const Order = lazy(() => import("./pages/Order"));
-// const Reservation = lazy(() => import("./pages/Reservation"));
-
 function App() {
   const { pathname } = useLocation();
+
+  const additionalProps = {
+    isFreeContact:true
+  };
 
   return (
     <>
@@ -54,7 +51,6 @@ function App() {
         {pathname !== "/" && (
           <>
             <NavHeader />
-
             <Header />
             <Sidebar />
           </>
@@ -85,8 +81,17 @@ function App() {
               <Route exact path="/coupons" component={Auth(Coupon)} />
               <Route exact path="/preorders" component={Auth(Preorder)} />
               <Route exact path="/newsletters" component={Auth(Newsletter)} />
-              <Route exact path="/serviceorders" component={Auth(Contact)} />
-              <Route exact path="/pricing" component={Auth(Pricing)} />
+              <Route
+                exact
+                path="/serviceorders"
+                render={(props) => <Contact {...props} />}
+              />
+              <Route
+                exact
+                path="/freeconsultancy"
+                render={(props) => <Contact {...props} {...additionalProps} />}
+              />
+              {/* <Route exact path="/pricing" component={Auth(Pricing)} /> */}
               <Route exact path="/faq" component={Auth(Faq)} />
               <Route exact path="/blog" component={Auth(Blog)} />
               <Route exact path="/attributes/:id" component={Auth(Attribute)} />
@@ -95,30 +100,11 @@ function App() {
                 path="/products/images/:id"
                 component={Auth(ProductImage)}
               />
-
-              {/* <Route exact path="/gallery" component={Auth(Gallery)} />
-              <Route exact path="/hero-section" component={Auth(HeroSection)} />
-              <Route exact path="/service" component={Auth(Service)} />
-              <Route exact path="/about" component={Auth(Profile)} />
-              <Route exact path="/inbox" component={Auth(Inbox)} />
-              <Route exact path="/review" component={Auth(Review)} />
-              <Route exact path="/order" component={Auth(Order)} />
-              <Route exact path="/reservation" component={Auth(Reservation)} />
-              <Route exact path="/blogs" component={Auth(Blog)} />
-              <Route exact path="/locations" component={Auth(Location)} />
-              <Route exact path="/publications" component={Auth(Publication)} />
-              <Route exact path="/order-online" component={Auth(Online)} />
-              <Route exact path="/faq" component={Auth(Faq)} /> */}
-
               <Route exact path="/" component={LoginPage} />
             </>
           </Switch>
         </Suspense>
-        {pathname !== "/" && (
-          <>
-            <Footer />
-          </>
-        )}
+        {pathname !== "/" && <Footer />}
       </div>
     </>
   );

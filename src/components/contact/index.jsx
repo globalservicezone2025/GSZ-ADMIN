@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useCallback, useEffect, useState } from "react";
 import fetchData from "../../libs/api";
 import { showErrorToast, showSuccessToast } from "../../utils/toast";
@@ -8,7 +10,7 @@ import IndianaDragScroller from "../global/IndianaDragScroller";
 import Searchbar from "../global/Searchbar";
 import Loader from "../global/Loader";
 
-const ContactList = () => {
+const ContactList = ({ isFreeContact = false }) => {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(20);
 
@@ -32,7 +34,7 @@ const ContactList = () => {
         selectedQuery ? searchTerm : ""
       }&page=${searchTerm.length > 2 ? "" : page}&limit=${
         searchTerm.length > 2 ? "" : limit
-      }`,
+      }&isFreeContact=${isFreeContact}`,
       "GET"
     )
       .then((result) => {
@@ -130,7 +132,11 @@ const ContactList = () => {
                             <td>{item.time?.slice(11, 19)}</td>
                             <td>{item.description}</td>
                             <td>{item.isActive ? "Active" : "Inactive"}</td>
-                            <td>{item.subsubcategory?.name}</td>
+                            <td>
+                              {item.isFreeContact
+                                ? "Free Consultancy"
+                                : item.subsubcategory?.name}
+                            </td>
                             <td>{item.createdAt?.slice(0, 10)}</td>
                           </tr>
                         ))

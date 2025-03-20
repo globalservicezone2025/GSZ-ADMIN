@@ -77,31 +77,31 @@ const UserList = () => {
     return () => clearTimeout(getUsersDebounce);
   }, [selectedQuery, searchTerm, page, limit]);
 
-  //get all roles
-  const getRoles = useCallback(() => {
-    setLoader(true);
+  // //get all roles
+  // const getRoles = useCallback(() => {
+  //   setLoader(true);
 
-    fetchData(`/api/v1/auth/roles`, "GET")
-      .then((result) => {
-        if (result.success) {
-          setRoles(result.data);
-        } else {
-          showErrorToast(result.message);
-        }
-      })
-      .catch((error) => {
-        showErrorToast(error);
-      })
-      .finally(() => {
-        setLoader(false);
-      });
-  }, []);
+  //   fetchData(`/api/v1/auth/roles`, "GET")
+  //     .then((result) => {
+  //       if (result.success) {
+  //         setRoles(result.data);
+  //       } else {
+  //         showErrorToast(result.message);
+  //       }
+  //     })
+  //     .catch((error) => {
+  //       showErrorToast(error);
+  //     })
+  //     .finally(() => {
+  //       setLoader(false);
+  //     });
+  // }, []);
 
-  useEffect(() => {
-    getRoles();
+  // useEffect(() => {
+  //   getRoles();
 
-    return () => setRoles([]);
-  }, []);
+  //   return () => setRoles([]);
+  // }, []);
 
   return (
     <>
@@ -138,7 +138,7 @@ const UserList = () => {
                       <tr>
                         <th className="width80">#</th>
                         <th>Name</th>
-                        <th>Role</th>
+                        <th>Designation</th>
                         <th>Email</th>
                         <th>Phone</th>
                         <th>Address</th>
@@ -154,7 +154,7 @@ const UserList = () => {
                               <strong>{index + 1}</strong>
                             </td>
                             <td>{item?.name}</td>
-                            <td>{item?.role?.name}</td>
+                            <td>{item?.designation}</td>
                             <td>{item?.email}</td>
                             <td>{item?.phone}</td>
                             <td>{item?.address}</td>

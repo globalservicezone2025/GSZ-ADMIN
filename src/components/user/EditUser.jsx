@@ -11,7 +11,7 @@ const editUser = async (
   email,
   phone,
   address,
-  roleId,
+  designation,
   setLoader,
   getUsers,
   modalCloseButton
@@ -26,7 +26,7 @@ const editUser = async (
     billing_address: "",
     country: "",
     city: "",
-    roleId,
+    designation,
     initialPaymentAmount: parseFloat(0),
     initialPaymentDue: parseFloat(0),
     installmentTime: parseFloat(0),
@@ -49,9 +49,9 @@ const editUser = async (
   return { success, message };
 };
 
-const EditUser = ({ item, getUsers, roles }) => {
+const EditUser = ({ item, getUsers }) => {
   const [loader, setLoader] = useState(false);
-  const [roleId, setRoleId] = useState(item.roleId);
+  const [designation, setDesignation] = useState(item.designation);
   const [name, setName] = useState(item.name);
   const [email, setEmail] = useState(item.email);
   const [phone, setPhone] = useState(item.phone);
@@ -67,26 +67,13 @@ const EditUser = ({ item, getUsers, roles }) => {
         modalCloseButton={modalCloseButton}
       >
         <div className="form-group">
-          <label className="text-black font-w500">Role</label>
-          <select
-            name="role"
-            id="role"
+          <label className="text-black font-w500">Designation</label>
+          <input
+            type="text"
             className="form-control"
-            onChange={(e) => setRoleId(e.target.value)}
-          >
-            <option value="">Select a role</option>
-
-            {roles &&
-              roles.map((role, index) => (
-                <option
-                  value={role?.id}
-                  key={role?.id + index}
-                  selected={roleId === role?.id}
-                >
-                  {role?.name}
-                </option>
-              ))}
-          </select>
+            value={designation}
+            onChange={(e) => setDesignation(e.target.value)}
+          />
         </div>
         <div className="form-group">
           <label className="text-black font-w500">User Name</label>
@@ -137,7 +124,7 @@ const EditUser = ({ item, getUsers, roles }) => {
                   email,
                   phone,
                   address,
-                  roleId,
+                  designation,
                   setLoader,
                   getUsers,
                   modalCloseButton

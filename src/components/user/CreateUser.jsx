@@ -10,7 +10,7 @@ const createUser = async (
   email,
   phone,
   address,
-  roleId,
+  designation,
   image,
   setLoader,
   modalCloseButton,
@@ -26,7 +26,7 @@ const createUser = async (
   formData.append("billing_address", address);
   formData.append("country", address);
   formData.append("city", "address");
-  formData.append("roleId", roleId);
+  formData.append("designation", designation);
   formData.append("initialPaymentAmount", parseFloat(0));
   formData.append("initialPaymentDue", parseFloat(0));
   formData.append("installmentTime", parseFloat(0));
@@ -63,9 +63,9 @@ const createUser = async (
   }
 };
 
-const CreateUser = ({ getUsers, roles }) => {
+const CreateUser = ({ getUsers }) => {
   const [loader, setLoader] = useState(false);
-  const [roleId, setRoleId] = useState("");
+  const [designation, setDesignation] = useState("");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -86,22 +86,13 @@ const CreateUser = ({ getUsers, roles }) => {
         modalCloseButton={modalCloseButton}
       >
         <div className="form-group">
-          <label className="text-black font-w500">Role</label>
-          <select
-            name="role"
-            id="role"
+          <label className="text-black font-w500">Designation</label>
+          <input
+            type="text"
             className="form-control"
-            onChange={(e) => setRoleId(e.target.value)}
-          >
-            <option value="">Select a role</option>
-
-            {roles &&
-              roles.map((role, index) => (
-                <option value={role?.id} key={role?.id + index}>
-                  {role?.name}
-                </option>
-              ))}
-          </select>
+            value={designation}
+            onChange={(e) => setDesignation(e.target.value)}
+          />
         </div>
         <div className="form-group">
           <label className="text-black font-w500">User Name</label>
@@ -159,7 +150,7 @@ const CreateUser = ({ getUsers, roles }) => {
                   email,
                   phone,
                   address,
-                  roleId,
+                  designation,
                   image,
                   setLoader,
                   modalCloseButton,
