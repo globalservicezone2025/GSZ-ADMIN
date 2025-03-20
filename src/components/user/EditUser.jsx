@@ -12,41 +12,52 @@ const editUser = async (
   phone,
   address,
   designation,
+  image,
   setLoader,
   getUsers,
   modalCloseButton
 ) => {
   setLoader(true);
 
-  const jsonData = await fetchData(`/api/v1/auth/users/${item.id}`, "PUT", {
-    name,
-    email,
-    phone,
-    address,
-    billing_address: "",
-    country: "",
-    city: "",
-    designation,
-    initialPaymentAmount: parseFloat(0),
-    initialPaymentDue: parseFloat(0),
-    installmentTime: parseFloat(0),
-  });
-
-  const message = jsonData.message;
-  const success = jsonData.success;
-
-  if (!success) {
-    setLoader(false);
-    showErrorToast(message);
-    throw { message };
+  const formData = new FormData();
+  formData.append("name", name);
+  formData.append("email", email);
+  formData.append("phone", phone);
+  formData.append("address", address);
+  formData.append("billing_address", "");
+  formData.append("country", "");
+  formData.append("city", "");
+  formData.append("designation", designation);
+  formData.append("initialPaymentAmount", parseFloat(0));
+  formData.append("initialPaymentDue", parseFloat(0));
+  formData.append("installmentTime", parseFloat(0));
+  if (image) {
+    formData.append("image", image);
   }
 
-  setLoader(false);
-  showSuccessToast(message);
-  getUsers();
-  modalCloseButton.current.click();
+  try {
+    const jsonData = await fetchData(`/api/v1/auth/users/${item.id}`, "PUT", formData, true);
 
-  return { success, message };
+    const message = jsonData.message;
+    const success = jsonData.success;
+
+    if (!success) {
+      setLoader(false);
+      showErrorToast(message);
+      throw { message };
+    }
+
+    setLoader(false);
+    showSuccessToast(message);
+    getUsers();
+    modalCloseButton.current.click();
+
+    return { success, message };
+  } catch (error) {
+    setLoader(false);
+    showErrorToast("An error occurred while updating the user.");
+    throw error;
+  }
 };
 
 const EditUser = ({ item, getUsers }) => {
@@ -56,8 +67,13 @@ const EditUser = ({ item, getUsers }) => {
   const [email, setEmail] = useState(item.email);
   const [phone, setPhone] = useState(item.phone);
   const [address, setAddress] = useState(item.address);
+  const [image, setImage] = useState(null);
 
   const modalCloseButton = useRef();
+
+  const handleImageChange = (e) => {
+    setImage(e.target.files[0]);
+  };
 
   return (
     <>
@@ -111,6 +127,14 @@ const EditUser = ({ item, getUsers }) => {
             onChange={(e) => setAddress(e.target.value)}
           />
         </div>
+        <div className="form-group">
+          <label className="text-black font-w500">Image</label>
+          <input
+            type="file"
+            className="form-control"
+            onChange={handleImageChange}
+          />
+        </div>
 
         {loader === true ? (
           <Loader />
@@ -125,6 +149,7 @@ const EditUser = ({ item, getUsers }) => {
                   phone,
                   address,
                   designation,
+                  image,
                   setLoader,
                   getUsers,
                   modalCloseButton
