@@ -8,6 +8,7 @@ import Modal from "../global/Modal";
 const editSubcategory = async (
   name,
   categoryId,
+  serial,
   image,
   isActive,
   item,
@@ -21,7 +22,7 @@ const editSubcategory = async (
 
   formData.append("name", name);
   formData.append("categoryId", categoryId);
-  //   formData.append("subtitle", subtitle);
+  formData.append("serial", serial);
   formData.append("isActive", isActive);
 
   if (image !== item.image) {
@@ -63,6 +64,7 @@ const EditSubcategory = ({ item, getSubcategories, categories }) => {
   const [loader, setLoader] = useState(false);
   const [name, setName] = useState(item.name);
   const [categoryId, setCategoryId] = useState(item.categoryId);
+  const [serial, setSerial] = useState(item.serial);
   const [isActive, setIsActive] = useState(item.isActive);
   const [image, setImage] = useState(item.image);
   const [tempImageUrl, setTempImageUrl] = useState(item.image);
@@ -92,46 +94,38 @@ const EditSubcategory = ({ item, getSubcategories, categories }) => {
             name="categoryId"
             id="categoryId"
             className="form-control"
+            value={categoryId}
             onChange={(e) => setCategoryId(e.target.value)}
           >
-            {/* <option value="true">Yes</option>
-            <option value="false">No</option> */}
-
+            <option value="">Select a service</option>
             {categories &&
               categories.map((category, index) => (
-                <>
-                  <option
-                    value={category?.id}
-                    key={category?.id + index}
-                    selected={category?.id === categoryId}
-                  >
-                    {category?.name}
-                  </option>
-                </>
+                <option value={category?.id} key={category?.id + index}>
+                  {category?.name}
+                </option>
               ))}
           </select>
+        </div>
+
+        <div className="form-group">
+          <label className="text-black font-w500">Serial</label>
+          <input
+            type="number"
+            className="form-control"
+            value={serial}
+            onChange={(e) => setSerial(e.target.value)}
+          />
         </div>
 
         <div className="form-group">
           <label className="text-black font-w500">Active?</label>
           <select
             className="form-control default-select"
+            value={isActive}
             onChange={(e) => setIsActive(e.target.value)}
           >
             <option value={"true"}>Yes</option>
             <option value={"false"}>No</option>
-            {/* {[
-                            { id: 1, value: true, label: 'Yes' },
-                            { id: 2, value: false, label: 'No' },
-                        ].map((itm, index) => (
-                            <option
-                                key={itm.id}
-                                value={itm.value}
-                                selected={itm.value === item.isCuratedCustomService ? true : false}
-                            >
-                                {itm.label}
-                            </option>
-                        ))} */}
           </select>
         </div>
 
@@ -173,6 +167,7 @@ const EditSubcategory = ({ item, getSubcategories, categories }) => {
                   editSubcategory(
                     name,
                     categoryId,
+                    serial,
                     image,
                     isActive,
                     item,

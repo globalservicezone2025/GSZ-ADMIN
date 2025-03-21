@@ -110,7 +110,7 @@ const SubsubcategoryList = () => {
       setSubCategoryLoader(true);
       try {
         const result = await fetchData(
-          `/api/v1/subcategoriesByCategory/${selectedCategory}`,
+          `/api/v1/subcategories/category/${selectedCategory}`,
           "GET"
         );
         if (result.success) {
@@ -169,6 +169,7 @@ const SubsubcategoryList = () => {
                         <th>Slug</th>
                         <th>Service</th>
                         <th>Sub Service</th>
+                        <th>Serial</th>
                         <th>Image</th>
                         <th>Active?</th>
                         <th>Action</th>
@@ -186,6 +187,7 @@ const SubsubcategoryList = () => {
                             <td>{item.slug}</td>
                             <td>{item?.category?.name}</td>
                             <td>{item?.subcategory?.name}</td>
+                            <td>{item.serial}</td>
                             <td>
                               {item?.image && (
                                 <img
@@ -242,6 +244,7 @@ const SubsubcategoryList = () => {
                         <th>Slug</th>
                         <th>Category</th>
                         <th>Subcategory</th>
+                        <th>Serial</th>
                         <th>Image</th>
                         <th>Active?</th>
                         <th>Action</th>

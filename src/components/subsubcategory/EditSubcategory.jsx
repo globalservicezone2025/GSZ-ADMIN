@@ -13,6 +13,7 @@ const editSubcategory = async (
   text,
   categoryId,
   subCategoryId,
+  serial,
   image,
   isActive,
   item,
@@ -28,6 +29,7 @@ const editSubcategory = async (
   formData.append("text", text); // Ensure this matches the field name in your model
   formData.append("categoryId", categoryId);
   formData.append("subCategoryId", subCategoryId); // Ensure this matches the field name in your model
+  formData.append("serial", serial);
   formData.append("isActive", isActive);
 
   if (image !== item.image) {
@@ -69,16 +71,18 @@ const EditSubcategory = ({ item, getSubcategories, categories }) => {
   const [text, setText] = useState(item.text);
   const [categoryId, setCategoryId] = useState(item.categoryId);
   const [subCategoryId, setSubCategoryId] = useState(item.subCategoryId);
+  const [serial, setSerial] = useState(item.serial);
   const [isActive, setIsActive] = useState(item.isActive);
   const [image, setImage] = useState(null);
   const [tempImageUrl, setTempImageUrl] = useState(item.image);
   const [subCategories, setSubCategories] = useState([]);
   const [subCategoryLoader, setSubCategoryLoader] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const modalCloseButton = useRef();
 
   useEffect(() => {
-    if (categoryId) {
+    if (categoryId && isModalOpen) {
       setSubCategoryLoader(true);
       fetchData(`/api/v1/subcategoriesByCategory/${categoryId}`, "GET")
         .then((result) => {
@@ -95,7 +99,7 @@ const EditSubcategory = ({ item, getSubcategories, categories }) => {
           setSubCategoryLoader(false);
         });
     }
-  }, [categoryId]);
+  }, [categoryId, isModalOpen]);
 
   return (
     <>
@@ -103,6 +107,8 @@ const EditSubcategory = ({ item, getSubcategories, categories }) => {
         modalId={"editSubcategory" + item.id}
         modalHeader={"Edit Service Details"}
         modalCloseButton={modalCloseButton}
+        onShow={() => setIsModalOpen(true)}
+        onHide={() => setIsModalOpen(false)}
       >
         <div className="form-group">
           <label className="text-black font-w500">Name</label>
@@ -178,6 +184,16 @@ const EditSubcategory = ({ item, getSubcategories, categories }) => {
         </div>
 
         <div className="form-group">
+          <label className="text-black font-w500">Serial</label>
+          <input
+            type="number"
+            className="form-control"
+            value={serial}
+            onChange={(e) => setSerial(e.target.value)}
+          />
+        </div>
+
+        <div className="form-group">
           <label className="text-black font-w500">Active?</label>
           <select
             className="form-control default-select"
@@ -225,6 +241,7 @@ const EditSubcategory = ({ item, getSubcategories, categories }) => {
                   text,
                   categoryId,
                   subCategoryId,
+                  serial,
                   image,
                   isActive,
                   item,

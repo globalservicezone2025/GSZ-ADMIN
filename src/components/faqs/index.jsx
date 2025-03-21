@@ -155,7 +155,7 @@ const FaqList = () => {
                         <th>Sub Service</th>
                         <th>Question</th>
                         <th>Answer</th>
-                        <th>Is Active</th>
+                        {/* <th>Is Active</th> */}
                         <th>Action</th>
                       </tr>
                     </thead>
@@ -171,7 +171,7 @@ const FaqList = () => {
                             <td>{item.subcategory?.name}</td>
                             <td>{item.question}</td>
                             <td>{item.answer}</td>
-                            <td>
+                            {/* <td>
                               <Switch
                                 checked={item.isActive}
                                 onChange={() =>
@@ -189,7 +189,7 @@ const FaqList = () => {
                                 className="react-switch"
                                 id={`switch-${item.id}`}
                               />
-                            </td>
+                            </td> */}
                             <td>
                               <div className="dropdown">
                                 <button
@@ -269,11 +269,11 @@ const FaqList = () => {
                     <tfoot>
                       <tr>
                         <th className="width80">#</th>
-                        <th>Category</th>
-                        <th>Subcategory</th>
+                        <th>Service</th>
+                        <th>Sub Service</th>
                         <th>Question</th>
                         <th>Answer</th>
-                        <th>Is Active</th>
+                        {/* <th>Is Active</th> */}
                         <th>Action</th>
                       </tr>
                     </tfoot>

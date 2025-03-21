@@ -112,6 +112,7 @@ const CategoryList = () => {
                         <th>Name</th>
                         <th>Slug</th>
                         <th>Image</th>
+                        <th>Serial</th>
                         <th>Active?</th>
                         <th>Action</th>
                       </tr>
@@ -139,8 +140,8 @@ const CategoryList = () => {
                                 />
                               )}
                             </td>
+                            <td>{item.serial}</td>
                             <td>{item.isActive ? "Active" : "Inactive"}</td>
-
                             <td>
                               <ActionButton>
                                 <ActionButtonMenu
@@ -180,6 +181,7 @@ const CategoryList = () => {
                         <th>Name</th>
                         <th>Slug</th>
                         <th>Image</th>
+                        <th>Serial</th>
                         <th>Active?</th>
                         <th>Action</th>
                       </tr>

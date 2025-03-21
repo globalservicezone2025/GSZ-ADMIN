@@ -132,7 +132,7 @@ const EditAttribute = ({
               className="form-control"
               onChange={(e) => {
                 setBrandId(e.target.value);
-                // getSubcategoriesByCategory(e.target.value);
+                // getsubcategories/category(e.target.value);
               }}
             >
               <option value="">Select a brand</option>
@@ -160,7 +160,7 @@ const EditAttribute = ({
               className="form-control"
               onChange={(e) => {
                 setCategoryId(e.target.value);
-                getSubcategoriesByCategory(e.target.value);
+                getsubcategories/category(e.target.value);
               }}
             >
               <option value="">Select a category</option>
@@ -188,7 +188,7 @@ const EditAttribute = ({
               className="form-control"
               onChange={(e) => {
                 setSubcategoryId(e.target.value);
-                getSubsubcategoriesBySubcategory(e.target.value);
+                getsubsubcategories/subcategory(e.target.value);
               }}
             >
               <option value="">Select a subcategory</option>

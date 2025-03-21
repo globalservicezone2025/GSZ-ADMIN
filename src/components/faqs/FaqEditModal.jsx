@@ -63,7 +63,7 @@ const FaqEditModal = ({ faq, getData, categories }) => {
 
   useEffect(() => {
     if (category) {
-      fetchData(`/api/v1/subcategoriesByCategory/${category}`, "GET")
+      fetchData(`/api/v1/subcategories/category/${category}`, "GET")
         .then((result) => {
           if (result.success) {
             setSubCategories(result.data);
@@ -79,7 +79,7 @@ const FaqEditModal = ({ faq, getData, categories }) => {
 
   useEffect(() => {
     if (subCategory) {
-      fetchData(`/api/v1/subSubCategoriesBySubCategory/${subCategory}`, "GET")
+      fetchData(`/api/v1/subsubcategories/subcategory/${subCategory}`, "GET")
         .then((result) => {
           if (result.success) {
             setSubSubCategories(result.data);
@@ -102,7 +102,7 @@ const FaqEditModal = ({ faq, getData, categories }) => {
       setSubCategoryLoader(true);
       try {
         const result = await fetchData(
-          `/api/v1/subcategoriesByCategory/${selectedCategory}`,
+          `/api/v1/subcategories/category/${selectedCategory}`,
           "GET"
         );
         if (result.success) {
@@ -129,7 +129,7 @@ const FaqEditModal = ({ faq, getData, categories }) => {
       setSubSubCategoryLoader(true);
       try {
         const result = await fetchData(
-          `/api/v1/subSubCategoriesBySubCategory/${selectedSubCategory}`,
+          `/api/v1/subsubcategories/subcategory/${selectedSubCategory}`,
           "GET"
         );
         if (result.success) {
@@ -193,7 +193,10 @@ const FaqEditModal = ({ faq, getData, categories }) => {
                     <option value="">Select a sub service</option>
                     {subCategories &&
                       subCategories.map((subCategory, index) => (
-                        <option value={subCategory.id} key={subCategory.id + index}>
+                        <option
+                          value={subCategory.id}
+                          key={subCategory.id + index}
+                        >
                           {subCategory.name}
                         </option>
                       ))}
@@ -202,7 +205,9 @@ const FaqEditModal = ({ faq, getData, categories }) => {
               </div>
 
               <div className="form-group">
-                <label className="text-black font-w500 mr-2">Sub-Sub Service</label>
+                <label className="text-black font-w500 mr-2">
+                  Sub-Sub Service
+                </label>
                 {subSubCategoryLoader ? (
                   <Loader />
                 ) : (
@@ -216,7 +221,10 @@ const FaqEditModal = ({ faq, getData, categories }) => {
                     <option value="">Select a sub-subcategory</option>
                     {subSubCategories &&
                       subSubCategories.map((subSubCategory, index) => (
-                        <option value={subSubCategory.id} key={subSubCategory.id + index}>
+                        <option
+                          value={subSubCategory.id}
+                          key={subSubCategory.id + index}
+                        >
                           {subSubCategory.name}
                         </option>
                       ))}

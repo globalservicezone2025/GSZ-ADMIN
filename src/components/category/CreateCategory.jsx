@@ -8,6 +8,7 @@ import Modal from "../global/Modal";
 const createCategory = async (
   name,
   text,
+  serial,
   image,
   isActive,
   setLoader,
@@ -20,7 +21,9 @@ const createCategory = async (
     const formData = new FormData();
     formData.append("name", name);
     formData.append("text", text);
-    //   formData.append("subtitle", subtitle);
+    if (serial) {
+      formData.append("serial", serial);
+    }
     if (image) {
       formData.append("image", image);
     }
@@ -39,7 +42,6 @@ const createCategory = async (
     if (!success) {
       setLoader(false);
       showErrorToast(message);
-      // eslint-disable-next-line no-throw-literal
       throw {
         message,
       };
@@ -65,6 +67,7 @@ const CreateCategory = ({ getCategories }) => {
   const [loader, setLoader] = useState(false);
   const [name, setName] = useState("");
   const [text, setText] = useState("");
+  const [serial, setSerial] = useState("");
   const [isActive, setIsActive] = useState("true");
   const [tempImages, setTempImages] = useState([]);
   const [image, setImage] = useState("");
@@ -100,6 +103,16 @@ const CreateCategory = ({ getCategories }) => {
         </div>
 
         <div className="form-group">
+          <label className="text-black font-w500">Serial</label>
+          <input
+            type="number"
+            className="form-control"
+            value={serial}
+            onChange={(e) => setSerial(e.target.value)}
+          />
+        </div>
+
+        <div className="form-group">
           <label className="text-black font-w500">Active?</label>
           <select
             name="isActive"
@@ -109,15 +122,6 @@ const CreateCategory = ({ getCategories }) => {
           >
             <option value="true">Yes</option>
             <option value="false">No</option>
-
-            {/* {categories &&
-              categories.map((category, index) => (
-                <>
-                  <option value={category?.id} key={category?.id + index}>
-                    {category?.name}
-                  </option>
-                </>
-              ))} */}
           </select>
         </div>
 
@@ -159,6 +163,7 @@ const CreateCategory = ({ getCategories }) => {
                   createCategory(
                     name,
                     text,
+                    serial,
                     image,
                     isActive,
                     setLoader,

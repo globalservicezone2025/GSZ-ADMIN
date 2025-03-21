@@ -151,7 +151,7 @@ const CreateAttribute = ({ getAttributes, productId }) => {
 
   // useEffect(() => {
   //   if (categoryId) {
-  //     getSubcategoriesByCategory();
+  //     getsubcategories/category();
   //   }
 
   //   return () => setSubcategories([]);
@@ -159,7 +159,7 @@ const CreateAttribute = ({ getAttributes, productId }) => {
 
   // useEffect(() => {
   //   if (subcategoryId) {
-  //     getSubsubcategoriesBySubcategory();
+  //     getsubsubcategories/subcategory();
   //   }
 
   //   return () => setSubsubcategories([]);

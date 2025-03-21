@@ -142,6 +142,7 @@ const SubcategoryList = () => {
                         <th>Name</th>
                         <th>Slug</th>
                         <th>Category</th>
+                        <th>Serial</th>
                         <th>Image</th>
                         <th>Active?</th>
                         <th>Action</th>
@@ -158,6 +159,7 @@ const SubcategoryList = () => {
                             <td>{item.name}</td>
                             <td>{item.slug}</td>
                             <td>{item?.category?.name}</td>
+                            <td>{item.serial}</td>
                             <td>
                               {item?.image && (
                                 <img
@@ -213,6 +215,7 @@ const SubcategoryList = () => {
                         <th>Name</th>
                         <th>Slug</th>
                         <th>Service</th>
+                        <th>Serial</th>
                         <th>Image</th>
                         <th>Active?</th>
                         <th>Action</th>

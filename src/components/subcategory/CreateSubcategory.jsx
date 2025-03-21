@@ -12,6 +12,7 @@ const createSubcategory = async (
   subTitle,
   text,
   categoryId,
+  serial,
   image,
   isActive,
   setLoader,
@@ -24,9 +25,11 @@ const createSubcategory = async (
 
   formData.append("name", name);
   formData.append("text", subTitle);
-  formData.append("description", '');
+  formData.append("description", text);
   formData.append("categoryId", categoryId);
-  //   formData.append("subtitle", subtitle);
+  if (serial) {
+    formData.append("serial", serial);
+  }
   if (image) {
     formData.append("image", image);
   }
@@ -70,6 +73,7 @@ const CreateSubcategory = ({ getSubcategories, categories }) => {
   const [subTitle, setSubTitle] = useState("");
   const [text, setText] = useState("");
   const [categoryId, setCategoryId] = useState("");
+  const [serial, setSerial] = useState("");
   const [isActive, setIsActive] = useState("true");
   const [tempImages, setTempImages] = useState([]);
   const [image, setImage] = useState("");
@@ -105,6 +109,16 @@ const CreateSubcategory = ({ getSubcategories, categories }) => {
         </div>
 
         <div className="form-group">
+          <label className="text-black font-w500">Description</label>
+          <ReactQuill
+            value={text}
+            onChange={setText}
+            theme="snow"
+            className="form-control"
+          />
+        </div>
+
+        <div className="form-group">
           <label className="text-black font-w500">Service</label>
           <select
             name="categoryId"
@@ -112,19 +126,24 @@ const CreateSubcategory = ({ getSubcategories, categories }) => {
             className="form-control"
             onChange={(e) => setCategoryId(e.target.value)}
           >
-            {/* <option value="true">Yes</option>
-            <option value="false">No</option> */}
-
             <option value="">Select a service</option>
             {categories &&
               categories.map((category, index) => (
-                <>
-                  <option value={category?.id} key={category?.id + index}>
-                    {category?.name}
-                  </option>
-                </>
+                <option value={category?.id} key={category?.id + index}>
+                  {category?.name}
+                </option>
               ))}
           </select>
+        </div>
+
+        <div className="form-group">
+          <label className="text-black font-w500">Serial</label>
+          <input
+            type="number"
+            className="form-control"
+            value={serial}
+            onChange={(e) => setSerial(e.target.value)}
+          />
         </div>
 
         <div className="form-group">
@@ -137,15 +156,6 @@ const CreateSubcategory = ({ getSubcategories, categories }) => {
           >
             <option value="true">Yes</option>
             <option value="false">No</option>
-
-            {/* {categories &&
-              categories.map((category, index) => (
-                <>
-                  <option value={category?.id} key={category?.id + index}>
-                    {category?.name}
-                  </option>
-                </>
-              ))} */}
           </select>
         </div>
 
@@ -189,6 +199,7 @@ const CreateSubcategory = ({ getSubcategories, categories }) => {
                     subTitle,
                     text,
                     categoryId,
+                    serial,
                     image,
                     isActive,
                     setLoader,

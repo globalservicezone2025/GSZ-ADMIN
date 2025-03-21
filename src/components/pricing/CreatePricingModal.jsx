@@ -75,7 +75,7 @@ const CreatePricingModal = ({ getPricings, categories }) => {
       setSubCategoryLoader(true);
       try {
         const result = await fetchData(
-          `/api/v1/subcategoriesByCategory/${selectedCategory}`,
+          `/api/v1/subcategories/category/${selectedCategory}`,
           "GET"
         );
         if (result.success) {
@@ -102,7 +102,7 @@ const CreatePricingModal = ({ getPricings, categories }) => {
       setSubSubCategoryLoader(true);
       try {
         const result = await fetchData(
-          `/api/v1/subSubCategoriesBySubCategory/${selectedSubCategory}`,
+          `/api/v1/subsubcategories/subcategory/${selectedSubCategory}`,
           "GET"
         );
         if (result.success) {
@@ -183,7 +183,10 @@ const CreatePricingModal = ({ getPricings, categories }) => {
               <option value="">Select a sub-subcategory</option>
               {subSubCategories &&
                 subSubCategories.map((subSubCategory, index) => (
-                  <option value={subSubCategory.id} key={subSubCategory.id + index}>
+                  <option
+                    value={subSubCategory.id}
+                    key={subSubCategory.id + index}
+                  >
                     {subSubCategory.name}
                   </option>
                 ))}

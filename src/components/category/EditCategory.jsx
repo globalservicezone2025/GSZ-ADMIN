@@ -7,6 +7,7 @@ import Modal from "../global/Modal";
 
 const editCategory = async (
   name,
+  serial,
   image,
   isActive,
   item,
@@ -19,7 +20,7 @@ const editCategory = async (
   const formData = new FormData();
 
   formData.append("name", name);
-  //   formData.append("subtitle", subtitle);
+  formData.append("serial", serial);
   formData.append("isActive", isActive);
 
   if (image !== item.image) {
@@ -39,7 +40,6 @@ const editCategory = async (
   if (!success) {
     setLoader(false);
     showErrorToast(message);
-    // eslint-disable-next-line no-throw-literal
     throw {
       message,
     };
@@ -60,6 +60,7 @@ const editCategory = async (
 const EditCategory = ({ item, getCategories }) => {
   const [loader, setLoader] = useState(false);
   const [name, setName] = useState(item.name);
+  const [serial, setSerial] = useState(item.serial);
   const [isActive, setIsActive] = useState(item.isActive);
   const [image, setImage] = useState(item.image);
   const [tempImageUrl, setTempImageUrl] = useState(item.image);
@@ -84,25 +85,24 @@ const EditCategory = ({ item, getCategories }) => {
         </div>
 
         <div className="form-group">
+          <label className="text-black font-w500">Serial</label>
+          <input
+            type="number"
+            className="form-control"
+            value={serial}
+            onChange={(e) => setSerial(e.target.value)}
+          />
+        </div>
+
+        <div className="form-group">
           <label className="text-black font-w500">Active?</label>
           <select
             className="form-control default-select"
+            value={isActive}
             onChange={(e) => setIsActive(e.target.value)}
           >
             <option value={"true"}>Yes</option>
             <option value={"false"}>No</option>
-            {/* {[
-                            { id: 1, value: true, label: 'Yes' },
-                            { id: 2, value: false, label: 'No' },
-                        ].map((itm, index) => (
-                            <option
-                                key={itm.id}
-                                value={itm.value}
-                                selected={itm.value === item.isCuratedCustomService ? true : false}
-                            >
-                                {itm.label}
-                            </option>
-                        ))} */}
           </select>
         </div>
 
@@ -143,6 +143,7 @@ const EditCategory = ({ item, getCategories }) => {
                 buttonOnClick={() =>
                   editCategory(
                     name,
+                    serial,
                     image,
                     isActive,
                     item,

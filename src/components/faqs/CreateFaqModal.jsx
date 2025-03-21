@@ -69,7 +69,7 @@ const CreateFaqModal = ({ getFaqs, categories }) => {
       setSubCategoryLoader(true);
       try {
         const result = await fetchData(
-          `/api/v1/subcategoriesByCategory/${selectedCategory}`,
+          `/api/v1/subcategories/category/${selectedCategory}`,
           "GET"
         );
         if (result.success) {
@@ -96,7 +96,7 @@ const CreateFaqModal = ({ getFaqs, categories }) => {
       setSubSubCategoryLoader(true);
       try {
         const result = await fetchData(
-          `/api/v1/subSubCategoriesBySubCategory/${selectedSubCategory}`,
+          `/api/v1/subsubcategories/subcategory/${selectedSubCategory}`,
           "GET"
         );
         if (result.success) {
@@ -177,7 +177,10 @@ const CreateFaqModal = ({ getFaqs, categories }) => {
               <option value="">Select a sub-sub service</option>
               {subSubCategories &&
                 subSubCategories.map((subSubCategory, index) => (
-                  <option value={subSubCategory.id} key={subSubCategory.id + index}>
+                  <option
+                    value={subSubCategory.id}
+                    key={subSubCategory.id + index}
+                  >
                     {subSubCategory.name}
                   </option>
                 ))}

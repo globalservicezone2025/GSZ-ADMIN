@@ -13,6 +13,7 @@ const createSubcategory = async (
   text,
   categoryId,
   subCategoryId,
+  serial,
   image,
   isActive,
   setLoader,
@@ -27,6 +28,9 @@ const createSubcategory = async (
   formData.append("text", text); // Ensure this matches the field name in your model
   formData.append("categoryId", categoryId);
   formData.append("subcategoryId", subCategoryId); // Ensure this matches the field name in your model
+  if (serial) {
+    formData.append("serial", serial);
+  }
   if (image) {
     formData.append("image", image);
   }
@@ -63,6 +67,7 @@ const CreateSubcategory = ({ getSubcategories, categories }) => {
   const [text, setText] = useState("");
   const [categoryId, setCategoryId] = useState("");
   const [subCategoryId, setSubCategoryId] = useState("");
+  const [serial, setSerial] = useState("");
   const [isActive, setIsActive] = useState("true");
   const [tempImages, setTempImages] = useState([]);
   const [image, setImage] = useState("");
@@ -80,7 +85,7 @@ const CreateSubcategory = ({ getSubcategories, categories }) => {
       setSubCategoryLoader(true);
       try {
         const result = await fetchData(
-          `/api/v1/subcategoriesByCategory/${selectedCategory}`,
+          `/api/v1/subcategories/category/${selectedCategory}`,
           "GET"
         );
         if (result.success) {
@@ -172,6 +177,16 @@ const CreateSubcategory = ({ getSubcategories, categories }) => {
         </div>
 
         <div className="form-group">
+          <label className="text-black font-w500">Serial</label>
+          <input
+            type="number"
+            className="form-control"
+            value={serial}
+            onChange={(e) => setSerial(e.target.value)}
+          />
+        </div>
+
+        <div className="form-group">
           <label className="text-black font-w500">Active?</label>
           <select
             name="isActive"
@@ -220,6 +235,7 @@ const CreateSubcategory = ({ getSubcategories, categories }) => {
                   text,
                   categoryId,
                   subCategoryId,
+                  serial,
                   image,
                   isActive,
                   setLoader,
