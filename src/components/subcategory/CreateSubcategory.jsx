@@ -109,16 +109,6 @@ const CreateSubcategory = ({ getSubcategories, categories }) => {
         </div>
 
         <div className="form-group">
-          <label className="text-black font-w500">Description</label>
-          <ReactQuill
-            value={text}
-            onChange={setText}
-            theme="snow"
-            className="form-control"
-          />
-        </div>
-
-        <div className="form-group">
           <label className="text-black font-w500">Service</label>
           <select
             name="categoryId"
