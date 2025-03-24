@@ -35,7 +35,7 @@ const editProduct = async (
   }
   formData.append("link", link);
   formData.append("description", description);
-  formData.append("price", 0);
+  formData.append("price", price);
 
   const jsonData = await fetchData(
     `/api/v1/products/${item.id}`,
@@ -163,7 +163,7 @@ const EditProduct = ({ item, getProducts }) => {
           <ReactQuill value={description} onChange={setDescription} />
         </div>
 
-        {/* <div className="form-group">
+        <div className="form-group">
           <label className="text-black font-w500">Price</label>
           <input
             type="number"
@@ -171,7 +171,7 @@ const EditProduct = ({ item, getProducts }) => {
             value={price}
             onChange={(e) => setPrice(parseFloat(e.target.value))}
           />
-        </div> */}
+        </div>
 
         <div className="form-group">
           <label className="text-black font-w500">Active?</label>
