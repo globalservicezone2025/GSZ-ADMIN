@@ -198,8 +198,6 @@ const EditProduct = ({ item, getProducts }) => {
                   name,
                   isActive,
                   createdBy,
-                  mainCategory,
-                  tags,
                   image,
                   link,
                   description,
