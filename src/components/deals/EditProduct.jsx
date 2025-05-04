@@ -11,8 +11,6 @@ const editProduct = async (
   name,
   isActive,
   createdBy,
-  mainCategory,
-  tags,
   image,
   link,
   description,
@@ -28,7 +26,7 @@ const editProduct = async (
   formData.append("name", name);
   formData.append("isActive", isActive);
   formData.append("createdBy", createdBy);
-  formData.append("mainCategory", "");
+  formData.append("mainCategory", "Sample");
   formData.append("tags", "");
   if (image) {
     formData.append("image", image);
