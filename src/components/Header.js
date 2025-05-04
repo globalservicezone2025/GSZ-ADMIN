@@ -45,8 +45,8 @@ const Header = () => {
             <div className="collapse navbar-collapse justify-content-between">
               <div className="header-left">
                 <div className="dashboard_bar">
-                  E-Global Service Zone
-                  <span>Welcome to E-Global Service Zone Dashboard!</span>
+                  Global Service Zone
+                  <span>Welcome to Global Service Zone Dashboard!</span>
                 </div>
               </div>
               <ul className="navbar-nav header-right">

@@ -1,3 +1,3 @@
-# E-Global Service Zone-admin-dashboard
+# Global Service Zone-admin-dashboard
 
-Admin dashboard for E-Global Service Zone
+Admin dashboard for Global Service Zone

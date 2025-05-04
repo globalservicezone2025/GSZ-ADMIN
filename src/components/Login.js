@@ -14,7 +14,7 @@ const Login = () => {
   const [otpError, setOtpError] = useState("");
   const [showOtp, setShowOtp] = useState(false);
   const [loading, setLoading] = useState(false);
-  
+
   const Error = (text) =>
     !text ? null : (
       <p
@@ -172,7 +172,7 @@ const Login = () => {
                   <div className="col-xl-12">
                     <div className="auth-form">
                       <h3 className="text-center mb-4 text-white">
-                        E-Global Service Zone Dashboard
+                        Global Service Zone Dashboard
                       </h3>
                       <form className="mt-4">
                         {showOtp ? (
