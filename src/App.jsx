@@ -94,6 +94,7 @@ function App() {
               {/* <Route exact path="/pricing" component={Auth(Pricing)} /> */}
               <Route exact path="/faq" component={Auth(Faq)} />
               <Route exact path="/blog" component={Auth(Blog)} />
+              <Route exact path="/banner" component={Auth(Banner)} />
               <Route exact path="/attributes/:id" component={Auth(Attribute)} />
               <Route
                 exact

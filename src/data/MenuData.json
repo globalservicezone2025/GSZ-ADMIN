@@ -64,5 +64,11 @@
     "name": "Blog",
     "link": "/blog",
     "icon": "flaticon-381-newspaper"
+  },
+  {
+    "id": 21,
+    "name": "Banner",
+    "link": "/banner",
+    "icon": "flaticon-381-newspaper"
   }
 ]

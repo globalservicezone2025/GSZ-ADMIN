@@ -105,11 +105,7 @@ const BannerList = () => {
                   <thead>
                     <tr>
                       <th className="width80">#</th>
-                      <th>Title</th>
-                      <th>Subtitle</th>
-                      <th>Url</th>
                       <th>Image</th>
-                      <th>Active</th>
                       <th>Action</th>
                     </tr>
                   </thead>
@@ -121,9 +117,6 @@ const BannerList = () => {
                           <td>
                             <strong>{index + 1}</strong>
                           </td>
-                          <td>{item.title}</td>
-                          <td>{item.subtitle}</td>
-                          <td>{item.url}</td>
                           <td>
                             <img
                               src={item?.image}
@@ -135,8 +128,6 @@ const BannerList = () => {
                               }}
                             />
                           </td>
-                          <td>{item.isActive ? "Active" : "Inactive"}</td>
-
                           <td>
                             <ActionButton>
                               <ActionButtonMenu

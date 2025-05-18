@@ -115,58 +115,6 @@ const CreateBanner = ({ getBanners }) => {
         modalCloseButton={modalCloseButton}
       >
         <div className="form-group">
-          <label className="text-black font-w500">Title</label>
-          <input
-            type="text"
-            className="form-control"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-          />
-        </div>
-
-        <div className="form-group">
-          <label className="text-black font-w500">Subtitle</label>
-          <input
-            type="text"
-            className="form-control"
-            value={subtitle}
-            onChange={(e) => setSubtitle(e.target.value)}
-          />
-        </div>
-
-        <div className="form-group">
-          <label className="text-black font-w500">Url</label>
-          <input
-            type="text"
-            className="form-control"
-            value={url}
-            onChange={(e) => setUrl(e.target.value)}
-          />
-        </div>
-
-        <div className="form-group">
-          <label className="text-black font-w500">Active?</label>
-          <select
-            name="isActive"
-            id="isActive"
-            className="form-control"
-            onChange={(e) => setIsActive(e.target.value)}
-          >
-            <option value="true">Yes</option>
-            <option value="false">No</option>
-
-            {/* {categories &&
-              categories.map((category, index) => (
-                <>
-                  <option value={category?.id} key={category?.id + index}>
-                    {category?.name}
-                  </option>
-                </>
-              ))} */}
-          </select>
-        </div>
-
-        <div className="form-group">
           <label className="text-black font-w500">Image</label>
           <input
             type="file"
@@ -202,11 +150,11 @@ const CreateBanner = ({ getBanners }) => {
               <Button
                 buttonOnClick={() =>
                   createBanner(
-                    title,
-                    subtitle,
-                    url,
+                    'Hello',
+                    'Hello',
+                    'https://www.globalservicezone.com/',
                     image,
-                    isActive,
+                    true,
                     getBanners,
                     setLoader,
                     modalCloseButton

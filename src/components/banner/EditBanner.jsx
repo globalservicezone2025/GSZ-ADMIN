@@ -88,59 +88,6 @@ const EditBanner = ({ item, itemId, getBanners }) => {
         modalCloseButton={modalCloseButton}
       >
         <div className="form-group">
-          <label className="text-black font-w500">Title</label>
-          <input
-            type="text"
-            className="form-control"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-          />
-        </div>
-
-        <div className="form-group">
-          <label className="text-black font-w500">Subtitle</label>
-          <input
-            type="text"
-            className="form-control"
-            value={subtitle}
-            onChange={(e) => setSubtitle(e.target.value)}
-          />
-        </div>
-
-        <div className="form-group">
-          <label className="text-black font-w500">Url</label>
-          <input
-            type="text"
-            className="form-control"
-            value={url}
-            onChange={(e) => setUrl(e.target.value)}
-          />
-        </div>
-
-        <div className="form-group">
-          <label className="text-black font-w500">Active?</label>
-          <select
-            className="form-control default-select"
-            onChange={(e) => setIsActive(e.target.value)}
-          >
-            <option value={"true"}>Yes</option>
-            <option value={"false"}>No</option>
-            {/* {[
-                            { id: 1, value: true, label: 'Yes' },
-                            { id: 2, value: false, label: 'No' },
-                        ].map((itm, index) => (
-                            <option
-                                key={itm.id}
-                                value={itm.value}
-                                selected={itm.value === item.isCuratedCustomService ? true : false}
-                            >
-                                {itm.label}
-                            </option>
-                        ))} */}
-          </select>
-        </div>
-
-        <div className="form-group">
           <label className="text-black font-w500">Image</label>
           <input
             type="file"
@@ -176,11 +123,11 @@ const EditBanner = ({ item, itemId, getBanners }) => {
               <Button
                 buttonOnClick={() =>
                   editBanner(
-                    title,
-                    subtitle,
-                    url,
+                    "title",
+                    "subtitle",
+                    'https://www.globalservicezone.com/',
                     image,
-                    isActive,
+                    true,
                     item,
                     setLoader,
                     getBanners,
