@@ -70,5 +70,11 @@
     "name": "Banner",
     "link": "/banner",
     "icon": "flaticon-381-newspaper"
+  },
+  {
+    "id": 22,
+    "name": "Slider",
+    "link": "/sliders",
+    "icon": "flaticon-381-newspaper"
   }
 ]
