@@ -164,11 +164,7 @@ const BannerList = () => {
                   <tfoot>
                     <tr>
                       <th className="width80">#</th>
-                      <th>Title</th>
-                      <th>Subtitle</th>
-                      <th>Url</th>
                       <th>Image</th>
-                      <th>Active</th>
                       <th>Action</th>
                     </tr>
                   </tfoot>
