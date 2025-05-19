@@ -150,9 +150,9 @@ const CreateBanner = ({ getBanners }) => {
               <Button
                 buttonOnClick={() =>
                   createBanner(
-                    'Hello',
-                    'Hello',
-                    'https://www.globalservicezone.com/',
+                    Date.now().toString(),
+                    Date.now().toString(),
+                    "https://www.globalservicezone.com/",
                     image,
                     true,
                     getBanners,
