@@ -113,7 +113,7 @@ const EProductList = () => {
                         <th>Color</th>
                         <th>Size</th>
                         <th>Quantity</th>
-                        <th>Category ID</th>
+                        <th>Category</th>
                         <th>Active?</th>
                         <th>Action</th>
                       </tr>
@@ -131,7 +131,7 @@ const EProductList = () => {
                             <td>{item.color}</td>
                             <td>{item.size}</td>
                             <td>{item.quantity}</td>
-                            <td>{item.eCategoryId}</td>
+                            <td>{item.eCategory.name}</td>
                             <td>{item.isActive ? "Active" : "Inactive"}</td>
                             <td>
                               <ActionButton>
@@ -172,7 +172,7 @@ const EProductList = () => {
                         <th>Color</th>
                         <th>Size</th>
                         <th>Quantity</th>
-                        <th>Category ID</th>
+                        <th>Category</th>
                         <th>Active?</th>
                         <th>Action</th>
                       </tr>
