@@ -10,6 +10,7 @@ import NavHeader from "./components/NavHeader";
 import Sidebar from "./components/Sidebar";
 import Auth from "./libs/auth";
 import Slider from "./pages/Slider";
+import ECategory from "./pages/ECategory";
 
 const LoginPage = lazy(() => import("./pages/LoginPage"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
@@ -65,7 +66,8 @@ function App() {
               <Route exact path="/roles" component={Auth(Role)} />
               <Route exact path="/users" component={Auth(User)} />
               <Route exact path="/services" component={Auth(Category)} />
-              <Route exact path="/campaigns" component={Auth(Campaign)} />
+              <Route exact path="/services" component={Auth(Category)} />
+              <Route exact path="/ecategory" component={Auth(ECategory)} />
               <Route exact path="/products" component={Auth(Product)} />
               <Route exact path="/deals" component={Auth(Deals)} />
               <Route exact path="/suppliers" component={Auth(Supplier)} />

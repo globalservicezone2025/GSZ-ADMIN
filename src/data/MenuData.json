@@ -63,18 +63,24 @@
     "id": 20,
     "name": "Blog",
     "link": "/blog",
-    "icon": "flaticon-381-newspaper"
+    "icon": "flaticon-381-edit"
   },
   {
     "id": 21,
     "name": "Banner",
     "link": "/banner",
-    "icon": "flaticon-381-newspaper"
+    "icon": "flaticon-381-picture"
   },
   {
     "id": 22,
     "name": "Slider",
     "link": "/sliders",
-    "icon": "flaticon-381-newspaper"
+    "icon": "flaticon-381-controls-3"
+  },
+  {
+    "id": 23,
+    "name": "E-Category",
+    "link": "/ecategory",
+    "icon": "flaticon-381-list"
   }
 ]

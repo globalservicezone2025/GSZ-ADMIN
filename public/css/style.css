@@ -6333,6 +6333,7 @@ a.close.disabled {
 }
 .modal-backdrop.fade {
   opacity: 0;
+  display: none !important;
 }
 .modal-backdrop.show {
   opacity: 0.5;
