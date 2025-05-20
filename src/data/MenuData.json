@@ -82,5 +82,11 @@
     "name": "E-Category",
     "link": "/ecategory",
     "icon": "flaticon-381-list"
+  },
+  {
+    "id": 24,
+    "name": "E-Product",
+    "link": "/eproduct",
+    "icon": "flaticon-381-box"
   }
 ]
