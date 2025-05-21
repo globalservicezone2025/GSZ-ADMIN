@@ -10,9 +10,8 @@ const createEProduct = async (
   description,
   color,
   size,
-  quantity,
   eCategoryId,
-  isActive,
+  stocks,
   setLoader,
   modalCloseButton,
   getProducts
@@ -20,20 +19,20 @@ const createEProduct = async (
   try {
     setLoader(true);
 
-    const formData = new FormData();
-    formData.append("name", name);
-    if (description) formData.append("description", description);
-    if (color) formData.append("color", color);
-    if (size) formData.append("size", size);
-    formData.append("quantity", quantity ? quantity : 0);
-    formData.append("eCategoryId", eCategoryId);
-    formData.append("isActive", isActive);
+    const payload = {
+      name,
+      description,
+      color,
+      size,
+      eCategoryId,
+      stocks,
+    };
 
     const jsonData = await fetchData(
       "/api/v1/eproducts",
       "POST",
-      formData,
-      true
+      JSON.stringify(payload),
+      false // not multipart/form-data
     );
 
     const message = jsonData.message;
@@ -48,10 +47,7 @@ const createEProduct = async (
     setLoader(false);
     showSuccessToast(message);
 
-    //fetch data
     getProducts();
-
-    //close modal
     modalCloseButton.current.click();
 
     return { success, message };
@@ -64,26 +60,45 @@ const CreateEProduct = ({ getProducts }) => {
   const [loader, setLoader] = useState(false);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const [color, setColor] = useState("");
-  const [size, setSize] = useState("");
-  const [quantity, setQuantity] = useState(0);
+  const [color, setColor] = useState(""); // comma-separated
+  const [size, setSize] = useState(""); // comma-separated
   const [eCategoryId, setECategoryId] = useState("");
-  const [isActive, setIsActive] = useState("true");
   const [categories, setCategories] = useState([]);
+  const [stocks, setStocks] = useState([
+    { color: "", size: "", quantity: 0 }
+  ]);
 
   const modalCloseButton = useRef();
 
   useEffect(() => {
+    let isMounted = true;
     fetchData("/api/v1/ecategories", "GET")
       .then((result) => {
-        if (result.success) {
+        if (isMounted && result.success) {
           setCategories(result.data);
         }
       })
       .catch(() => {
-        setCategories([]);
+        if (isMounted) setCategories([]);
       });
+    return () => { isMounted = false; };
   }, []);
+
+  const handleStockChange = (idx, field, value) => {
+    setStocks((prev) =>
+      prev.map((stock, i) =>
+        i === idx ? { ...stock, [field]: value } : stock
+      )
+    );
+  };
+
+  const addStockRow = () => {
+    setStocks([...stocks, { color: "", size: "", quantity: 0 }]);
+  };
+
+  const removeStockRow = (idx) => {
+    setStocks(stocks.filter((_, i) => i !== idx));
+  };
 
   return (
     <>
@@ -113,32 +128,24 @@ const CreateEProduct = ({ getProducts }) => {
         </div>
 
         <div className="form-group">
-          <label className="text-black font-w500">Color</label>
+          <label className="text-black font-w500">Colors (comma separated)</label>
           <input
             type="text"
             className="form-control"
             value={color}
             onChange={(e) => setColor(e.target.value)}
+            placeholder="e.g. #FFFFFF, #000000"
           />
         </div>
 
         <div className="form-group">
-          <label className="text-black font-w500">Size</label>
+          <label className="text-black font-w500">Sizes (comma separated)</label>
           <input
             type="text"
             className="form-control"
             value={size}
             onChange={(e) => setSize(e.target.value)}
-          />
-        </div>
-
-        <div className="form-group">
-          <label className="text-black font-w500">Quantity</label>
-          <input
-            type="number"
-            className="form-control"
-            value={quantity}
-            onChange={(e) => setQuantity(e.target.value)}
+            placeholder="e.g. 32,33"
           />
         </div>
 
@@ -159,17 +166,51 @@ const CreateEProduct = ({ getProducts }) => {
         </div>
 
         <div className="form-group">
-          <label className="text-black font-w500">Active?</label>
-          <select
-            name="isActive"
-            id="isActive"
-            className="form-control"
-            value={isActive}
-            onChange={(e) => setIsActive(e.target.value)}
+          <label className="text-black font-w500">Stocks</label>
+          {stocks.map((stock, idx) => (
+            <div key={idx} className="d-flex mb-2">
+              <input
+                type="text"
+                className="form-control mr-2"
+                style={{ width: "30%" }}
+                placeholder="Color"
+                value={stock.color}
+                onChange={(e) => handleStockChange(idx, "color", e.target.value)}
+              />
+              <input
+                type="text"
+                className="form-control mr-2"
+                style={{ width: "30%" }}
+                placeholder="Size"
+                value={stock.size}
+                onChange={(e) => handleStockChange(idx, "size", e.target.value)}
+              />
+              <input
+                type="number"
+                className="form-control mr-2"
+                style={{ width: "30%" }}
+                placeholder="Quantity"
+                value={stock.quantity}
+                onChange={(e) => handleStockChange(idx, "quantity", e.target.value)}
+              />
+              {stocks.length > 1 && (
+                <button
+                  type="button"
+                  className="btn btn-danger btn-sm"
+                  onClick={() => removeStockRow(idx)}
+                >
+                  &times;
+                </button>
+              )}
+            </div>
+          ))}
+          <button
+            type="button"
+            className="btn btn-primary btn-sm mt-2"
+            onClick={addStockRow}
           >
-            <option value="true">Yes</option>
-            <option value="false">No</option>
-          </select>
+            Add Stock
+          </button>
         </div>
 
         {loader === true ? (
@@ -181,11 +222,14 @@ const CreateEProduct = ({ getProducts }) => {
                 createEProduct(
                   name,
                   description,
-                  color,
-                  size,
-                  quantity,
+                  color.split(",").map((c) => c.trim()).filter(Boolean),
+                  size.split(",").map((s) => s.trim()).filter(Boolean),
                   eCategoryId,
-                  isActive,
+                  stocks.map((s) => ({
+                    color: s.color,
+                    size: s.size,
+                    quantity: Number(s.quantity)
+                  })),
                   setLoader,
                   modalCloseButton,
                   getProducts
