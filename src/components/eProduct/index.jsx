@@ -109,7 +109,6 @@ const EProductList = () => {
                       <tr>
                         <th className="width80">#</th>
                         <th>Name</th>
-                        <th>Description</th>
                         <th>Color</th>
                         <th>Size</th>
                         <th>Quantity</th>
@@ -127,8 +126,29 @@ const EProductList = () => {
                               <strong>{index + 1}</strong>
                             </td>
                             <td>{item.name}</td>
-                            <td>{item.description}</td>
-                            <td>{item.color}</td>
+                            <td>
+                              {Array.isArray(item.color) &&
+                              item.color.length > 0 ? (
+                                item.color.map((code, idx) => (
+                                  <span
+                                    key={code + idx}
+                                    title={code}
+                                    style={{
+                                      display: "inline-block",
+                                      width: 18,
+                                      height: 18,
+                                      borderRadius: "50%",
+                                      background: code,
+                                      border: "1px solid #ccc",
+                                      marginRight: 4,
+                                      verticalAlign: "middle",
+                                    }}
+                                  />
+                                ))
+                              ) : (
+                                <span style={{ color: "#aaa" }}>-</span>
+                              )}
+                            </td>
                             <td>{item.size}</td>
                             <td>{item.quantity}</td>
                             <td>{item.eCategory.name}</td>
@@ -168,7 +188,6 @@ const EProductList = () => {
                       <tr>
                         <th className="width80">#</th>
                         <th>Name</th>
-                        <th>Description</th>
                         <th>Color</th>
                         <th>Size</th>
                         <th>Quantity</th>

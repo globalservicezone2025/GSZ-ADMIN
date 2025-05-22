@@ -1,14 +1,55 @@
 import React, { useRef, useState, useEffect } from "react";
+import Select, { components } from "react-select";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 import fetchData from "../../libs/api";
 import { showErrorToast, showSuccessToast } from "../../utils/toast";
 import Button from "../global/Button";
 import Loader from "../global/Loader";
 import Modal from "../global/Modal";
 
+// Custom Option for dropdown
+const ColorOption = (props) => (
+  <components.Option {...props}>
+    <span
+      style={{
+        display: "inline-block",
+        width: 16,
+        height: 16,
+        borderRadius: "50%",
+        background: props.data.value,
+        border: "1px solid #ccc",
+        marginRight: 8,
+        verticalAlign: "middle",
+      }}
+    />
+    {props.label}
+  </components.Option>
+);
+
+// Custom MultiValueLabel for selected values
+const ColorMultiValueLabel = (props) => (
+  <components.MultiValueLabel {...props}>
+    <span
+      style={{
+        display: "inline-block",
+        width: 14,
+        height: 14,
+        borderRadius: "50%",
+        background: props.data.value,
+        border: "1px solid #ccc",
+        marginRight: 4,
+        verticalAlign: "middle",
+      }}
+    />
+    {props.data.label}
+  </components.MultiValueLabel>
+);
+
 const createEProduct = async (
   name,
   description,
-  color,
+  colors,
   size,
   eCategoryId,
   stocks,
@@ -22,7 +63,7 @@ const createEProduct = async (
     const payload = {
       name,
       description,
-      color,
+      color: colors.map((c) => c.value),
       size,
       eCategoryId,
       stocks,
@@ -32,7 +73,7 @@ const createEProduct = async (
       "/api/v1/eproducts",
       "POST",
       JSON.stringify(payload),
-      false // not multipart/form-data
+      false
     );
 
     const message = jsonData.message;
@@ -60,8 +101,9 @@ const CreateEProduct = ({ getProducts }) => {
   const [loader, setLoader] = useState(false);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
-  const [color, setColor] = useState(""); // comma-separated
-  const [size, setSize] = useState(""); // comma-separated
+  const [colors, setColors] = useState([]);
+  const [allColors, setAllColors] = useState([]);
+  const [size, setSize] = useState("");
   const [eCategoryId, setECategoryId] = useState("");
   const [categories, setCategories] = useState([]);
   const [stocks, setStocks] = useState([
@@ -80,6 +122,20 @@ const CreateEProduct = ({ getProducts }) => {
       })
       .catch(() => {
         if (isMounted) setCategories([]);
+      });
+    fetchData("/api/v1/colors", "GET")
+      .then((result) => {
+        if (isMounted && result.success) {
+          setAllColors(
+            result.data.map((color) => ({
+              value: color.code,
+              label: color.name,
+            }))
+          );
+        }
+      })
+      .catch(() => {
+        if (isMounted) setAllColors([]);
       });
     return () => { isMounted = false; };
   }, []);
@@ -119,22 +175,23 @@ const CreateEProduct = ({ getProducts }) => {
 
         <div className="form-group">
           <label className="text-black font-w500">Description</label>
-          <input
-            type="text"
-            className="form-control"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-          />
+          <ReactQuill value={description} onChange={setDescription} />
         </div>
 
         <div className="form-group">
-          <label className="text-black font-w500">Colors (comma separated)</label>
-          <input
-            type="text"
-            className="form-control"
-            value={color}
-            onChange={(e) => setColor(e.target.value)}
-            placeholder="e.g. #FFFFFF, #000000"
+          <label className="text-black font-w500">Colors</label>
+          <Select
+            isMulti
+            options={allColors}
+            value={colors}
+            onChange={setColors}
+            className="basic-multi-select"
+            classNamePrefix="select"
+            placeholder="Select colors"
+            components={{
+              Option: ColorOption,
+              MultiValueLabel: ColorMultiValueLabel,
+            }}
           />
         </div>
 
@@ -222,7 +279,7 @@ const CreateEProduct = ({ getProducts }) => {
                 createEProduct(
                   name,
                   description,
-                  color.split(",").map((c) => c.trim()).filter(Boolean),
+                  colors,
                   size.split(",").map((s) => s.trim()).filter(Boolean),
                   eCategoryId,
                   stocks.map((s) => ({
