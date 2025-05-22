@@ -88,5 +88,11 @@
     "name": "E-Product",
     "link": "/eproduct",
     "icon": "flaticon-381-box"
+  },
+  {
+    "id": 25,
+    "name": "Discounts",
+    "link": "/discounts",
+    "icon": "flaticon-381-percentage"
   }
 ]

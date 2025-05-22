@@ -12,6 +12,7 @@ import Auth from "./libs/auth";
 import Slider from "./pages/Slider";
 import ECategory from "./pages/ECategory";
 import EProduct from "./pages/EProduct";
+import Discount from "./pages/Discount";
 
 const LoginPage = lazy(() => import("./pages/LoginPage"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
@@ -70,6 +71,7 @@ function App() {
               <Route exact path="/services" component={Auth(Category)} />
               <Route exact path="/ecategory" component={Auth(ECategory)} />
               <Route exact path="/eproduct" component={Auth(EProduct)} />
+              <Route exact path="/discounts" component={Auth(Discount)} />
               <Route exact path="/products" component={Auth(Product)} />
               <Route exact path="/deals" component={Auth(Deals)} />
               <Route exact path="/suppliers" component={Auth(Supplier)} />
