@@ -84,6 +84,12 @@
     "icon": "flaticon-381-list"
   },
   {
+    "id": 26,
+    "name": "Colors",
+    "link": "/colors",
+    "icon": "flaticon-381-edit"
+  },
+  {
     "id": 24,
     "name": "E-Product",
     "link": "/eproduct",
