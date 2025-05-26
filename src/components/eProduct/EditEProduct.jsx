@@ -50,10 +50,11 @@ const editEProduct = async (
   name,
   description,
   colors,
-  size,
-  quantity,
+  sizes,
+  stocks,
   eCategoryId,
   isActive,
+  image,
   item,
   setLoader,
   getProducts,
@@ -61,20 +62,23 @@ const editEProduct = async (
 ) => {
   setLoader(true);
 
-  const payload = {
-    name,
-    description,
-    color: colors.map((c) => c.value), // array of color codes
-    size,
-    quantity,
-    eCategoryId,
-    isActive,
-  };
+  const formData = new FormData();
+  formData.append("name", name);
+  formData.append("description", description);
+  formData.append("color", JSON.stringify(colors.map((c) => c.value)));
+  formData.append("size", JSON.stringify(sizes));
+  formData.append("eCategoryId", eCategoryId);
+  formData.append("stocks", JSON.stringify(stocks));
+  formData.append("isActive", isActive === "true");
+  if (image) {
+    formData.append("image", image);
+  }
 
   const jsonData = await fetchData(
     `/api/v1/eproducts/${item.id}`,
     "PUT",
-    payload
+    formData,
+    true // isFormData flag
   );
 
   const message = jsonData.message;
@@ -105,11 +109,18 @@ const EditEProduct = ({ item, getProducts }) => {
       : []
   );
   const [allColors, setAllColors] = useState([]);
-  const [size, setSize] = useState(item.size || "");
-  const [quantity, setQuantity] = useState(item.quantity || 0);
+  const [size, setSize] = useState(
+    Array.isArray(item.size) ? item.size.join(",") : item.size || ""
+  );
+  const [stocks, setStocks] = useState(
+    Array.isArray(item.stocks) && item.stocks.length
+      ? item.stocks
+      : [{ color: "", size: "", quantity: 0 }]
+  );
   const [eCategoryId, setECategoryId] = useState(item.eCategoryId || "");
   const [categories, setCategories] = useState([]);
   const [isActive, setIsActive] = useState(item.isActive ? "true" : "false");
+  const [image, setImage] = useState(null);
 
   const modalCloseButton = useRef();
 
@@ -153,6 +164,30 @@ const EditEProduct = ({ item, getProducts }) => {
     // eslint-disable-next-line
   }, [item.color]);
 
+  const handleStockChange = (idx, field, value) => {
+    setStocks((prev) =>
+      prev.map((stock, i) =>
+        i === idx ? { ...stock, [field]: value } : stock
+      )
+    );
+  };
+
+  const handleStockColorChange = (idx, selected) => {
+    setStocks((prev) =>
+      prev.map((stock, i) =>
+        i === idx ? { ...stock, color: selected ? selected.value : "" } : stock
+      )
+    );
+  };
+
+  const addStockRow = () => {
+    setStocks([...stocks, { color: "", size: "", quantity: 0 }]);
+  };
+
+  const removeStockRow = (idx) => {
+    setStocks(stocks.filter((_, i) => i !== idx));
+  };
+
   return (
     <>
       <Modal
@@ -193,23 +228,64 @@ const EditEProduct = ({ item, getProducts }) => {
         </div>
 
         <div className="form-group">
-          <label className="text-black font-w500">Size</label>
+          <label className="text-black font-w500">Sizes (comma separated)</label>
           <input
             type="text"
             className="form-control"
             value={size}
             onChange={(e) => setSize(e.target.value)}
+            placeholder="e.g. 32,34"
           />
         </div>
 
         <div className="form-group">
-          <label className="text-black font-w500">Quantity</label>
-          <input
-            type="number"
-            className="form-control"
-            value={quantity}
-            onChange={(e) => setQuantity(e.target.value)}
-          />
+          <label className="text-black font-w500">Stocks</label>
+          {stocks.map((stock, idx) => (
+            <div key={idx} className="d-flex mb-2">
+              <Select
+                options={allColors}
+                value={allColors.find((c) => c.value === stock.color) || null}
+                onChange={(selected) => handleStockColorChange(idx, selected)}
+                className="mr-2"
+                classNamePrefix="select"
+                placeholder="Color"
+                styles={{ container: (base) => ({ ...base, width: "30%" }) }}
+                isClearable
+              />
+              <input
+                type="text"
+                className="form-control mr-2"
+                style={{ width: "30%" }}
+                placeholder="Size"
+                value={stock.size}
+                onChange={(e) => handleStockChange(idx, "size", e.target.value)}
+              />
+              <input
+                type="number"
+                className="form-control mr-2"
+                style={{ width: "30%" }}
+                placeholder="Quantity"
+                value={stock.quantity}
+                onChange={(e) => handleStockChange(idx, "quantity", e.target.value)}
+              />
+              {stocks.length > 1 && (
+                <button
+                  type="button"
+                  className="btn btn-danger btn-sm"
+                  onClick={() => removeStockRow(idx)}
+                >
+                  &times;
+                </button>
+              )}
+            </div>
+          ))}
+          <button
+            type="button"
+            className="btn btn-primary btn-sm mt-2"
+            onClick={addStockRow}
+          >
+            Add Stock
+          </button>
         </div>
 
         <div className="form-group">
@@ -240,6 +316,16 @@ const EditEProduct = ({ item, getProducts }) => {
           </select>
         </div>
 
+        <div className="form-group">
+          <label className="text-black font-w500">Image</label>
+          <input
+            type="file"
+            className="form-control"
+            accept="image/*"
+            onChange={(e) => setImage(e.target.files[0])}
+          />
+        </div>
+
         {loader === true ? (
           <Loader />
         ) : (
@@ -250,10 +336,15 @@ const EditEProduct = ({ item, getProducts }) => {
                   name,
                   description,
                   colors,
-                  size,
-                  quantity,
+                  size.split(",").map((s) => s.trim()).filter(Boolean),
+                  stocks.map((s) => ({
+                    color: s.color,
+                    size: s.size,
+                    quantity: Number(s.quantity)
+                  })),
                   eCategoryId,
                   isActive,
+                  image,
                   item,
                   setLoader,
                   getProducts,

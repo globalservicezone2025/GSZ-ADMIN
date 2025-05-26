@@ -149,9 +149,26 @@ const EProductList = () => {
                                 <span style={{ color: "#aaa" }}>-</span>
                               )}
                             </td>
-                            <td>{item.size}</td>
-                            <td>{item.quantity}</td>
-                            <td>{item.eCategory.name}</td>
+                            <td>
+                              {/* Show sizes as comma separated */}
+                              {Array.isArray(item.size)
+                                ? item.size.join(", ")
+                                : item.size || "-"}
+                            </td>
+                            <td>
+                              {/* Show quantity as sum of stocks if available, else fallback */}
+                              {Array.isArray(item.stocks) && item.stocks.length > 0
+                                ? item.stocks.reduce(
+                                    (sum, stock) =>
+                                      sum +
+                                      (typeof stock.quantity === "number"
+                                        ? stock.quantity
+                                        : parseInt(stock.quantity) || 0),
+                                    0
+                                  )
+                                : item.quantity || "-"}
+                            </td>
+                            <td>{item.eCategory?.name || "-"}</td>
                             <td>{item.isActive ? "Active" : "Inactive"}</td>
                             <td>
                               <ActionButton>

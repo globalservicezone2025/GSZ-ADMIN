@@ -50,9 +50,10 @@ const createEProduct = async (
   name,
   description,
   colors,
-  size,
+  sizes,
   eCategoryId,
   stocks,
+  image,
   setLoader,
   modalCloseButton,
   getProducts
@@ -60,20 +61,22 @@ const createEProduct = async (
   try {
     setLoader(true);
 
-    const payload = {
-      name,
-      description,
-      color: colors.map((c) => c.value),
-      size,
-      eCategoryId,
-      stocks,
-    };
+    const formData = new FormData();
+    formData.append("name", name);
+    formData.append("description", description);
+    formData.append("color", JSON.stringify(colors.map((c) => c.value)));
+    formData.append("size", JSON.stringify(sizes));
+    formData.append("eCategoryId", eCategoryId);
+    formData.append("stocks", JSON.stringify(stocks));
+    if (image) {
+      formData.append("image", image);
+    }
 
     const jsonData = await fetchData(
       "/api/v1/eproducts",
       "POST",
-      JSON.stringify(payload),
-      false
+      formData,
+      true // isFormData flag, ensure fetchData handles this
     );
 
     const message = jsonData.message;
@@ -93,6 +96,7 @@ const createEProduct = async (
 
     return { success, message };
   } catch (err) {
+    setLoader(false);
     console.log("Create Product Error: ", err);
   }
 };
@@ -109,6 +113,7 @@ const CreateEProduct = ({ getProducts }) => {
   const [stocks, setStocks] = useState([
     { color: "", size: "", quantity: 0 }
   ]);
+  const [image, setImage] = useState(null);
 
   const modalCloseButton = useRef();
 
@@ -144,6 +149,14 @@ const CreateEProduct = ({ getProducts }) => {
     setStocks((prev) =>
       prev.map((stock, i) =>
         i === idx ? { ...stock, [field]: value } : stock
+      )
+    );
+  };
+
+  const handleStockColorChange = (idx, selected) => {
+    setStocks((prev) =>
+      prev.map((stock, i) =>
+        i === idx ? { ...stock, color: selected ? selected.value : "" } : stock
       )
     );
   };
@@ -202,7 +215,7 @@ const CreateEProduct = ({ getProducts }) => {
             className="form-control"
             value={size}
             onChange={(e) => setSize(e.target.value)}
-            placeholder="e.g. 32,33"
+            placeholder="e.g. 32,34"
           />
         </div>
 
@@ -226,13 +239,15 @@ const CreateEProduct = ({ getProducts }) => {
           <label className="text-black font-w500">Stocks</label>
           {stocks.map((stock, idx) => (
             <div key={idx} className="d-flex mb-2">
-              <input
-                type="text"
-                className="form-control mr-2"
-                style={{ width: "30%" }}
+              <Select
+                options={allColors}
+                value={allColors.find((c) => c.value === stock.color) || null}
+                onChange={(selected) => handleStockColorChange(idx, selected)}
+                className="mr-2"
+                classNamePrefix="select"
                 placeholder="Color"
-                value={stock.color}
-                onChange={(e) => handleStockChange(idx, "color", e.target.value)}
+                styles={{ container: (base) => ({ ...base, width: "30%" }) }}
+                isClearable
               />
               <input
                 type="text"
@@ -270,6 +285,16 @@ const CreateEProduct = ({ getProducts }) => {
           </button>
         </div>
 
+        <div className="form-group">
+          <label className="text-black font-w500">Image</label>
+          <input
+            type="file"
+            className="form-control"
+            accept="image/*"
+            onChange={(e) => setImage(e.target.files[0])}
+          />
+        </div>
+
         {loader === true ? (
           <Loader />
         ) : (
@@ -287,6 +312,7 @@ const CreateEProduct = ({ getProducts }) => {
                     size: s.size,
                     quantity: Number(s.quantity)
                   })),
+                  image,
                   setLoader,
                   modalCloseButton,
                   getProducts
