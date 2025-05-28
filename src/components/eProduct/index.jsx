@@ -112,6 +112,8 @@ const EProductList = () => {
                         <th>Color</th>
                         <th>Size</th>
                         <th>Quantity</th>
+                        <th>Price</th>
+                        <th>Image</th>
                         <th>Category</th>
                         <th>Active?</th>
                         <th>Action</th>
@@ -168,6 +170,24 @@ const EProductList = () => {
                                   )
                                 : item.quantity || "-"}
                             </td>
+                            <td>
+                              {/* Show price */}
+                              {typeof item.price !== "undefined" && item.price !== null
+                                ? item.price
+                                : "-"}
+                            </td>
+                            <td>
+                              {/* Show image */}
+                              {item.image ? (
+                                <img
+                                  src={item.image}
+                                  alt={item.name}
+                                  style={{ width: 40, height: 40, objectFit: "cover", borderRadius: 4 }}
+                                />
+                              ) : (
+                                <span style={{ color: "#aaa" }}>-</span>
+                              )}
+                            </td>
                             <td>{item.eCategory?.name || "-"}</td>
                             <td>{item.isActive ? "Active" : "Inactive"}</td>
                             <td>
@@ -195,7 +215,7 @@ const EProductList = () => {
                       ) : (
                         <>
                           <tr className="col-md-12 text-center">
-                            <td colSpan={9}>{message}</td>
+                            <td colSpan={11}>{message}</td>
                           </tr>
                         </>
                       )}
@@ -208,6 +228,8 @@ const EProductList = () => {
                         <th>Color</th>
                         <th>Size</th>
                         <th>Quantity</th>
+                        <th>Price</th>
+                        <th>Image</th>
                         <th>Category</th>
                         <th>Active?</th>
                         <th>Action</th>

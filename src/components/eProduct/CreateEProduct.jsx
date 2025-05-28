@@ -53,6 +53,7 @@ const createEProduct = async (
   sizes,
   eCategoryId,
   stocks,
+  price,
   image,
   setLoader,
   modalCloseButton,
@@ -68,6 +69,7 @@ const createEProduct = async (
     formData.append("size", JSON.stringify(sizes));
     formData.append("eCategoryId", eCategoryId);
     formData.append("stocks", JSON.stringify(stocks));
+    formData.append("price", price);
     if (image) {
       formData.append("image", image);
     }
@@ -113,6 +115,7 @@ const CreateEProduct = ({ getProducts }) => {
   const [stocks, setStocks] = useState([
     { color: "", size: "", quantity: 0 }
   ]);
+  const [price, setPrice] = useState(""); // <-- Add price state
   const [image, setImage] = useState(null);
 
   const modalCloseButton = useRef();
@@ -295,6 +298,19 @@ const CreateEProduct = ({ getProducts }) => {
           />
         </div>
 
+        <div className="form-group">
+          <label className="text-black font-w500">Price</label>
+          <input
+            type="number"
+            className="form-control"
+            value={price}
+            onChange={(e) => setPrice(e.target.value)}
+            placeholder="Enter price"
+            min="0"
+            step="0.01"
+          />
+        </div>
+
         {loader === true ? (
           <Loader />
         ) : (
@@ -312,6 +328,7 @@ const CreateEProduct = ({ getProducts }) => {
                     size: s.size,
                     quantity: Number(s.quantity)
                   })),
+                  price,
                   image,
                   setLoader,
                   modalCloseButton,

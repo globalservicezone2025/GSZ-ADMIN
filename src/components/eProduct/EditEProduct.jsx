@@ -54,6 +54,7 @@ const editEProduct = async (
   stocks,
   eCategoryId,
   isActive,
+  price,
   image,
   item,
   setLoader,
@@ -70,6 +71,7 @@ const editEProduct = async (
   formData.append("eCategoryId", eCategoryId);
   formData.append("stocks", JSON.stringify(stocks));
   formData.append("isActive", isActive === "true");
+  formData.append("price", price);
   if (image) {
     formData.append("image", image);
   }
@@ -121,6 +123,7 @@ const EditEProduct = ({ item, getProducts }) => {
   const [categories, setCategories] = useState([]);
   const [isActive, setIsActive] = useState(item.isActive ? "true" : "false");
   const [image, setImage] = useState(null);
+  const [price, setPrice] = useState(item.price || ""); // <-- Add price state
 
   const modalCloseButton = useRef();
 
@@ -150,7 +153,9 @@ const EditEProduct = ({ item, getProducts }) => {
               item.color
                 .map((code) => {
                   const found = result.data.find((c) => c.code === code);
-                  return found ? { value: found.code, label: found.name } : null;
+                  return found
+                    ? { value: found.code, label: found.name }
+                    : null;
                 })
                 .filter(Boolean)
             );
@@ -160,15 +165,15 @@ const EditEProduct = ({ item, getProducts }) => {
       .catch(() => {
         if (isMounted) setAllColors([]);
       });
-    return () => { isMounted = false; };
+    return () => {
+      isMounted = false;
+    };
     // eslint-disable-next-line
   }, [item.color]);
 
   const handleStockChange = (idx, field, value) => {
     setStocks((prev) =>
-      prev.map((stock, i) =>
-        i === idx ? { ...stock, [field]: value } : stock
-      )
+      prev.map((stock, i) => (i === idx ? { ...stock, [field]: value } : stock))
     );
   };
 
@@ -228,7 +233,9 @@ const EditEProduct = ({ item, getProducts }) => {
         </div>
 
         <div className="form-group">
-          <label className="text-black font-w500">Sizes (comma separated)</label>
+          <label className="text-black font-w500">
+            Sizes (comma separated)
+          </label>
           <input
             type="text"
             className="form-control"
@@ -266,7 +273,9 @@ const EditEProduct = ({ item, getProducts }) => {
                 style={{ width: "30%" }}
                 placeholder="Quantity"
                 value={stock.quantity}
-                onChange={(e) => handleStockChange(idx, "quantity", e.target.value)}
+                onChange={(e) =>
+                  handleStockChange(idx, "quantity", e.target.value)
+                }
               />
               {stocks.length > 1 && (
                 <button
@@ -326,6 +335,19 @@ const EditEProduct = ({ item, getProducts }) => {
           />
         </div>
 
+        <div className="form-group">
+          <label className="text-black font-w500">Price</label>
+          <input
+            type="number"
+            className="form-control"
+            value={price}
+            onChange={(e) => setPrice(e.target.value)}
+            placeholder="Enter price"
+            min="0"
+            step="0.01"
+          />
+        </div>
+
         {loader === true ? (
           <Loader />
         ) : (
@@ -336,14 +358,18 @@ const EditEProduct = ({ item, getProducts }) => {
                   name,
                   description,
                   colors,
-                  size.split(",").map((s) => s.trim()).filter(Boolean),
+                  size
+                    .split(",")
+                    .map((s) => s.trim())
+                    .filter(Boolean),
                   stocks.map((s) => ({
                     color: s.color,
                     size: s.size,
-                    quantity: Number(s.quantity)
+                    quantity: Number(s.quantity),
                   })),
                   eCategoryId,
                   isActive,
+                  price,
                   image,
                   item,
                   setLoader,
