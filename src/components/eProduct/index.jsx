@@ -17,7 +17,8 @@ const EProductList = () => {
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(20);
 
-  const [data, setData] = useState([]);
+  const [data, setData] = useState([]); // will hold products array
+  const [total, setTotal] = useState(0); // total products count
   const [loader, setLoader] = useState(false);
 
   const [selectedQuery, setSelectedQuery] = useState("name");
@@ -41,17 +42,21 @@ const EProductList = () => {
     )
       .then((result) => {
         if (result.success) {
+          // Use new API response structure
+          const products = result.data?.products || [];
+          const totalCount = result.data?.total || 0;
           if (searchTerm.length > 2) {
             if (page > 1) {
               setPage(1);
               setData([]);
             }
-            setData(result.data);
+            setData(products);
           } else if (page > 1) {
-            setData([...data, ...result.data]);
+            setData((prev) => [...prev, ...products]);
           } else {
-            setData(result.data);
+            setData(products);
           }
+          setTotal(totalCount);
           setMessage(result.message);
         } else {
           showSuccessToast(result.message);
@@ -72,7 +77,7 @@ const EProductList = () => {
     }, 500);
 
     return () => clearTimeout(getProductsDebounce);
-  }, [selectedQuery, searchTerm, page, limit]);
+  }, [selectedQuery, searchTerm, page, limit, getProducts]);
 
   return (
     <>
@@ -87,7 +92,7 @@ const EProductList = () => {
             modalId={"#createEProduct"}
             buttonText={"+"}
             btnClass={"btnAdd"}
-            totalCount={data ? data.length : 0}
+            totalCount={total}
           >
             <Searchbar
               queries={["name", "description", "color", "size"]}
@@ -121,11 +126,11 @@ const EProductList = () => {
                     </thead>
 
                     <tbody>
-                      {data ? (
-                        data?.map((item, index) => (
+                      {data && data.length > 0 ? (
+                        data.map((item, index) => (
                           <tr key={item.id + index}>
                             <td>
-                              <strong>{index + 1}</strong>
+                              <strong>{index + 1 + (page - 1) * limit}</strong>
                             </td>
                             <td>{item.name}</td>
                             <td>
@@ -152,13 +157,11 @@ const EProductList = () => {
                               )}
                             </td>
                             <td>
-                              {/* Show sizes as comma separated */}
                               {Array.isArray(item.size)
                                 ? item.size.join(", ")
                                 : item.size || "-"}
                             </td>
                             <td>
-                              {/* Show quantity as sum of stocks if available, else fallback */}
                               {Array.isArray(item.stocks) && item.stocks.length > 0
                                 ? item.stocks.reduce(
                                     (sum, stock) =>
@@ -171,13 +174,11 @@ const EProductList = () => {
                                 : item.quantity || "-"}
                             </td>
                             <td>
-                              {/* Show price */}
                               {typeof item.price !== "undefined" && item.price !== null
                                 ? item.price
                                 : "-"}
                             </td>
                             <td>
-                              {/* Show image */}
                               {item.image ? (
                                 <img
                                   src={item.image}
@@ -213,11 +214,9 @@ const EProductList = () => {
                           </tr>
                         ))
                       ) : (
-                        <>
-                          <tr className="col-md-12 text-center">
-                            <td colSpan={11}>{message}</td>
-                          </tr>
-                        </>
+                        <tr className="col-md-12 text-center">
+                          <td colSpan={11}>{message}</td>
+                        </tr>
                       )}
                     </tbody>
 
@@ -238,14 +237,12 @@ const EProductList = () => {
                   </table>
                 </IndianaDragScroller>
                 <div className="col-md-12 text-center">
-                  {data?.length === limit * page && (
-                    <>
-                      <Button
-                        buttonText={"Load more"}
-                        fontSize={"11px"}
-                        buttonOnClick={() => loadMoreProduct()}
-                      />
-                    </>
+                  {data.length < total && (
+                    <Button
+                      buttonText={"Load more"}
+                      fontSize={"11px"}
+                      buttonOnClick={() => loadMoreProduct()}
+                    />
                   )}
                 </div>
               </div>
