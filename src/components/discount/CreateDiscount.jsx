@@ -76,15 +76,19 @@ const CreateDiscount = ({ getDiscounts }) => {
   }, []);
 
   // react-select expects options as { value, label }
-  const categoryOptions = allCategories.map((cat) => ({
-    value: cat.id,
-    label: cat.name,
-  }));
+  const categoryOptions = Array.isArray(allCategories)
+    ? allCategories.map((cat) => ({
+        value: cat.id,
+        label: cat.name,
+      }))
+    : [];
 
-  const productOptions = allProducts.map((prod) => ({
-    value: prod.id,
-    label: prod.name,
-  }));
+  const productOptions = Array.isArray(allProducts)
+    ? allProducts.map((prod) => ({
+        value: prod.id,
+        label: prod.name,
+      }))
+    : [];
 
   // Remove category by value
   const removeCategory = (catId) => {

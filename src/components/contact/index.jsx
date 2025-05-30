@@ -79,7 +79,7 @@ const ContactList = ({ isFreeContact = false }) => {
           <CardHeader
             title={"Contact Messages"}
             hasButton={false}
-            totalCount={data ? data.length : 0}
+            totalCount={Array.isArray(data) ? data.length : 0}
           >
             <Searchbar
               queries={["name", "email"]}
@@ -116,7 +116,7 @@ const ContactList = ({ isFreeContact = false }) => {
                     </thead>
 
                     <tbody>
-                      {data.length > 0 ? (
+                      {Array.isArray(data) && data.length > 0 ? (
                         data.map((item, index) => (
                           <tr key={item.id}>
                             <td>
@@ -168,7 +168,7 @@ const ContactList = ({ isFreeContact = false }) => {
                 </IndianaDragScroller>
 
                 <div className="col-md-12 text-center">
-                  {data?.length === limit * page && (
+                  {Array.isArray(data) && data.length === limit * page && (
                     <Button
                       buttonText={"Load more"}
                       fontSize={"11px"}
