@@ -25,10 +25,12 @@ const CategoryList = () => {
 
   const [message, setMessage] = useState("");
 
+  // Use functional update to avoid stale closure
   const loadMoreCategory = useCallback(() => {
-    setPage(page + 1);
-  }, [page]);
+    setPage((prev) => prev + 1);
+  }, []);
 
+  // Remove data from dependency array to avoid recreation
   const getCategories = useCallback(() => {
     setLoader(true);
 
@@ -43,13 +45,17 @@ const CategoryList = () => {
       .then((result) => {
         if (result.success) {
           if (searchTerm.length > 2) {
-            if (page > 1) {
-              setPage(1);
-              setData([]);
-            }
+            // Only reset if not already at page 1
+            setPage((prevPage) => {
+              if (prevPage > 1) {
+                setData([]);
+                return 1;
+              }
+              return prevPage;
+            });
             setData(result.data);
           } else if (page > 1) {
-            setData([...data, ...result.data]);
+            setData((prevData) => [...prevData, ...result.data]);
           } else {
             setData(result.data);
           }
@@ -73,7 +79,7 @@ const CategoryList = () => {
     }, 500);
 
     return () => clearTimeout(getCategoriesDebounce);
-  }, [selectedQuery, searchTerm, page, limit]);
+  }, [selectedQuery, searchTerm, page, limit, getCategories]);
 
   return (
     <>
@@ -119,8 +125,8 @@ const CategoryList = () => {
                     </thead>
 
                     <tbody>
-                      {data ? (
-                        data?.map((item, index) => (
+                      {data && data.length > 0 ? (
+                        data.map((item, index) => (
                           <tr key={item.id + index}>
                             <td>
                               <strong>{index + 1}</strong>
@@ -165,13 +171,11 @@ const CategoryList = () => {
                           </tr>
                         ))
                       ) : (
-                        <>
-                          <tr className="col-md-12 text-center">
-                            <td></td>
-                            <td>{message}</td>
-                            <td></td>
-                          </tr>
-                        </>
+                        <tr className="col-md-12 text-center">
+                          <td colSpan={7}>
+                            {message || "No categories found."}
+                          </td>
+                        </tr>
                       )}
                     </tbody>
 

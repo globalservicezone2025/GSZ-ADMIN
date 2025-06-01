@@ -69,7 +69,6 @@ function App() {
               <Route exact path="/roles" component={Auth(Role)} />
               <Route exact path="/users" component={Auth(User)} />
               <Route exact path="/services" component={Auth(Category)} />
-              <Route exact path="/services" component={Auth(Category)} />
               <Route exact path="/ecategory" component={Auth(ECategory)} />
               <Route exact path="/colors" component={Auth(Color)} />
               <Route exact path="/eproduct" component={Auth(EProduct)} />
