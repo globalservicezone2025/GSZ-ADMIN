@@ -100,5 +100,11 @@
     "name": "Discounts",
     "link": "/discounts",
     "icon": "flaticon-381-percentage"
+  },
+  {
+    "id": 26,
+    "name": "Orders",
+    "link": "/orders",
+    "icon": "flaticon-381-shopping-bag"
   }
 ]

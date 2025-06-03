@@ -34,7 +34,7 @@ const OrderList = () => {
     setLoader(true);
 
     fetchData(
-      `/api/v1/orders?${selectedQuery}=${
+      `/api/v1/eorders?${selectedQuery}=${
         selectedQuery ? searchTerm : ""
       }&page=${searchTerm.length > 2 ? "" : page}&limit=${
         searchTerm.length > 2 ? "" : limit
@@ -67,6 +67,26 @@ const OrderList = () => {
         setLoader(false);
       });
   }, [selectedQuery, searchTerm, page, limit]);
+
+  const updateOrderStatus = async (orderId, newStatus) => {
+    setLoader(true);
+    try {
+      const result = await fetchData(
+        `/api/v1/eorders/${orderId}/status/${newStatus}`,
+        "PUT"
+      );
+      if (result.success) {
+        showSuccessToast("Order status updated");
+        getOrders();
+      } else {
+        showErrorToast(result.message || "Failed to update status");
+      }
+    } catch (error) {
+      showErrorToast(error.message || "Failed to update status");
+    } finally {
+      setLoader(false);
+    }
+  };
 
   useEffect(() => {
     const getOrdersDebounce = setTimeout(() => {
@@ -110,12 +130,10 @@ const OrderList = () => {
                   <thead>
                     <tr>
                       <th className="width80">#</th>
-                      <th>Name</th>
+                      <th>Order ID</th>
+                      <th>Email</th>
                       <th>Phone</th>
                       <th>Address</th>
-                      <th>City</th>
-                      <th>Postal Code</th>
-                      <th>Invoice Number</th>
                       <th>Payment Method</th>
                       <th>Status</th>
                       <th>Action</th>
@@ -123,36 +141,54 @@ const OrderList = () => {
                   </thead>
 
                   <tbody>
-                    {data ? (
-                      data?.map((item, index) => (
+                    {Array.isArray(data) && data.length > 0 ? (
+                      data.map((item, index) => (
                         <tr key={item.id + index}>
                           <td>
                             <strong>{index + 1}</strong>
                           </td>
-                          <td>{item.customerName}</td>
-                          <td>{item.customerPhone}</td>
-                          <td>{item.customerAddress}</td>
-                          <td>{item.customerCity}</td>
-                          <td>{item.customerPostalCode}</td>
-                          <td>{item.invoiceNumber}</td>
-                          <td>{item.paymentMethod}</td>
-
-                          <td
-                            style={{
-                              color: `${
-                                item.status === "PENDING"
-                                  ? "orange"
-                                  : item.status === "INPROGRESS"
-                                  ? "blue"
-                                  : item.status === "DELIVERED"
-                                  ? "green"
-                                  : "red"
-                              }`,
-                            }}
-                          >
-                            {item.status}
+                          <td>{item.id || "-"}</td>
+                          <td>{item.email || "-"}</td>
+                          <td>{item.phoneNumber || "-"}</td>
+                          <td>{item.address || "-"}</td>
+                          <td>
+                            {item.paymentMethod === "cod"
+                              ? "Cash on Delivery"
+                              : item.paymentMethod || "-"}
                           </td>
-
+                          <td>
+                            <select
+                              value={item.status}
+                              onChange={(e) =>
+                                updateOrderStatus(item.id, e.target.value)
+                              }
+                              style={{
+                                color:
+                                  item.status === "PENDING"
+                                    ? "orange"
+                                    : item.status === "INPROGRESS"
+                                    ? "blue"
+                                    : item.status === "DELIVERED"
+                                    ? "green"
+                                    : item.status === "CONFIRM"
+                                    ? "blue"
+                                    : item.status === "ASSIGNED"
+                                    ? "purple"
+                                    : "red",
+                                minWidth: 110,
+                                padding: "2px 8px",
+                                borderRadius: 4,
+                                border: "1px solid #ccc",
+                                background: "#fff",
+                              }}
+                            >
+                              <option value="PENDING">PENDING</option>
+                              <option value="CONFIRM">CONFIRM</option>
+                              <option value="ASSIGNED">ASSIGNED</option>
+                              <option value="DELIVERED">DELIVERED</option>
+                              <option value="CANCEL">CANCEL</option>
+                            </select>
+                          </td>
                           <td>
                             <ActionButton>
                               <ActionButtonMenu
@@ -170,25 +206,19 @@ const OrderList = () => {
                         </tr>
                       ))
                     ) : (
-                      <>
-                        <tr className="col-md-12 text-center">
-                          <td></td>
-                          <td>{message}</td>
-                          <td></td>
-                        </tr>
-                      </>
+                      <tr className="col-md-12 text-center">
+                        <td colSpan={8}>{message}</td>
+                      </tr>
                     )}
                   </tbody>
 
                   <tfoot>
                     <tr>
                       <th className="width80">#</th>
-                      <th>Name</th>
+                      <th>Order ID</th>
+                      <th>Email</th>
                       <th>Phone</th>
                       <th>Address</th>
-                      <th>City</th>
-                      <th>Postal Code</th>
-                      <th>Invoice Number</th>
                       <th>Payment Method</th>
                       <th>Status</th>
                       <th>Action</th>
