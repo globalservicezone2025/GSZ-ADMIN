@@ -118,6 +118,8 @@ const EProductList = () => {
                         <th>Size</th>
                         <th>Quantity</th>
                         <th>Price</th>
+                        <th>Discount Price</th>
+                        <th>Final Price</th>
                         <th>Image</th>
                         <th>Category</th>
                         <th>Active?</th>
@@ -127,95 +129,123 @@ const EProductList = () => {
 
                     <tbody>
                       {data && data.length > 0 ? (
-                        data.map((item, index) => (
-                          <tr key={item.id + index}>
-                            <td>
-                              <strong>{index + 1 + (page - 1) * limit}</strong>
-                            </td>
-                            <td>{item.name}</td>
-                            <td>
-                              {Array.isArray(item.color) &&
-                              item.color.length > 0 ? (
-                                item.color.map((code, idx) => (
-                                  <span
-                                    key={code + idx}
-                                    title={code}
-                                    style={{
-                                      display: "inline-block",
-                                      width: 18,
-                                      height: 18,
-                                      borderRadius: "50%",
-                                      background: code,
-                                      border: "1px solid #ccc",
-                                      marginRight: 4,
-                                      verticalAlign: "middle",
-                                    }}
+                        data.map((item, index) => {
+                          // Calculate discount and final price if discountPercent exists
+                          let discountPrice = null;
+                          let finalPrice = null;
+                          if (
+                            typeof item.discountPercent === "number" &&
+                            typeof item.price === "number"
+                          ) {
+                            discountPrice = (item.price * item.discountPercent) / 100;
+                            finalPrice = item.price - discountPrice;
+                          }
+                          return (
+                            <tr key={item.id + index}>
+                              <td>
+                                <strong>{index + 1 + (page - 1) * limit}</strong>
+                              </td>
+                              <td>{item.name}</td>
+                              <td>
+                                {Array.isArray(item.color) &&
+                                item.color.length > 0 ? (
+                                  item.color.map((code, idx) => (
+                                    <span
+                                      key={code + idx}
+                                      title={code}
+                                      style={{
+                                        display: "inline-block",
+                                        width: 18,
+                                        height: 18,
+                                        borderRadius: "50%",
+                                        background: code,
+                                        border: "1px solid #ccc",
+                                        marginRight: 4,
+                                        verticalAlign: "middle",
+                                      }}
+                                    />
+                                  ))
+                                ) : (
+                                  <span style={{ color: "#aaa" }}>-</span>
+                                )}
+                              </td>
+                              <td>
+                                {Array.isArray(item.size)
+                                  ? item.size.join(", ")
+                                  : item.size || "-"}
+                              </td>
+                              <td>
+                                {Array.isArray(item.stocks) && item.stocks.length > 0
+                                  ? item.stocks.reduce(
+                                      (sum, stock) =>
+                                        sum +
+                                        (typeof stock.quantity === "number"
+                                          ? stock.quantity
+                                          : parseInt(stock.quantity) || 0),
+                                      0
+                                    )
+                                  : item.quantity || "-"}
+                              </td>
+                              <td>
+                                {typeof item.price !== "undefined" && item.price !== null
+                                  ? item.price
+                                  : "-"}
+                              </td>
+                              <td>
+                                {discountPrice !== null ? (
+                                  <span style={{ color: "red", fontWeight: "bold" }}>
+                                    {discountPrice.toFixed(2)}
+                                  </span>
+                                ) : (
+                                  <span style={{ color: "#aaa" }}>-</span>
+                                )}
+                              </td>
+                              <td>
+                                {finalPrice !== null ? (
+                                  <span>{finalPrice.toFixed(2)}</span>
+                                ) : (
+                                  <span style={{ color: "#aaa" }}>-</span>
+                                )}
+                              </td>
+                              <td>
+                                {item.image ? (
+                                  <img
+                                    src={item.image}
+                                    alt={item.name}
+                                    style={{ width: 40, height: 40, objectFit: "cover", borderRadius: 4 }}
                                   />
-                                ))
-                              ) : (
-                                <span style={{ color: "#aaa" }}>-</span>
-                              )}
-                            </td>
-                            <td>
-                              {Array.isArray(item.size)
-                                ? item.size.join(", ")
-                                : item.size || "-"}
-                            </td>
-                            <td>
-                              {Array.isArray(item.stocks) && item.stocks.length > 0
-                                ? item.stocks.reduce(
-                                    (sum, stock) =>
-                                      sum +
-                                      (typeof stock.quantity === "number"
-                                        ? stock.quantity
-                                        : parseInt(stock.quantity) || 0),
-                                    0
-                                  )
-                                : item.quantity || "-"}
-                            </td>
-                            <td>
-                              {typeof item.price !== "undefined" && item.price !== null
-                                ? item.price
-                                : "-"}
-                            </td>
-                            <td>
-                              {item.image ? (
-                                <img
-                                  src={item.image}
-                                  alt={item.name}
-                                  style={{ width: 40, height: 40, objectFit: "cover", borderRadius: 4 }}
-                                />
-                              ) : (
-                                <span style={{ color: "#aaa" }}>-</span>
-                              )}
-                            </td>
-                            <td>{item.eCategory?.name || "-"}</td>
-                            <td>{item.isActive ? "Active" : "Inactive"}</td>
-                            <td>
-                              <ActionButton>
-                                <ActionButtonMenu
-                                  menuName={"Edit"}
-                                  menuTarget={"#editEProduct" + item.id}
-                                />
-                                <ActionButtonMenu
-                                  menuName={"Delete"}
-                                  menuTarget={"#deleteEProduct" + item.id}
-                                />
-                              </ActionButton>
-                            </td>
-                            <EditEProduct
-                              item={item}
-                              getProducts={getProducts}
-                            />
-                            <DeleteEProduct
-                              item={item}
-                              getProducts={getProducts}
-                            />
-                          </tr>
-                        ))
+                                ) : (
+                                  <span style={{ color: "#aaa" }}>-</span>
+                                )}
+                              </td>
+                              <td>{item.eCategory?.name || "-"}</td>
+                              <td>{item.isActive ? "Active" : "Inactive"}</td>
+                              <td>
+                                <ActionButton>
+                                  <ActionButtonMenu
+                                    menuName={"Edit"}
+                                    menuTarget={"#editEProduct" + item.id}
+                                  />
+                                  <ActionButtonMenu
+                                    menuName={"Delete"}
+                                    menuTarget={"#deleteEProduct" + item.id}
+                                  />
+                                </ActionButton>
+                              </td>
+                              <EditEProduct
+                                item={item}
+                                getProducts={getProducts}
+                              />
+                              <DeleteEProduct
+                                item={item}
+                                getProducts={getProducts}
+                              />
+                            </tr>
+                          );
+                        })
                       ) : (
                         <tr className="col-md-12 text-center">
-                          <td colSpan={11}>{message}</td>
+                          <td colSpan={13}>{message}</td>
                         </tr>
                       )}
                     </tbody>
@@ -228,6 +258,8 @@ const EProductList = () => {
                         <th>Size</th>
                         <th>Quantity</th>
                         <th>Price</th>
+                        <th>Discount Price</th>
+                        <th>Final Price</th>
                         <th>Image</th>
                         <th>Category</th>
                         <th>Active?</th>
