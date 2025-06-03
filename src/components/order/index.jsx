@@ -131,6 +131,7 @@ const OrderList = () => {
                     <tr>
                       <th className="width80">#</th>
                       <th>Order ID</th>
+                      <th>Name</th>
                       <th>Email</th>
                       <th>Phone</th>
                       <th>Address</th>
@@ -148,6 +149,7 @@ const OrderList = () => {
                             <strong>{index + 1}</strong>
                           </td>
                           <td>{item.id || "-"}</td>
+                          <td>{item.name ? item.name : "N/A"}</td>
                           <td>{item.email || "-"}</td>
                           <td>{item.phoneNumber || "-"}</td>
                           <td>{item.address || "-"}</td>
@@ -187,6 +189,7 @@ const OrderList = () => {
                               <option value="ASSIGNED">ASSIGNED</option>
                               <option value="DELIVERED">DELIVERED</option>
                               <option value="CANCEL">CANCEL</option>
+                              <option value="CANCEL">RETURNED</option>
                             </select>
                           </td>
                           <td>
@@ -202,12 +205,12 @@ const OrderList = () => {
                             </ActionButton>
                           </td>
                           <EditOrder item={item} getOrders={getOrders} />
-                          <SeeDetails item={item} getOrders={getOrders} />
+                          <SeeDetails id={item.id} />
                         </tr>
                       ))
                     ) : (
                       <tr className="col-md-12 text-center">
-                        <td colSpan={8}>{message}</td>
+                        <td colSpan={9}>{message}</td>
                       </tr>
                     )}
                   </tbody>
@@ -216,6 +219,7 @@ const OrderList = () => {
                     <tr>
                       <th className="width80">#</th>
                       <th>Order ID</th>
+                      <th>Name</th>
                       <th>Email</th>
                       <th>Phone</th>
                       <th>Address</th>
