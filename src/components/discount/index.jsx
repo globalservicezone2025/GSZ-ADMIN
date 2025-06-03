@@ -43,6 +43,7 @@ const DiscountList = () => {
     )
       .then((result) => {
         if (result.success) {
+          // result.data is now always an array of discounts
           if (searchTerm.length > 2) {
             if (page > 1) {
               setPage(1);
@@ -65,7 +66,7 @@ const DiscountList = () => {
       .finally(() => {
         setLoader(false);
       });
-  }, [selectedQuery, searchTerm, page, limit]);
+  }, [selectedQuery, searchTerm, page, limit, data]);
 
   useEffect(() => {
     const getDiscountsDebounce = setTimeout(() => {
@@ -136,61 +137,109 @@ const DiscountList = () => {
                       <th>Categories</th>
                       <th>Products</th>
                       <th>Discount (%)</th>
+                      <th>Discount Price</th>
+                      <th>Final Price</th>
                       <th>Action</th>
                     </tr>
                   </thead>
 
                   <tbody>
                     {data && data.length > 0 ? (
-                      data.map((item, index) => (
-                        <tr key={item.id}>
-                          <td>
-                            <strong>{index + 1}</strong>
-                          </td>
-                          <td>
-                            {item.fromDate
-                              ? new Date(item.fromDate).toLocaleDateString()
-                              : ""}
-                          </td>
-                          <td>
-                            {item.toDate
-                              ? new Date(item.toDate).toLocaleDateString()
-                              : ""}
-                          </td>
-                          <td>
-                            {Array.isArray(item.categories)
-                              ? item.categories.join(", ")
-                              : ""}
-                          </td>
-                          <td>
-                            {Array.isArray(item.products)
-                              ? item.products.join(", ")
-                              : ""}
-                          </td>
-                          <td>{item.discountPercent}</td>
-                          <td>
-                            <ActionButton>
-                              <ActionButtonMenu
-                                menuName="Edit"
-                                menuTarget={`#editDiscount${item.id}`}
-                                onClick={() => setEditDiscount(item)}
+                      data.map((item, index) => {
+                        // Try to get the first product's price for discount calculation
+                        let productPrice = null;
+                        if (
+                          Array.isArray(item.productDetails) &&
+                          item.productDetails.length > 0 &&
+                          typeof item.productDetails[0].price !== "undefined"
+                        ) {
+                          productPrice = Number(item.productDetails[0].price);
+                        } else if (
+                          Array.isArray(item.products) &&
+                          item.products.length > 0 &&
+                          typeof item.products[0].price !== "undefined"
+                        ) {
+                          productPrice = Number(item.products[0].price);
+                        }
+                        // fallback: if productDetails not available, try products array (from eProduct API)
+                        // fallback: if not available, null
+
+                        let discountPrice = null;
+                        let finalPrice = null;
+                        if (
+                          productPrice !== null &&
+                          typeof item.discountPercent === "number"
+                        ) {
+                          discountPrice = (productPrice * item.discountPercent) / 100;
+                          finalPrice = productPrice - discountPrice;
+                        }
+
+                        return (
+                          <tr key={item.id}>
+                            <td>
+                              <strong>{index + 1}</strong>
+                            </td>
+                            <td>
+                              {item.fromDate
+                                ? new Date(item.fromDate).toLocaleDateString()
+                                : ""}
+                            </td>
+                            <td>
+                              {item.toDate
+                                ? new Date(item.toDate).toLocaleDateString()
+                                : ""}
+                            </td>
+                            <td>
+                              {Array.isArray(item.categoryDetails) && item.categoryDetails.length > 0
+                                ? item.categoryDetails.map((cat) => cat.name).join(", ")
+                                : "N/A"}
+                            </td>
+                            <td>
+                              {Array.isArray(item.productDetails) && item.productDetails.length > 0
+                                ? item.productDetails.map((prod) => prod.name).join(", ")
+                                : "N/A"}
+                            </td>
+                            <td>{item.discountPercent}</td>
+                            <td>
+                              {discountPrice !== null ? (
+                                <span style={{ color: "red", fontWeight: "bold" }}>
+                                  {discountPrice.toFixed(2)}
+                                </span>
+                              ) : (
+                                <span style={{ color: "#aaa" }}>N/A</span>
+                              )}
+                            </td>
+                            <td>
+                              {finalPrice !== null ? (
+                                <span>{finalPrice.toFixed(2)}</span>
+                              ) : (
+                                <span style={{ color: "#aaa" }}>N/A</span>
+                              )}
+                            </td>
+                            <td>
+                              <ActionButton>
+                                <ActionButtonMenu
+                                  menuName="Edit"
+                                  menuTarget={`#editDiscount${item.id}`}
+                                  onClick={() => setEditDiscount(item)}
+                                />
+                                <ActionButtonMenu
+                                  menuName="Delete"
+                                  menuTarget={`#deleteDiscount${item.id}`}
+                                  onClick={() => setDeleteDiscountItem(item)}
+                                />
+                              </ActionButton>
+                              <DeleteDiscount
+                                item={item}
+                                getDiscounts={getDiscounts}
                               />
-                              <ActionButtonMenu
-                                menuName="Delete"
-                                menuTarget={`#deleteDiscount${item.id}`}
-                                onClick={() => setDeleteDiscountItem(item)}
-                              />
-                            </ActionButton>
-                            <DeleteDiscount
-                              item={item}
-                              getDiscounts={getDiscounts}
-                            />
-                          </td>
-                        </tr>
-                      ))
+                            </td>
+                          </tr>
+                        );
+                      })
                     ) : (
                       <tr className="col-md-12 text-center">
-                        <td colSpan={7}>{message || "No discounts found."}</td>
+                        <td colSpan={9}>{message || "No discounts found."}</td>
                       </tr>
                     )}
                   </tbody>
@@ -203,6 +252,8 @@ const DiscountList = () => {
                       <th>Categories</th>
                       <th>Products</th>
                       <th>Discount (%)</th>
+                      <th>Discount Price</th>
+                      <th>Final Price</th>
                       <th>Action</th>
                     </tr>
                   </tfoot>
