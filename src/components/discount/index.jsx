@@ -43,6 +43,7 @@ const DiscountList = () => {
     )
       .then((result) => {
         if (result.success) {
+          // result.data is now always an array of discounts
           if (searchTerm.length > 2) {
             if (page > 1) {
               setPage(1);
@@ -65,7 +66,7 @@ const DiscountList = () => {
       .finally(() => {
         setLoader(false);
       });
-  }, [selectedQuery, searchTerm, page, limit]);
+  }, [selectedQuery, searchTerm, page, limit, data]);
 
   useEffect(() => {
     const getDiscountsDebounce = setTimeout(() => {
@@ -158,14 +159,14 @@ const DiscountList = () => {
                               : ""}
                           </td>
                           <td>
-                            {Array.isArray(item.categories)
-                              ? item.categories.join(", ")
-                              : ""}
+                            {Array.isArray(item.categoryDetails) && item.categoryDetails.length > 0
+                              ? item.categoryDetails.map((cat) => cat.name).join(", ")
+                              : "N/A"}
                           </td>
                           <td>
-                            {Array.isArray(item.products)
-                              ? item.products.join(", ")
-                              : ""}
+                            {Array.isArray(item.productDetails) && item.productDetails.length > 0
+                              ? item.productDetails.map((prod) => prod.name).join(", ")
+                              : "N/A"}
                           </td>
                           <td>{item.discountPercent}</td>
                           <td>

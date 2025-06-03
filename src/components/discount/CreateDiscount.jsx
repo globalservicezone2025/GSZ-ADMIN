@@ -70,7 +70,11 @@ const CreateDiscount = ({ getDiscounts }) => {
   useEffect(() => {
     fetchData("/api/v1/eproducts", "GET")
       .then((res) => {
-        if (res.success) setAllProducts(res.data);
+        if (res.success && res.data && Array.isArray(res.data.products)) {
+          setAllProducts(res.data.products);
+        } else {
+          setAllProducts([]);
+        }
       })
       .catch(() => setAllProducts([]));
   }, []);
