@@ -50,11 +50,12 @@ const editUser = async (
     setLoader(false);
     showSuccessToast(message);
     getUsers();
-    modalCloseButton.current.click();
+    // modalCloseButton.current.click();
 
     return { success, message };
   } catch (error) {
     setLoader(false);
+    console.error("Error updating user:", error);
     showErrorToast("An error occurred while updating the user.");
     throw error;
   }
