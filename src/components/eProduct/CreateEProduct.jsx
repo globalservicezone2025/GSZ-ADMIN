@@ -46,6 +46,7 @@ const ColorMultiValueLabel = (props) => (
   </components.MultiValueLabel>
 );
 
+// Function to create product
 const createEProduct = async (
   name,
   description,
@@ -54,7 +55,7 @@ const createEProduct = async (
   eCategoryId,
   stocks,
   price,
-  image,
+  images, // multiple images
   setLoader,
   modalCloseButton,
   getProducts
@@ -70,36 +71,34 @@ const createEProduct = async (
     formData.append("eCategoryId", eCategoryId);
     formData.append("stocks", JSON.stringify(stocks));
     formData.append("price", price);
-    if (image) {
-      formData.append("image", image);
+
+    // Append multiple images (up to 8)
+    if (images && images.length > 0) {
+      if (images.length > 8) {
+        showErrorToast("You can upload up to 8 images only.");
+        setLoader(false);
+        return;
+      }
+      images.forEach((file) => formData.append("images", file)); // Must match backend multer field name
     }
 
-    const jsonData = await fetchData(
-      "/api/v1/eproducts",
-      "POST",
-      formData,
-      true // isFormData flag, ensure fetchData handles this
-    );
+    const jsonData = await fetchData("/api/v1/eproducts", "POST", formData, true);
 
-    const message = jsonData.message;
-    const success = jsonData.success;
-
-    if (!success) {
+    if (!jsonData.success) {
       setLoader(false);
-      showErrorToast(message);
-      throw { message };
+      showErrorToast(jsonData.message);
+      throw { message: jsonData.message };
     }
 
     setLoader(false);
-    showSuccessToast(message);
-
+    showSuccessToast(jsonData.message);
     getProducts();
     modalCloseButton.current.click();
 
-    return { success, message };
+    return { success: true, message: jsonData.message };
   } catch (err) {
     setLoader(false);
-    console.log("Create Product Error: ", err);
+    console.error("Create Product Error:", err);
   }
 };
 
@@ -112,81 +111,48 @@ const CreateEProduct = ({ getProducts }) => {
   const [size, setSize] = useState("");
   const [eCategoryId, setECategoryId] = useState("");
   const [categories, setCategories] = useState([]);
-  const [stocks, setStocks] = useState([
-    { color: "", size: "", quantity: 0 }
-  ]);
-  const [price, setPrice] = useState(""); // <-- Add price state
-  const [image, setImage] = useState(null);
-
+  const [stocks, setStocks] = useState([{ color: "", size: "", quantity: 0 }]);
+  const [price, setPrice] = useState("");
+  const [images, setImages] = useState([]); // multiple images
   const modalCloseButton = useRef();
 
+  // Fetch categories and colors
   useEffect(() => {
     let isMounted = true;
+
     fetchData("/api/v1/ecategories", "GET")
-      .then((result) => {
-        if (isMounted && result.success) {
-          setCategories(result.data);
-        }
+      .then((res) => {
+        if (isMounted && res.success) setCategories(res.data);
       })
-      .catch(() => {
-        if (isMounted) setCategories([]);
-      });
+      .catch(() => isMounted && setCategories([]));
+
     fetchData("/api/v1/colors", "GET")
-      .then((result) => {
-        if (isMounted && result.success) {
-          setAllColors(
-            result.data.map((color) => ({
-              value: color.code,
-              label: color.name,
-            }))
-          );
-        }
+      .then((res) => {
+        if (isMounted && res.success)
+          setAllColors(res.data.map((c) => ({ value: c.code, label: c.name })));
       })
-      .catch(() => {
-        if (isMounted) setAllColors([]);
-      });
-    return () => { isMounted = false; };
+      .catch(() => isMounted && setAllColors([]));
+
+    return () => (isMounted = false);
   }, []);
 
-  const handleStockChange = (idx, field, value) => {
+  const handleStockChange = (idx, field, value) =>
+    setStocks((prev) => prev.map((s, i) => (i === idx ? { ...s, [field]: value } : s)));
+
+  const handleStockColorChange = (idx, selected) =>
     setStocks((prev) =>
-      prev.map((stock, i) =>
-        i === idx ? { ...stock, [field]: value } : stock
-      )
+      prev.map((s, i) => (i === idx ? { ...s, color: selected ? selected.value : "" } : s))
     );
-  };
 
-  const handleStockColorChange = (idx, selected) => {
-    setStocks((prev) =>
-      prev.map((stock, i) =>
-        i === idx ? { ...stock, color: selected ? selected.value : "" } : stock
-      )
-    );
-  };
-
-  const addStockRow = () => {
-    setStocks([...stocks, { color: "", size: "", quantity: 0 }]);
-  };
-
-  const removeStockRow = (idx) => {
-    setStocks(stocks.filter((_, i) => i !== idx));
-  };
+  const addStockRow = () => setStocks([...stocks, { color: "", size: "", quantity: 0 }]);
+  const removeStockRow = (idx) => setStocks(stocks.filter((_, i) => i !== idx));
 
   return (
     <>
-      <Modal
-        modalId={"createEProduct"}
-        modalHeader={"Create EProduct"}
-        modalCloseButton={modalCloseButton}
-      >
+      <Modal modalId="createEProduct" modalHeader="Create EProduct" modalCloseButton={modalCloseButton}>
         <div className="form-group">
           <label className="text-black font-w500">Name</label>
-          <input
-            type="text"
-            className="form-control"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
+          <input type="text" className="form-control" value={name} onChange={(e) => setName(e.target.value)} />
         </div>
 
         <div className="form-group">
@@ -204,36 +170,21 @@ const CreateEProduct = ({ getProducts }) => {
             className="basic-multi-select"
             classNamePrefix="select"
             placeholder="Select colors"
-            components={{
-              Option: ColorOption,
-              MultiValueLabel: ColorMultiValueLabel,
-            }}
+            components={{ Option: ColorOption, MultiValueLabel: ColorMultiValueLabel }}
           />
         </div>
 
         <div className="form-group">
           <label className="text-black font-w500">Sizes (comma separated)</label>
-          <input
-            type="text"
-            className="form-control"
-            value={size}
-            onChange={(e) => setSize(e.target.value)}
-            placeholder="e.g. 32,34"
-          />
+          <input type="text" className="form-control" value={size} onChange={(e) => setSize(e.target.value)} />
         </div>
 
         <div className="form-group">
           <label className="text-black font-w500">E-Category</label>
-          <select
-            className="form-control"
-            value={eCategoryId}
-            onChange={(e) => setECategoryId(e.target.value)}
-          >
+          <select className="form-control" value={eCategoryId} onChange={(e) => setECategoryId(e.target.value)}>
             <option value="">Select E-Category</option>
-            {(categories || []).map((cat) => (
-              <option key={cat.id} value={cat.id}>
-                {cat.name}
-              </option>
+            {categories.map((cat) => (
+              <option key={cat.id} value={cat.id}>{cat.name}</option>
             ))}
           </select>
         </div>
@@ -245,9 +196,7 @@ const CreateEProduct = ({ getProducts }) => {
               <Select
                 options={allColors}
                 value={allColors.find((c) => c.value === stock.color) || null}
-                onChange={(selected) => handleStockColorChange(idx, selected)}
-                className="mr-2"
-                classNamePrefix="select"
+                onChange={(sel) => handleStockColorChange(idx, sel)}
                 placeholder="Color"
                 styles={{ container: (base) => ({ ...base, width: "30%" }) }}
                 isClearable
@@ -269,49 +218,74 @@ const CreateEProduct = ({ getProducts }) => {
                 onChange={(e) => handleStockChange(idx, "quantity", e.target.value)}
               />
               {stocks.length > 1 && (
-                <button
-                  type="button"
-                  className="btn btn-danger btn-sm"
-                  onClick={() => removeStockRow(idx)}
-                >
+                <button type="button" className="btn btn-danger btn-sm" onClick={() => removeStockRow(idx)}>
                   &times;
                 </button>
               )}
             </div>
           ))}
-          <button
-            type="button"
-            className="btn btn-primary btn-sm mt-2"
-            onClick={addStockRow}
-          >
+          <button type="button" className="btn btn-primary btn-sm mt-2" onClick={addStockRow}>
             Add Stock
           </button>
         </div>
 
+        {/* Updated Images Section */}
         <div className="form-group">
-          <label className="text-black font-w500">Image</label>
+          <label className="text-black font-w500">Images (up to 8)</label>
           <input
             type="file"
             className="form-control"
             accept="image/*"
-            onChange={(e) => setImage(e.target.files[0])}
+            multiple
+            onChange={(e) => setImages(Array.from(e.target.files))}
           />
+          <div className="d-flex mt-2 flex-wrap">
+            {images.map((img, idx) => {
+              const src = typeof img === "string" ? img : URL.createObjectURL(img);
+              return (
+                <div key={idx} style={{ position: "relative", marginRight: 8, marginBottom: 8 }}>
+                  <img
+                    src={src}
+                    alt={`preview-${idx}`}
+                    width={80}
+                    height={80}
+                    style={{ objectFit: "cover", borderRadius: 4 }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setImages(images.filter((_, i) => i !== idx))}
+                    style={{
+                      position: "absolute",
+                      top: -6,
+                      right: -6,
+                      background: "#e74c3c",
+                      border: "none",
+                      color: "#fff",
+                      borderRadius: "50%",
+                      width: 20,
+                      height: 20,
+                      cursor: "pointer",
+                      fontSize: 12,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      padding: 0,
+                    }}
+                  >
+                    &times;
+                  </button>
+                </div>
+              );
+            })}
+          </div>
         </div>
 
         <div className="form-group">
           <label className="text-black font-w500">Price</label>
-          <input
-            type="number"
-            className="form-control"
-            value={price}
-            onChange={(e) => setPrice(e.target.value)}
-            placeholder="Enter price"
-            min="0"
-            step="0.01"
-          />
+          <input type="number" className="form-control" value={price} onChange={(e) => setPrice(e.target.value)} />
         </div>
 
-        {loader === true ? (
+        {loader ? (
           <Loader />
         ) : (
           <div className="form-group">
@@ -323,13 +297,9 @@ const CreateEProduct = ({ getProducts }) => {
                   colors,
                   size.split(",").map((s) => s.trim()).filter(Boolean),
                   eCategoryId,
-                  stocks.map((s) => ({
-                    color: s.color,
-                    size: s.size,
-                    quantity: Number(s.quantity)
-                  })),
+                  stocks.map((s) => ({ color: s.color, size: s.size, quantity: Number(s.quantity) })),
                   price,
-                  image,
+                  images,
                   setLoader,
                   modalCloseButton,
                   getProducts

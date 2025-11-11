@@ -57,26 +57,6 @@ const Login = () => {
     // }
   };
 
-  // useEffect(() => {
-  //   initializeApi();
-  // }, []);
-
-  // useEffect(() => {
-  //   const init = async () => {
-  //     if (showOtp) {
-  //       // setTimeout(async () => {
-  //       await fetchData(`/auth/login-with-otp`, "POST", {
-  //         // roleId: "roleId",
-  //         email,
-  //         otp: "1234",
-  //       });
-  //       // }, 1000);
-  //     }
-  //   };
-
-  //   init();
-  // }, [showOtp]);
-
   const handleSubmitLogin = async (email, password) => {
     setLoading(true);
 

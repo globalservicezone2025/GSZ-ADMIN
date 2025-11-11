@@ -44,7 +44,6 @@ const editUser = async (
     if (!success) {
       setLoader(false);
       showErrorToast(message);
-      throw { message };
     }
 
     setLoader(false);
