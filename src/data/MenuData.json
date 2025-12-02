@@ -1,0 +1,110 @@
+[
+  {
+    "id": 0,
+    "name": "Dashboard",
+    "link": "/dashboard",
+    "icon": "flaticon-381-networking"
+  },
+  {
+    "id": 3,
+    "name": "Users",
+    "link": "/users",
+    "icon": "flaticon-381-user"
+  },
+  {
+    "id": 4,
+    "name": "Services",
+    "link": "/services",
+    "icon": "flaticon-381-notepad"
+  },
+  {
+    "id": 5,
+    "name": "Sub Services",
+    "link": "/subservices",
+    "icon": "flaticon-381-notepad"
+  },
+  {
+    "id": 6,
+    "name": "Service Details",
+    "link": "/servicedetails",
+    "icon": "flaticon-381-notepad"
+  },
+  {
+    "id": 16,
+    "name": "Service Orders",
+    "link": "/serviceorders",
+    "icon": "flaticon-381-notepad"
+  },
+  {
+    "id": 16,
+    "name": "Free Consultancy",
+    "link": "/freeconsultancy",
+    "icon": "flaticon-381-notepad"
+  },
+  {
+    "id": 19,
+    "name": "FAQ",
+    "link": "/faq",
+    "icon": "flaticon-381-help"
+  },
+  {
+    "id": 8,
+    "name": "Products",
+    "link": "/products",
+    "icon": "flaticon-381-box-2"
+  },
+  {
+    "id": 21,
+    "name": "Deals",
+    "link": "/deals",
+    "icon": "flaticon-381-percentage"
+  },
+  {
+    "id": 20,
+    "name": "Blog",
+    "link": "/blog",
+    "icon": "flaticon-381-edit"
+  },
+  {
+    "id": 21,
+    "name": "Banner",
+    "link": "/banner",
+    "icon": "flaticon-381-picture"
+  },
+  {
+    "id": 22,
+    "name": "Slider",
+    "link": "/sliders",
+    "icon": "flaticon-381-controls-3"
+  },
+  {
+    "id": 23,
+    "name": "E-Category",
+    "link": "/ecategory",
+    "icon": "flaticon-381-list"
+  },
+  {
+    "id": 26,
+    "name": "Colors",
+    "link": "/colors",
+    "icon": "flaticon-381-edit"
+  },
+  {
+    "id": 24,
+    "name": "E-Product",
+    "link": "/eproduct",
+    "icon": "flaticon-381-box"
+  },
+  {
+    "id": 25,
+    "name": "Discounts",
+    "link": "/discounts",
+    "icon": "flaticon-381-percentage"
+  },
+  {
+    "id": 26,
+    "name": "Orders",
+    "link": "/orders",
+    "icon": "flaticon-381-shopping-bag"
+  }
+]

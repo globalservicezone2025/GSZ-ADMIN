@@ -1,0 +1,289 @@
+import React, { useCallback, useEffect, useState } from "react";
+import fetchData from "../../libs/api";
+import { showErrorToast, showSuccessToast } from "../../utils/toast";
+import "../css/category-list.css";
+import ActionButton from "../global/ActionButton";
+import ActionButtonMenu from "../global/ActionButtonMenu";
+import Button from "../global/Button";
+import CardHeader from "../global/CardHeader";
+import IndianaDragScroller from "../global/IndianaDragScroller";
+import Searchbar from "../global/Searchbar";
+import CreateEProduct from "./CreateEProduct";
+import DeleteEProduct from "./DeleteEProduct";
+import EditEProduct from "./EditEProduct";
+import Loader from "../global/Loader";
+
+const EProductList = () => {
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(20);
+
+  const [data, setData] = useState([]); // will hold products array
+  const [total, setTotal] = useState(0); // total products count
+  const [loader, setLoader] = useState(false);
+
+  const [selectedQuery, setSelectedQuery] = useState("name");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [message, setMessage] = useState("");
+
+  const loadMoreProduct = useCallback(() => {
+    setPage(page + 1);
+  }, [page]);
+
+  const getProducts = useCallback(() => {
+    setLoader(true);
+
+    fetchData(
+      `/api/v1/eproducts?name=${
+        selectedQuery === "name" ? searchTerm : ""
+      }&page=${searchTerm.length > 2 ? "" : page}&limit=${
+        searchTerm.length > 2 ? "" : limit
+      }`,
+      "GET"
+    )
+      .then((result) => {
+        if (result.success) {
+          // Use new API response structure
+          const products = result.data?.products || [];
+          const totalCount = result.data?.total || 0;
+          if (searchTerm.length > 2) {
+            if (page > 1) {
+              setPage(1);
+              setData([]);
+            }
+            setData(products);
+          } else if (page > 1) {
+            setData((prev) => [...prev, ...products]);
+          } else {
+            setData(products);
+          }
+          setTotal(totalCount);
+          setMessage(result.message);
+        } else {
+          showSuccessToast(result.message);
+          setMessage(result.message);
+        }
+      })
+      .catch((error) => {
+        showErrorToast(error);
+      })
+      .finally(() => {
+        setLoader(false);
+      });
+  }, [selectedQuery, searchTerm, page, limit]);
+
+  useEffect(() => {
+    const getProductsDebounce = setTimeout(() => {
+      getProducts();
+    }, 500);
+
+    return () => clearTimeout(getProductsDebounce);
+  }, [selectedQuery, searchTerm, page, limit, getProducts]);
+
+  return (
+    <>
+      {/* add modal */}
+      <CreateEProduct getProducts={getProducts} />
+
+      {/* table */}
+      <div className="col-lg-12">
+        <div className="card">
+          <CardHeader
+            title={"EProduct"}
+            modalId={"#createEProduct"}
+            buttonText={"+"}
+            btnClass={"btnAdd"}
+            totalCount={total}
+          >
+            <Searchbar
+              queries={["name", "description", "color", "size"]}
+              selectedQuery={selectedQuery}
+              setSelectedQuery={setSelectedQuery}
+              searchTerm={searchTerm}
+              setSearchTerm={setSearchTerm}
+            />
+          </CardHeader>
+
+          <div className="card-body">
+            {loader ? (
+              <Loader />
+            ) : (
+              <div className="table-responsive">
+                <IndianaDragScroller>
+                  <table className="table table-responsive-md">
+                    <thead>
+                      <tr>
+                        <th className="width80">#</th>
+                        <th>Name</th>
+                        <th>Color</th>
+                        <th>Size</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                        <th>Discount Price</th>
+                        <th>Final Price</th>
+                        <th>Image</th>
+                        <th>Category</th>
+                        <th>Active?</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+
+                    <tbody>
+                      {data && data.length > 0 ? (
+                        data.map((item, index) => {
+                          // Calculate discount and final price if discountPercent exists
+                          let discountPrice = null;
+                          let finalPrice = null;
+                          if (
+                            typeof item.discountPercent === "number" &&
+                            typeof item.price === "number"
+                          ) {
+                            discountPrice = (item.price * item.discountPercent) / 100;
+                            finalPrice = item.price - discountPrice;
+                          }
+                          return (
+                            <tr key={item.id + index}>
+                              <td>
+                                <strong>{index + 1 + (page - 1) * limit}</strong>
+                              </td>
+                              <td>{item.name}</td>
+                              <td>
+                                {Array.isArray(item.color) &&
+                                item.color.length > 0 ? (
+                                  item.color.map((code, idx) => (
+                                    <span
+                                      key={code + idx}
+                                      title={code}
+                                      style={{
+                                        display: "inline-block",
+                                        width: 18,
+                                        height: 18,
+                                        borderRadius: "50%",
+                                        background: code,
+                                        border: "1px solid #ccc",
+                                        marginRight: 4,
+                                        verticalAlign: "middle",
+                                      }}
+                                    />
+                                  ))
+                                ) : (
+                                  <span style={{ color: "#aaa" }}>-</span>
+                                )}
+                              </td>
+                              <td>
+                                {Array.isArray(item.size)
+                                  ? item.size.join(", ")
+                                  : item.size || "-"}
+                              </td>
+                              <td>
+                                {Array.isArray(item.stocks) && item.stocks.length > 0
+                                  ? item.stocks.reduce(
+                                      (sum, stock) =>
+                                        sum +
+                                        (typeof stock.quantity === "number"
+                                          ? stock.quantity
+                                          : parseInt(stock.quantity) || 0),
+                                      0
+                                    )
+                                  : item.quantity || "-"}
+                              </td>
+                              <td>
+                                {typeof item.price !== "undefined" && item.price !== null
+                                  ? item.price
+                                  : "-"}
+                              </td>
+                              <td>
+                                {discountPrice !== null ? (
+                                  <span style={{ color: "red", fontWeight: "bold" }}>
+                                    {discountPrice.toFixed(2)}
+                                  </span>
+                                ) : (
+                                  <span style={{ color: "#aaa" }}>-</span>
+                                )}
+                              </td>
+                              <td>
+                                {finalPrice !== null ? (
+                                  <span>{finalPrice.toFixed(2)}</span>
+                                ) : (
+                                  <span style={{ color: "#aaa" }}>-</span>
+                                )}
+                              </td>
+                              <td>
+                                {item.image ? (
+                                  <img
+                                    src={item.image}
+                                    alt={item.name}
+                                    style={{ width: 40, height: 40, objectFit: "cover", borderRadius: 4 }}
+                                  />
+                                ) : (
+                                  <span style={{ color: "#aaa" }}>-</span>
+                                )}
+                              </td>
+                              <td>{item.eCategory?.name || "-"}</td>
+                              <td>{item.isActive ? "Active" : "Inactive"}</td>
+                              <td>
+                                <ActionButton>
+                                  <ActionButtonMenu
+                                    menuName={"Edit"}
+                                    menuTarget={"#editEProduct" + item.id}
+                                  />
+                                  <ActionButtonMenu
+                                    menuName={"Delete"}
+                                    menuTarget={"#deleteEProduct" + item.id}
+                                  />
+                                </ActionButton>
+                              </td>
+                              <EditEProduct
+                                item={item}
+                                getProducts={getProducts}
+                              />
+                              <DeleteEProduct
+                                item={item}
+                                getProducts={getProducts}
+                              />
+                            </tr>
+                          );
+                        })
+                      ) : (
+                        <tr className="col-md-12 text-center">
+                          <td colSpan={13}>{message}</td>
+                        </tr>
+                      )}
+                    </tbody>
+
+                    <tfoot>
+                      <tr>
+                        <th className="width80">#</th>
+                        <th>Name</th>
+                        <th>Color</th>
+                        <th>Size</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                        <th>Discount Price</th>
+                        <th>Final Price</th>
+                        <th>Image</th>
+                        <th>Category</th>
+                        <th>Active?</th>
+                        <th>Action</th>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </IndianaDragScroller>
+                <div className="col-md-12 text-center">
+                  {data.length < total && (
+                    <Button
+                      buttonText={"Load more"}
+                      fontSize={"11px"}
+                      buttonOnClick={() => loadMoreProduct()}
+                    />
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </>
+  );
+};
+
+export default EProductList;
