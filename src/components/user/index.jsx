@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import React, { useCallback, useEffect, useState } from "react";
+=======
+import { useCallback, useEffect, useState } from "react";
+>>>>>>> f0b93f2abbe66aa21a08402b98779c1f6471065a
 import fetchData from "../../libs/api";
 import { showErrorToast, showSuccessToast } from "../../utils/toast";
 import "../css/category-list.css";
