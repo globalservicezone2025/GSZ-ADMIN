@@ -106,5 +106,11 @@
     "name": "Orders",
     "link": "/orders",
     "icon": "flaticon-381-shopping-bag"
+  },
+  {
+    "id": 27,
+    "name": "Career",
+    "link": "/career",
+    "icon": "flaticon-381-briefcase"
   }
 ]

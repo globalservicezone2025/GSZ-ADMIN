@@ -4,8 +4,6 @@ import IndianaDragScroller from "../global/IndianaDragScroller";
 import fetchData from "../../libs/api";
 import { printPosInvoice } from "../../utils/printPosInvoice";
 
-
-
 const SeeDetails = ({ id }) => {
 
   const modalCloseButton = useRef();
