@@ -107,7 +107,11 @@
     "link": "/orders",
     "icon": "flaticon-381-shopping-bag"
   },
+<<<<<<< HEAD
    {
+=======
+  {
+>>>>>>> d6ecd60a99d3c8bbab7691d5f33d62da2dd1631c
     "id": 27,
     "name": "Career",
     "link": "/career",

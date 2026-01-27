@@ -15,7 +15,6 @@ const editUser = async (
   image,
   setLoader,
   getUsers,
-  modalCloseButton
 ) => {
   setLoader(true);
 
