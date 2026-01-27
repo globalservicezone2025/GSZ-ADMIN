@@ -27,7 +27,6 @@ const Product = lazy(() => import("./pages/Product"));
 const Supplier = lazy(() => import("./pages/Supplier"));
 const MonthlyPayment = lazy(() => import("./pages/MonthlyPayment"));
 const Order = lazy(() => import("./pages/Order"));
-const Career = lazy(() => import("./pages/Career"));
 
 const Banner = lazy(() => import("./pages/Banner"));
 const Brand = lazy(() => import("./pages/Brand"));
@@ -84,14 +83,9 @@ function App() {
                 path="/monthly-payments"
                 component={Auth(MonthlyPayment)}
               />
-              <Route exact path="/orders" component={Auth(Order)} />
-<<<<<<< HEAD
-                            <Route exact path="/career" component={Auth(Career)} />
-
-=======
-              <Route exact path="/career" component={Auth(Career)} />
->>>>>>> d6ecd60a99d3c8bbab7691d5f33d62da2dd1631c
-              <Route exact path="/banners" component={Auth(Banner)} />
+<Route exact path="/orders" component={Auth(Order)} />
+<Route exact path="/career" component={Auth(Career)} />
+<Route exact path="/banners" component={Auth(Banner)} />
               <Route exact path="/sliders" component={Auth(Slider)} />
               <Route exact path="/brands" component={Auth(Brand)} />
               <Route exact path="/subservices" component={Auth(Subcategory)} />

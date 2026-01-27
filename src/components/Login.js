@@ -50,36 +50,13 @@ const Login = () => {
       };
     }
 
-    // showSuccessToast(jsonData.message);
-    // setLoading(false);
+   
 
     return { success: true, message: message };
-    // }
+  
   };
 
-<<<<<<< HEAD
-
-=======
-  // useEffect(() => {
->>>>>>> d6ecd60a99d3c8bbab7691d5f33d62da2dd1631c
-  //   initializeApi();
-  // }, []);
-
-  // useEffect(() => {
-  //   const init = async () => {
-  //     if (showOtp) {
-  //       // setTimeout(async () => {
-  //       await fetchData(`/auth/login-with-otp`, "POST", {
-  //         // roleId: "roleId",
-  //         email,
-  //         otp: "1234",
-  //       });
-  //       // }, 1000);
-  //     }
-  //   };
-
-  //   init();
-  // }, [showOtp]);
+  
 
   const handleSubmitLogin = async (email, password) => {
     setLoading(true);

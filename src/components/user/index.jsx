@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-import React, { useCallback, useEffect, useState } from "react";
-=======
-import { useCallback, useEffect, useState } from "react";
->>>>>>> d6ecd60a99d3c8bbab7691d5f33d62da2dd1631c
+import{ useCallback, useEffect, useState } from "react";
 import fetchData from "../../libs/api";
 import { showErrorToast, showSuccessToast } from "../../utils/toast";
 import "../css/category-list.css";

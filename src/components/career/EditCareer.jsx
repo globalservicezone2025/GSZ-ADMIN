@@ -198,8 +198,4 @@ const EditCareer = ({ item, itemId, getCareers }) => {
   );
 };
 
-<<<<<<< HEAD
 export default EditCareer;
-=======
-export default EditCareer;
->>>>>>> d6ecd60a99d3c8bbab7691d5f33d62da2dd1631c
