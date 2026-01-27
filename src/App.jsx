@@ -26,6 +26,8 @@ const Product = lazy(() => import("./pages/Product"));
 const Supplier = lazy(() => import("./pages/Supplier"));
 const MonthlyPayment = lazy(() => import("./pages/MonthlyPayment"));
 const Order = lazy(() => import("./pages/Order"));
+const Career = lazy(() => import("./pages/Career"));
+
 const Banner = lazy(() => import("./pages/Banner"));
 const Brand = lazy(() => import("./pages/Brand"));
 const Subcategory = lazy(() => import("./pages/Subcategory"));
@@ -82,6 +84,8 @@ function App() {
                 component={Auth(MonthlyPayment)}
               />
               <Route exact path="/orders" component={Auth(Order)} />
+                            <Route exact path="/career" component={Auth(Career)} />
+
               <Route exact path="/banners" component={Auth(Banner)} />
               <Route exact path="/sliders" component={Auth(Slider)} />
               <Route exact path="/brands" component={Auth(Brand)} />

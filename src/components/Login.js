@@ -57,8 +57,7 @@ const Login = () => {
     // }
   };
 
-<<<<<<< HEAD
-  // useEffect(() => {
+
   //   initializeApi();
   // }, []);
 
@@ -78,8 +77,6 @@ const Login = () => {
   //   init();
   // }, [showOtp]);
 
-=======
->>>>>>> f0b93f2abbe66aa21a08402b98779c1f6471065a
   const handleSubmitLogin = async (email, password) => {
     setLoading(true);
 

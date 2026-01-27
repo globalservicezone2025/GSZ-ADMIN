@@ -1,13 +1,10 @@
-<<<<<<< HEAD
 import React, { useRef, useState } from "react";
-=======
-import { useRef, useState } from "react";
->>>>>>> f0b93f2abbe66aa21a08402b98779c1f6471065a
 import fetchData from "../../libs/api";
 import { showErrorToast, showSuccessToast } from "../../utils/toast";
 import Button from "../global/Button";
 import Loader from "../global/Loader";
 import Modal from "../global/Modal";
+
 
 const createBanner = async (
   title,

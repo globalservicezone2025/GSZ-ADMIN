@@ -44,10 +44,7 @@ const editUser = async (
     if (!success) {
       setLoader(false);
       showErrorToast(message);
-<<<<<<< HEAD
       throw { message };
-=======
->>>>>>> f0b93f2abbe66aa21a08402b98779c1f6471065a
     }
 
     setLoader(false);
