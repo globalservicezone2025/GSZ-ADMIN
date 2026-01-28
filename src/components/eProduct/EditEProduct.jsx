@@ -55,7 +55,8 @@ const editEProduct = async (
   eCategoryId,
   isActive,
   price,
-  image,
+  newImages,
+  removedImages,
   item,
   setLoader,
   getProducts,
@@ -72,8 +73,15 @@ const editEProduct = async (
   formData.append("stocks", JSON.stringify(stocks));
   formData.append("isActive", isActive === "true");
   formData.append("price", price);
-  if (image) {
-    formData.append("image", image);
+
+  // 🔹 Removed images
+  if (removedImages.length > 0) {
+    formData.append("removedImages", JSON.stringify(removedImages));
+  }
+
+  // 🔹 New images
+  if (newImages && newImages.length > 0) {
+    Array.from(newImages).forEach((img) => formData.append("images", img));
   }
 
   const jsonData = await fetchData(
@@ -122,22 +130,25 @@ const EditEProduct = ({ item, getProducts }) => {
   const [eCategoryId, setECategoryId] = useState(item.eCategoryId || "");
   const [categories, setCategories] = useState([]);
   const [isActive, setIsActive] = useState(item.isActive ? "true" : "false");
-  const [image, setImage] = useState(null);
-  const [price, setPrice] = useState(item.price || ""); // <-- Add price state
-
+  const [newImages, setNewImages] = useState([]); // for new uploads
+  const [existingImages, setExistingImages] = useState(item.images || []); // existing images
+  const [removedImages, setRemovedImages] = useState([]); // images to remove
+  const [price, setPrice] = useState(item.price || "");
   const modalCloseButton = useRef();
 
   useEffect(() => {
     let isMounted = true;
+
+    // Fetch categories
     fetchData("/api/v1/ecategories", "GET")
       .then((result) => {
         if (isMounted && result.success) {
           setCategories(result.data);
         }
       })
-      .catch(() => {
-        if (isMounted) setCategories([]);
-      });
+      .catch(() => isMounted && setCategories([]));
+
+    // Fetch colors
     fetchData("/api/v1/colors", "GET")
       .then((result) => {
         if (isMounted && result.success) {
@@ -147,7 +158,6 @@ const EditEProduct = ({ item, getProducts }) => {
               label: color.name,
             }))
           );
-          // Set initial selected colors with name labels
           if (Array.isArray(item.color)) {
             setColors(
               item.color
@@ -162,9 +172,8 @@ const EditEProduct = ({ item, getProducts }) => {
           }
         }
       })
-      .catch(() => {
-        if (isMounted) setAllColors([]);
-      });
+      .catch(() => isMounted && setAllColors([]));
+
     return () => {
       isMounted = false;
     };
@@ -200,6 +209,7 @@ const EditEProduct = ({ item, getProducts }) => {
         modalHeader={"Edit EProduct"}
         modalCloseButton={modalCloseButton}
       >
+        {/* Name */}
         <div className="form-group">
           <label className="text-black font-w500">Name</label>
           <input
@@ -210,11 +220,13 @@ const EditEProduct = ({ item, getProducts }) => {
           />
         </div>
 
+        {/* Description */}
         <div className="form-group">
           <label className="text-black font-w500">Description</label>
           <ReactQuill value={description} onChange={setDescription} />
         </div>
 
+        {/* Colors */}
         <div className="form-group">
           <label className="text-black font-w500">Colors</label>
           <Select
@@ -232,10 +244,9 @@ const EditEProduct = ({ item, getProducts }) => {
           />
         </div>
 
+        {/* Sizes */}
         <div className="form-group">
-          <label className="text-black font-w500">
-            Sizes (comma separated)
-          </label>
+          <label className="text-black font-w500">Sizes (comma separated)</label>
           <input
             type="text"
             className="form-control"
@@ -245,6 +256,7 @@ const EditEProduct = ({ item, getProducts }) => {
           />
         </div>
 
+        {/* Stocks */}
         <div className="form-group">
           <label className="text-black font-w500">Stocks</label>
           {stocks.map((stock, idx) => (
@@ -297,6 +309,7 @@ const EditEProduct = ({ item, getProducts }) => {
           </button>
         </div>
 
+        {/* E-Category */}
         <div className="form-group">
           <label className="text-black font-w500">E-Category</label>
           <select
@@ -313,6 +326,7 @@ const EditEProduct = ({ item, getProducts }) => {
           </select>
         </div>
 
+        {/* Active */}
         <div className="form-group">
           <label className="text-black font-w500">Active?</label>
           <select
@@ -325,16 +339,63 @@ const EditEProduct = ({ item, getProducts }) => {
           </select>
         </div>
 
+        {/* Existing Images */}
         <div className="form-group">
-          <label className="text-black font-w500">Image</label>
+          <label className="text-black font-w500">Existing Images</label>
+          <div className="d-flex flex-wrap">
+            {existingImages.map((img, idx) => (
+              <div key={idx} className="position-relative mr-2 mb-2">
+                <img
+                  src={img}
+                  alt={`img-${idx}`}
+                  style={{
+                    width: 100,
+                    height: 100,
+                    objectFit: "cover",
+                    borderRadius: 4,
+                  }}
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    setExistingImages((prev) =>
+                      prev.filter((_, i) => i !== idx)
+                    );
+                    setRemovedImages((prev) => [...prev, img]);
+                  }}
+                  style={{
+                    position: "absolute",
+                    top: -8,
+                    right: -8,
+                    background: "red",
+                    color: "#fff",
+                    border: "none",
+                    borderRadius: "50%",
+                    width: 20,
+                    height: 20,
+                    cursor: "pointer",
+                  }}
+                >
+                  &times;
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* New Images */}
+        <div className="form-group">
+          <label className="text-black font-w500">Add New Images</label>
           <input
             type="file"
             className="form-control"
             accept="image/*"
-            onChange={(e) => setImage(e.target.files[0])}
+            multiple
+            onChange={(e) => setNewImages(e.target.files)}
           />
         </div>
 
+        {/* Price */}
         <div className="form-group">
           <label className="text-black font-w500">Price</label>
           <input
@@ -348,6 +409,7 @@ const EditEProduct = ({ item, getProducts }) => {
           />
         </div>
 
+        {/* Loader / Button */}
         {loader === true ? (
           <Loader />
         ) : (
@@ -370,7 +432,8 @@ const EditEProduct = ({ item, getProducts }) => {
                   eCategoryId,
                   isActive,
                   price,
-                  image,
+                  newImages,
+                  removedImages,
                   item,
                   setLoader,
                   getProducts,

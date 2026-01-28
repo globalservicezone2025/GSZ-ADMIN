@@ -21,6 +21,10 @@ const EProductList = () => {
   const [total, setTotal] = useState(0); // total products count
   const [loader, setLoader] = useState(false);
 
+  const [showImageModal, setShowImageModal] = useState(false);
+const [activeImages, setActiveImages] = useState([]);
+
+
   const [selectedQuery, setSelectedQuery] = useState("name");
   const [searchTerm, setSearchTerm] = useState("");
   const [message, setMessage] = useState("");
@@ -207,17 +211,23 @@ const EProductList = () => {
                                   <span style={{ color: "#aaa" }}>-</span>
                                 )}
                               </td>
-                              <td>
-                                {item.image ? (
-                                  <img
-                                    src={item.image}
-                                    alt={item.name}
-                                    style={{ width: 40, height: 40, objectFit: "cover", borderRadius: 4 }}
-                                  />
-                                ) : (
-                                  <span style={{ color: "#aaa" }}>-</span>
-                                )}
-                              </td>
+                            <td>
+  {Array.isArray(item.images) && item.images.length > 0 ? (
+    <img
+      src={item.images[0]}
+      alt={item.name}
+      style={{
+        width: 40,
+        height: 40,
+        objectFit: "cover",
+        borderRadius: 4,
+      }}
+    />
+  ) : (
+    <span style={{ color: "#aaa" }}>-</span>
+  )}
+</td>
+
                               <td>{item.eCategory?.name || "-"}</td>
                               <td>{item.isActive ? "Active" : "Inactive"}</td>
                               <td>
