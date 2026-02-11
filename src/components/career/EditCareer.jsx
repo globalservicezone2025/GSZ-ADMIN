@@ -70,6 +70,34 @@ const EditCareer = ({ item, itemId, getCareers }) => {
   );
   const [visibility, setVisibility] = useState(item.visibility ?? true);
 
+  console.log("Editing career with data:", item);
+
+  const modalCloseButton = useRef();
+
+  const fetchCareerDetails = async () => {
+    try {
+      setLoader(true);
+      const jsonData = await fetchData(`/api/v1/careers/${item.id}`, "GET");
+
+      if (jsonData.success && jsonData.data) {
+        const career = jsonData.data;
+        setTitle(career.title || "");
+        setPosition(career.position || "");
+        setLocation(career.location || "");
+        setSalary(career.salary || "");
+        setDescription(career.description || "");
+        setLastDateToApply(career.lastDateToApply || "");
+        setVisibility(career.visibility ?? true);
+      } else {
+        showErrorToast(jsonData.message || "Failed to fetch career details");
+      }
+    } catch (error) {
+      showErrorToast("Error fetching career details");
+    } finally {
+      setLoader(false);
+    }
+  };
+
   useEffect(() => {
     setTitle(item.title || "");
     setPosition(item.position || "");
@@ -80,7 +108,11 @@ const EditCareer = ({ item, itemId, getCareers }) => {
     setVisibility(item.visibility ?? true);
   }, [item]);
 
-  const modalCloseButton = useRef();
+  useEffect(() => {
+    if (itemId === item.id) {
+      fetchCareerDetails();
+    }
+  }, [itemId, item]);
 
   return (
     <>
@@ -88,6 +120,7 @@ const EditCareer = ({ item, itemId, getCareers }) => {
         modalId={"editCareer" + item.id}
         modalHeader={"Edit Career"}
         modalCloseButton={modalCloseButton}
+        onOpen={fetchCareerDetails}
       >
         <div className="form-group">
           <label className="text-black font-w500">Title</label>

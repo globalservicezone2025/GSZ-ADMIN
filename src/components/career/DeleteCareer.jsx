@@ -5,16 +5,16 @@ import Button from "../global/Button";
 import Loader from "../global/Loader";
 import Modal from "../global/Modal";
 
-const deleteBanner = async (
+const deleteCareer = async (
   item,
   id,
   setLoader,
-  getBanners,
-  modalCloseButton
+  getCareers,
+  modalCloseButton,
 ) => {
   setLoader(true);
 
-  const jsonData = await fetchData(`/api/v1/banners/${id}`, "DELETE");
+  const jsonData = await fetchData(`/api/v1/careers/${id}`, "DELETE");
 
   const message = jsonData.message;
   const success = jsonData.success;
@@ -33,7 +33,7 @@ const deleteBanner = async (
   showSuccessToast(message);
 
   //fetch data
-  getBanners();
+  getCareers();
 
   //close modal
   modalCloseButton.current.click();
@@ -41,7 +41,7 @@ const deleteBanner = async (
   return { success, message };
 };
 
-const DeleteBanner = ({ item, itemId, getBanners }) => {
+const DeleteCareer = ({ item, itemId, getCareers }) => {
   const [loader, setLoader] = useState(false);
   const [id, setId] = useState(item.id);
   const modalCloseButton = useRef();
@@ -53,8 +53,8 @@ const DeleteBanner = ({ item, itemId, getBanners }) => {
   return (
     <>
       <Modal
-        modalId={"deleteBanner" + id}
-        modalHeader={"Delete Banner"}
+        modalId={"deleteCareer" + id}
+        modalHeader={"Delete Career"}
         modalCloseButton={modalCloseButton}
       >
         <div className="form-group">
@@ -70,12 +70,12 @@ const DeleteBanner = ({ item, itemId, getBanners }) => {
             <div className="form-group">
               <Button
                 buttonOnClick={() =>
-                  deleteBanner(
+                  deleteCareer(
                     item,
                     id,
                     setLoader,
-                    getBanners,
-                    modalCloseButton
+                    getCareers,
+                    modalCloseButton,
                   )
                 }
                 buttonText={"Delete"}
@@ -89,8 +89,4 @@ const DeleteBanner = ({ item, itemId, getBanners }) => {
   );
 };
 
-<<<<<<< HEAD
-export default DeleteBanner;
-=======
-export default DeleteBanner;
->>>>>>> d6ecd60a99d3c8bbab7691d5f33d62da2dd1631c
+export default DeleteCareer;
