@@ -23,9 +23,6 @@ const DiscountList = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [message, setMessage] = useState("");
 
-  const [editDiscount, setEditDiscount] = useState(null);
-  const [deleteDiscountItem, setDeleteDiscountItem] = useState(null); // <-- Add this
-
   const loadMoreDiscounts = useCallback(() => {
     setPage(page + 1);
   }, [page]);
@@ -43,7 +40,6 @@ const DiscountList = () => {
     )
       .then((result) => {
         if (result.success) {
-          // result.data is now always an array of discounts
           if (searchTerm.length > 2) {
             if (page > 1) {
               setPage(1);
@@ -57,7 +53,7 @@ const DiscountList = () => {
           }
           setMessage(result.message);
         } else {
-          showSuccessToast(result.message);
+          showErrorToast(result.message);
         }
       })
       .catch((error) => {
@@ -76,29 +72,71 @@ const DiscountList = () => {
     return () => clearTimeout(getDiscountsDebounce);
   }, [selectedQuery, searchTerm, page, limit]);
 
+  // Helper function to get discount status and color
+  const getDiscountStatus = (fromDate, toDate) => {
+    const now = new Date();
+    const from = new Date(fromDate);
+    const to = new Date(toDate);
+
+    // Expired (red)
+    if (now > to) {
+      return {
+        status: 'expired',
+        backgroundColor: '#ffebee',
+        color: '#c62828'
+      };
+    }
+
+    // Not started yet
+    if (now < from) {
+      return {
+        status: 'upcoming',
+        backgroundColor: '#e3f2fd',
+        color: '#1565c0'
+      };
+    }
+
+    // Active - check if ending in 10 days
+    const daysUntilEnd = Math.ceil((to - now) / (1000 * 60 * 60 * 24));
+
+    if (daysUntilEnd <= 10) {
+      // Ending soon (yellow)
+      return {
+        status: 'ending-soon',
+        backgroundColor: '#fff9c4',
+        color: '#f57f17'
+      };
+    }
+
+    // Active (green)
+    return {
+      status: 'active',
+      backgroundColor: '#e8f5e9',
+      color: '#2e7d32'
+    };
+  };
+
   return (
     <>
       <CreateDiscount getDiscounts={getDiscounts} />
 
-      {editDiscount && (
+      {/* Render all update modals */}
+      {data && data.length > 0 && data.map((item) => (
         <UpdateDiscount
-          discount={editDiscount}
-          getDiscounts={() => {
-            getDiscounts();
-            setEditDiscount(null);
-          }}
+          key={`update-${item.id}`}
+          discount={item}
+          getDiscounts={getDiscounts}
         />
-      )}
+      ))}
 
-      {deleteDiscountItem && (
+      {/* Render all delete modals */}
+      {data && data.length > 0 && data.map((item) => (
         <DeleteDiscount
-          item={deleteDiscountItem}
-          getDiscounts={() => {
-            getDiscounts();
-            setDeleteDiscountItem(null);
-          }}
+          key={`delete-${item.id}`}
+          item={item}
+          getDiscounts={getDiscounts}
         />
-      )}
+      ))}
 
       <div className="col-lg-12">
         <div className="card">
@@ -137,8 +175,7 @@ const DiscountList = () => {
                       <th>Categories</th>
                       <th>Products</th>
                       <th>Discount (%)</th>
-                      <th>Discount Price</th>
-                      <th>Final Price</th>
+                      <th>Status</th>
                       <th>Action</th>
                     </tr>
                   </thead>
@@ -146,100 +183,112 @@ const DiscountList = () => {
                   <tbody>
                     {data && data.length > 0 ? (
                       data.map((item, index) => {
-                        // Try to get the first product's price for discount calculation
-                        let productPrice = null;
-                        if (
-                          Array.isArray(item.productDetails) &&
-                          item.productDetails.length > 0 &&
-                          typeof item.productDetails[0].price !== "undefined"
-                        ) {
-                          productPrice = Number(item.productDetails[0].price);
-                        } else if (
-                          Array.isArray(item.products) &&
-                          item.products.length > 0 &&
-                          typeof item.products[0].price !== "undefined"
-                        ) {
-                          productPrice = Number(item.products[0].price);
-                        }
-                        // fallback: if productDetails not available, try products array (from eProduct API)
-                        // fallback: if not available, null
+                        // Get discount status
+                        const statusInfo = getDiscountStatus(item.fromDate, item.toDate);
 
-                        let discountPrice = null;
-                        let finalPrice = null;
-                        if (
-                          productPrice !== null &&
-                          typeof item.discountPercent === "number"
-                        ) {
-                          discountPrice = (productPrice * item.discountPercent) / 100;
-                          finalPrice = productPrice - discountPrice;
-                        }
+                        // Helper function to extract category names
+                        const getCategoryNames = (item) => {
+                          if (Array.isArray(item.categoryDetails) && item.categoryDetails.length > 0) {
+                            return item.categoryDetails.map((cat) => cat.name || cat.categoryName || "Unnamed").join(", ");
+                          }
+                          
+                          if (Array.isArray(item.categories) && item.categories.length > 0) {
+                            if (typeof item.categories[0] === 'object') {
+                              return item.categories.map((cat) => cat.name || cat.categoryName || "Unnamed").join(", ");
+                            }
+                          }
+                          
+                          return "N/A";
+                        };
+
+                        // Helper function to extract product names
+                        const getProductNames = (item) => {
+                          if (Array.isArray(item.productDetails) && item.productDetails.length > 0) {
+                            return item.productDetails.map((prod) => prod.name || prod.productName || "Unnamed").join(", ");
+                          }
+                          
+                          if (Array.isArray(item.products) && item.products.length > 0) {
+                            if (typeof item.products[0] === 'object') {
+                              return item.products.map((prod) => prod.name || prod.productName || "Unnamed").join(", ");
+                            }
+                          }
+                          
+                          return "N/A";
+                        };
+
+                        // Status label
+                        const getStatusLabel = (status) => {
+                          switch(status) {
+                            case 'active': return 'Active';
+                            case 'ending-soon': return 'Ending Soon';
+                            case 'expired': return 'Expired';
+                            case 'upcoming': return 'Upcoming';
+                            default: return 'Unknown';
+                          }
+                        };
 
                         return (
-                          <tr key={item.id}>
+                          <tr 
+                            key={item.id}
+                            style={{
+                              backgroundColor: statusInfo.backgroundColor,
+                              transition: 'background-color 0.2s'
+                            }}
+                          >
                             <td>
                               <strong>{index + 1}</strong>
                             </td>
                             <td>
                               {item.fromDate
                                 ? new Date(item.fromDate).toLocaleDateString()
-                                : ""}
+                                : "N/A"}
                             </td>
                             <td>
                               {item.toDate
                                 ? new Date(item.toDate).toLocaleDateString()
-                                : ""}
-                            </td>
-                            <td>
-                              {Array.isArray(item.categoryDetails) && item.categoryDetails.length > 0
-                                ? item.categoryDetails.map((cat) => cat.name).join(", ")
                                 : "N/A"}
                             </td>
+                            <td>{getCategoryNames(item)}</td>
+                            <td>{getProductNames(item)}</td>
                             <td>
-                              {Array.isArray(item.productDetails) && item.productDetails.length > 0
-                                ? item.productDetails.map((prod) => prod.name).join(", ")
-                                : "N/A"}
-                            </td>
-                            <td>{item.discountPercent}</td>
-                            <td>
-                              {discountPrice !== null ? (
-                                <span style={{ color: "red", fontWeight: "bold" }}>
-                                  {discountPrice.toFixed(2)}
-                                </span>
-                              ) : (
-                                <span style={{ color: "#aaa" }}>N/A</span>
-                              )}
+                              <strong style={{ color: statusInfo.color }}>
+                                {item.discountPercent || "N/A"}%
+                              </strong>
                             </td>
                             <td>
-                              {finalPrice !== null ? (
-                                <span>{finalPrice.toFixed(2)}</span>
-                              ) : (
-                                <span style={{ color: "#aaa" }}>N/A</span>
-                              )}
+                              <span
+                                style={{
+                                  padding: '4px 12px',
+                                  borderRadius: '12px',
+                                  fontSize: '12px',
+                                  fontWeight: '600',
+                                  backgroundColor: statusInfo.color,
+                                  color: '#fff',
+                                  textTransform: 'uppercase',
+                                  letterSpacing: '0.5px'
+                                }}
+                              >
+                                {getStatusLabel(statusInfo.status)}
+                              </span>
                             </td>
                             <td>
                               <ActionButton>
                                 <ActionButtonMenu
                                   menuName="Edit"
-                                  menuTarget={`#editDiscount${item.id}`}
-                                  onClick={() => setEditDiscount(item)}
+                                  menuTarget={`#updateDiscount${item.id}`}
                                 />
                                 <ActionButtonMenu
                                   menuName="Delete"
                                   menuTarget={`#deleteDiscount${item.id}`}
-                                  onClick={() => setDeleteDiscountItem(item)}
                                 />
                               </ActionButton>
-                              <DeleteDiscount
-                                item={item}
-                                getDiscounts={getDiscounts}
-                              />
                             </td>
                           </tr>
                         );
                       })
                     ) : (
                       <tr className="col-md-12 text-center">
-                        <td colSpan={9}>{message || "No discounts found."}</td>
+                        <td colSpan={8}>{message || "No discounts found."}</td>
                       </tr>
                     )}
                   </tbody>
@@ -252,8 +301,7 @@ const DiscountList = () => {
                       <th>Categories</th>
                       <th>Products</th>
                       <th>Discount (%)</th>
-                      <th>Discount Price</th>
-                      <th>Final Price</th>
+                      <th>Status</th>
                       <th>Action</th>
                     </tr>
                   </tfoot>

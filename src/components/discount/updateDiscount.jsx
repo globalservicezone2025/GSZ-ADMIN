@@ -27,23 +27,28 @@ const updateDiscount = async (
     discountPercent: parseFloat(discountPercent),
   };
 
-  const jsonData = await fetchData(`/api/v1/discounts/${discountId}`, "PUT", payload);
+  try {
+    const jsonData = await fetchData(`/api/v1/discounts/${discountId}`, "PUT", payload);
 
-  const message = jsonData.message;
-  const success = jsonData.success;
+    const message = jsonData.message;
+    const success = jsonData.success;
 
-  if (!success) {
+    if (!success) {
+      setLoader(false);
+      showErrorToast(message);
+      return;
+    }
+
     setLoader(false);
-    showErrorToast(message);
-    throw { message };
+    showSuccessToast(message);
+    getDiscounts();
+    modalCloseButton.current.click();
+
+    return { success, message };
+  } catch (error) {
+    setLoader(false);
+    showErrorToast(error.message || "Update failed");
   }
-
-  setLoader(false);
-  showSuccessToast(message);
-  getDiscounts();
-  modalCloseButton.current.click();
-
-  return { success, message };
 };
 
 const UpdateDiscount = ({ discount, getDiscounts }) => {
@@ -60,67 +65,196 @@ const UpdateDiscount = ({ discount, getDiscounts }) => {
 
   // Fetch all categories and products on mount
   useEffect(() => {
-    fetchData("/api/v1/ecategories", "GET")
-      .then((res) => {
-        if (res.success) setAllCategories(res.data);
-      })
-      .catch(() => setAllCategories([]));
-    fetchData("/api/v1/eproducts", "GET")
-      .then((res) => {
-        if (res.success) setAllProducts(res.data);
-      })
-      .catch(() => setAllProducts([]));
+    let isMounted = true;
+
+    const fetchAllData = async () => {
+      try {
+        // Fetch categories
+        fetchData("/api/v1/ecategories", "GET")
+          .then((res) => {
+            if (isMounted && res.success) setAllCategories(res.data);
+          })
+          .catch(() => {
+            if (isMounted) setAllCategories([]);
+          });
+
+        // Fetch products - same way as CreateDiscount
+        fetchData("/api/v1/eproducts", "GET")
+          .then((res) => {
+            if (isMounted) {
+              console.log("🔍 Products API Response:", res);
+              
+              if (res.success && res.data && Array.isArray(res.data.products)) {
+                console.log("✅ Products loaded:", res.data.products);
+                setAllProducts(res.data.products);
+              } else if (res.success && Array.isArray(res.data)) {
+                console.log("✅ Products loaded (alt format):", res.data);
+                setAllProducts(res.data);
+              } else {
+                console.warn("⚠️ Unknown products format");
+                setAllProducts([]);
+              }
+            }
+          })
+          .catch(() => {
+            if (isMounted) setAllProducts([]);
+          });
+      } catch (error) {
+        console.error("❌ Error loading data:", error);
+      }
+    };
+
+    fetchAllData();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   // Set initial values from discount prop
   useEffect(() => {
-    if (discount) {
-      setFromDate(discount.fromDate ? discount.fromDate.slice(0, 16) : "");
-      setToDate(discount.toDate ? discount.toDate.slice(0, 16) : "");
-      setCategories(
-        Array.isArray(discount.categories)
-          ? discount.categories
-              .map((id) => {
-                const cat = allCategories.find((c) => c.id === id);
-                return cat ? { value: cat.id, label: cat.name } : null;
-              })
-              .filter(Boolean)
-          : []
-      );
-      setProducts(
-        Array.isArray(discount.products)
-          ? discount.products
-              .map((id) => {
-                const prod = allProducts.find((p) => p.id === id);
-                return prod ? { value: prod.id, label: prod.name } : null;
-              })
-              .filter(Boolean)
-          : []
-      );
-      setDiscountPercent(discount.discountPercent || "");
+    if (!discount) return;
+
+    console.log("📝 Setting form values for discount:", discount);
+    console.log("Available products:", allProducts.length);
+
+    // Set dates
+    if (discount.fromDate) {
+      try {
+        const fromDateFormatted = new Date(discount.fromDate).toISOString().slice(0, 16);
+        setFromDate(fromDateFormatted);
+      } catch (e) {
+        console.error("Invalid fromDate:", discount.fromDate);
+      }
+    } else {
+      setFromDate("");
     }
-    // eslint-disable-next-line
+    
+    if (discount.toDate) {
+      try {
+        const toDateFormatted = new Date(discount.toDate).toISOString().slice(0, 16);
+        setToDate(toDateFormatted);
+      } catch (e) {
+        console.error("Invalid toDate:", discount.toDate);
+      }
+    } else {
+      setToDate("");
+    }
+
+    // Set discount percent
+    setDiscountPercent(
+      discount.discountPercent !== undefined && discount.discountPercent !== null
+        ? discount.discountPercent.toString()
+        : ""
+    );
+
+    // Set categories
+    if (allCategories.length > 0 && discount.categories) {
+      const categoryIds = extractIds(discount.categories);
+      console.log("Category IDs to select:", categoryIds);
+      
+      const selectedCategories = categoryIds
+        .map((id) => {
+          const cat = allCategories.find((c) => String(c.id) === String(id));
+          return cat ? { value: cat.id, label: cat.name } : null;
+        })
+        .filter(Boolean);
+      
+      console.log("Selected categories:", selectedCategories);
+      setCategories(selectedCategories);
+    } else {
+      setCategories([]);
+    }
+
+    // Set products
+    if (allProducts.length > 0 && discount.products) {
+      const productIds = extractIds(discount.products);
+      console.log("Product IDs to select:", productIds);
+      console.log("All available products:", allProducts);
+      
+      const selectedProducts = productIds
+        .map((id) => {
+          const prod = allProducts.find((p) => String(p.id) === String(id));
+          if (!prod) {
+            console.warn(`⚠️ Product not found for ID: ${id}`);
+          }
+          return prod ? { value: prod.id, label: prod.name } : null;
+        })
+        .filter(Boolean);
+      
+      console.log("Selected products:", selectedProducts);
+      setProducts(selectedProducts);
+    } else {
+      console.log("No products to set:", { 
+        allProductsLength: allProducts.length, 
+        discountProducts: discount.products 
+      });
+      setProducts([]);
+    }
+
   }, [discount, allCategories, allProducts]);
 
-  const categoryOptions = allCategories.map((cat) => ({
-    value: cat.id,
-    label: cat.name,
-  }));
+  // Helper function to extract IDs from various formats
+  const extractIds = (data) => {
+    if (!Array.isArray(data)) return [];
+    if (data.length === 0) return [];
+    
+    // If first item is an object with id property
+    if (typeof data[0] === 'object' && data[0] !== null && 'id' in data[0]) {
+      return data.map(item => item.id);
+    }
+    
+    // If it's already an array of IDs
+    return data;
+  };
 
-  const productOptions = allProducts.map((prod) => ({
-    value: prod.id,
-    label: prod.name,
-  }));
+  const categoryOptions = Array.isArray(allCategories) 
+    ? allCategories.map((cat) => ({
+        value: cat.id,
+        label: cat.name,
+      }))
+    : [];
 
-  // Remove category by value
+  const productOptions = Array.isArray(allProducts)
+    ? allProducts.map((prod) => ({
+        value: prod.id,
+        label: prod.name,
+      }))
+    : [];
+
   const removeCategory = (catId) => {
     setCategories(categories.filter((c) => c.value !== catId));
   };
 
+  const removeProduct = (prodId) => {
+    setProducts(products.filter((p) => p.value !== prodId));
+  };
+
+  const handleSubmit = () => {
+    console.log("📤 Submitting update:", {
+      categories: categories.map((c) => c.value),
+      products: products.map((p) => p.value),
+    });
+
+    updateDiscount(
+      discount.id,
+      fromDate ? new Date(fromDate).toISOString() : "",
+      toDate ? new Date(toDate).toISOString() : "",
+      categories.map((c) => c.value),
+      products.map((p) => p.value),
+      discountPercent,
+      setLoader,
+      modalCloseButton,
+      getDiscounts
+    );
+  };
+
+  if (!discount) return null;
+
   return (
     <>
       <Modal
-        modalId={`updateDiscount${discount?.id}`}
+        modalId={`updateDiscount${discount.id}`}
         modalHeader={"Update Discount"}
         modalCloseButton={modalCloseButton}
       >
@@ -142,6 +276,7 @@ const UpdateDiscount = ({ discount, getDiscounts }) => {
             onChange={(e) => setToDate(e.target.value)}
           />
         </div>
+        
         <div className="form-group">
           <label className="text-black font-w500">Categories</label>
           <Select
@@ -160,10 +295,10 @@ const UpdateDiscount = ({ discount, getDiscounts }) => {
                 style={{
                   background: "#eee",
                   borderRadius: 16,
-                  padding: "2px 10px",
-                  display: "flex",
+                  padding: "4px 12px",
+                  display: "inline-flex",
                   alignItems: "center",
-                  marginRight: 8,
+                  fontSize: "14px",
                 }}
               >
                 {cat.label}
@@ -175,6 +310,9 @@ const UpdateDiscount = ({ discount, getDiscounts }) => {
                     marginLeft: 6,
                     cursor: "pointer",
                     fontWeight: "bold",
+                    fontSize: "16px",
+                    padding: 0,
+                    lineHeight: 1,
                   }}
                   onClick={() => removeCategory(cat.value)}
                 >
@@ -184,6 +322,7 @@ const UpdateDiscount = ({ discount, getDiscounts }) => {
             ))}
           </div>
         </div>
+
         <div className="form-group">
           <label className="text-black font-w500">Products</label>
           <Select
@@ -195,7 +334,41 @@ const UpdateDiscount = ({ discount, getDiscounts }) => {
             classNamePrefix="select"
             placeholder="Select products"
           />
+          <div style={{ marginTop: 8, display: "flex", flexWrap: "wrap", gap: 8 }}>
+            {products.map((prod) => (
+              <span
+                key={prod.value}
+                style={{
+                  background: "#d4edda",
+                  borderRadius: 16,
+                  padding: "4px 12px",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  fontSize: "14px",
+                }}
+              >
+                {prod.label}
+                <button
+                  type="button"
+                  style={{
+                    background: "none",
+                    border: "none",
+                    marginLeft: 6,
+                    cursor: "pointer",
+                    fontWeight: "bold",
+                    fontSize: "16px",
+                    padding: 0,
+                    lineHeight: 1,
+                  }}
+                  onClick={() => removeProduct(prod.value)}
+                >
+                  ×
+                </button>
+              </span>
+            ))}
+          </div>
         </div>
+
         <div className="form-group">
           <label className="text-black font-w500">Discount Percent</label>
           <input
@@ -213,19 +386,7 @@ const UpdateDiscount = ({ discount, getDiscounts }) => {
         ) : (
           <div className="form-group">
             <Button
-              buttonOnClick={() =>
-                updateDiscount(
-                  discount.id,
-                  fromDate ? new Date(fromDate).toISOString() : "",
-                  toDate ? new Date(toDate).toISOString() : "",
-                  categories.map((c) => c.value),
-                  products.map((p) => p.value),
-                  discountPercent,
-                  setLoader,
-                  modalCloseButton,
-                  getDiscounts
-                )
-              }
+              buttonOnClick={handleSubmit}
               buttonText={"Update"}
             />
           </div>
