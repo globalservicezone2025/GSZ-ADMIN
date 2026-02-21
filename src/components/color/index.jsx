@@ -167,18 +167,21 @@ const ColorList = () => {
                                 : ""}
                             </td>
                             <td>
-                              <ActionButton>
-                                <ActionButtonMenu
-                                  menuName={"Edit"}
-                                  menuTarget={`#editColor${item.id}`}
-                                  onClick={() => setEditColor(item)}
-                                />
-                                <ActionButtonMenu
-                                  menuName={"Delete"}
-                                  menuTarget={`#deleteColor${item.id}`}
-                                  onClick={() => setDeleteColorItem(item)}
-                                />
-                              </ActionButton>
+                       <ActionButton>
+  <ActionButtonMenu
+    menuName={"Edit"}
+    menuTarget={`#editColor${item.id}`}
+  />
+  <ActionButtonMenu
+    menuName={"Delete"}
+    menuTarget={`#deleteColor${item.id}`}
+  />
+</ActionButton>
+
+<EditColor item={item} getColors={getColors} />
+<DeleteColor item={item} getColors={getColors} />
+
+<EditColor item={item} getColors={getColors} />
                               {/* <EditColor item={item} getColors={getColors} /> */}
                               {/* <DeleteColor item={item} getColors={getColors} /> */}
                             </td>
