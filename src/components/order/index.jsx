@@ -2,11 +2,8 @@ import React, { useState, useEffect, useCallback } from "react";
 import "../css/category-list.css";
 import fetchData from "../../libs/api";
 import { showErrorToast, showSuccessToast } from "../../utils/toast";
-// import CreateProduct from "./CreateProduct";
 import ActionButton from "../global/ActionButton";
 import ActionButtonMenu from "../global/ActionButtonMenu";
-// import EditProduct from "./EditProduct";
-// import DeleteProduct from "./DeleteProduct";
 import CardHeader from "../global/CardHeader";
 import Button from "../global/Button";
 import Searchbar from "../global/Searchbar";
@@ -25,6 +22,9 @@ const OrderList = () => {
   const [searchTerm, setSearchTerm] = useState("");
 
   const [message, setMessage] = useState("");
+
+  // 🔹 Image modal state
+  const [modalImg, setModalImg] = useState(null);
 
   const loadMoreOrder = useCallback(() => {
     setPage(page + 1);
@@ -96,8 +96,75 @@ const OrderList = () => {
     return () => clearTimeout(getOrdersDebounce);
   }, [selectedQuery, searchTerm, page, limit]);
 
+  // 🔹 Parse paymentSS JSON string → array of URLs
+  const parsePaymentSS = (raw) => {
+    if (!raw) return [];
+    try {
+      const parsed = JSON.parse(raw);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  };
+
   return (
     <>
+      {/* 🔹 Image Modal */}
+      {modalImg && (
+        <div
+          onClick={() => setModalImg(null)}
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0,0,0,0.75)",
+            zIndex: 99999,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            cursor: "zoom-out",
+          }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{ position: "relative" }}
+          >
+            <img
+              src={modalImg}
+              alt="Payment Screenshot"
+              style={{
+                maxWidth: "90vw",
+                maxHeight: "88vh",
+                borderRadius: 10,
+                boxShadow: "0 8px 32px rgba(0,0,0,0.5)",
+                display: "block",
+              }}
+            />
+            <button
+              onClick={() => setModalImg(null)}
+              style={{
+                position: "absolute",
+                top: -14,
+                right: -14,
+                background: "#e74c3c",
+                color: "#fff",
+                border: "none",
+                borderRadius: "50%",
+                width: 32,
+                height: 32,
+                fontSize: 18,
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                boxShadow: "0 2px 8px rgba(0,0,0,0.3)",
+              }}
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className="col-lg-12">
         <div className="card">
           <CardHeader
@@ -136,6 +203,8 @@ const OrderList = () => {
                       <th>Phone</th>
                       <th>Address</th>
                       <th>Payment Method</th>
+                      <th>Note</th>
+                      <th>Payment SS</th>
                       <th>Status</th>
                       <th>Action</th>
                     </tr>
@@ -143,74 +212,157 @@ const OrderList = () => {
 
                   <tbody>
                     {Array.isArray(data) && data.length > 0 ? (
-                      data.map((item, index) => (
-                        <tr key={item.id + index}>
-                          <td>
-                            <strong>{index + 1}</strong>
-                          </td>
-                          <td>{item.id || "-"}</td>
-                          <td>{item.name ? item.name : "N/A"}</td>
-                          <td>{item.email || "-"}</td>
-                          <td>{item.phoneNumber || "-"}</td>
-                          <td>{item.address || "-"}</td>
-                          <td>
-                            {item.paymentMethod === "cod"
-                              ? "Cash on Delivery"
-                              : item.paymentMethod || "-"}
-                          </td>
-                          <td>
-                            <select
-                              value={item.status}
-                              onChange={(e) =>
-                                updateOrderStatus(item.id, e.target.value)
-                              }
-                              style={{
-                                color:
-                                  item.status === "PENDING"
-                                    ? "orange"
-                                    : item.status === "INPROGRESS"
-                                    ? "blue"
-                                    : item.status === "DELIVERED"
-                                    ? "green"
-                                    : item.status === "CONFIRM"
-                                    ? "blue"
-                                    : item.status === "ASSIGNED"
-                                    ? "purple"
-                                    : "red",
-                                minWidth: 110,
-                                padding: "2px 8px",
-                                borderRadius: 4,
-                                border: "1px solid #ccc",
-                                background: "#fff",
-                              }}
-                            >
-                              <option value="PENDING">PENDING</option>
-                              <option value="CONFIRM">CONFIRM</option>
-                              <option value="ASSIGNED">ASSIGNED</option>
-                              <option value="DELIVERED">DELIVERED</option>
-                              <option value="CANCEL">CANCEL</option>
-                              <option value="CANCEL">RETURNED</option>
-                            </select>
-                          </td>
-                          <td>
-                            <ActionButton>
-                              <ActionButtonMenu
-                                menuName={"See Details"}
-                                menuTarget={"#seeDetails" + item.id}
-                              />
-                              <ActionButtonMenu
-                                menuName={"Edit Status"}
-                                menuTarget={"#editStatus" + item.id}
-                              />
-                            </ActionButton>
-                          </td>
-                          <EditOrder item={item} getOrders={getOrders} />
-                          <SeeDetails id={item.id} />
-                        </tr>
-                      ))
+                      data.map((item, index) => {
+                        const screenshots = parsePaymentSS(item.paymentSS);
+                        const rowBg =
+                          item.status === "PENDING"
+                            ? "#fffbe6"
+                            : item.status === "DELIVERED"
+                            ? "#eaffea"
+                            : item.status === "ASSIGNED" || item.status === "INPROGRESS"
+                            ? "#e8f0ff"
+                            : item.status === "CANCEL" || item.status === "RETURNED"
+                            ? "#ffeaea"
+                            : item.status === "CONFIRM"
+                            ? "#e8f0ff"
+                            : "#fff";
+
+                        return (
+                          <tr key={item.id + index} style={{ background: rowBg, borderBottom: "2px solid #dee2e6" }}>
+                            <td>
+                              <strong>{index + 1}</strong>
+                            </td>
+                            <td>{item.id || "-"}</td>
+                            <td>{item.name ? item.name : "N/A"}</td>
+                            <td>{item.email || "-"}</td>
+                            <td>{item.phoneNumber || "-"}</td>
+                            <td>{item.address || "-"}</td>
+                            <td>
+                              {item.paymentMethod === "cod"
+                                ? "Cash on Delivery"
+                                : item.paymentMethod || "-"}
+                            </td>
+
+                            {/* 🔹 Note column */}
+                            <td style={{ minWidth: 200, maxWidth: 260 }}>
+                              {item.note ? (
+                                <div
+                                  title={item.note}
+                                  style={{
+                                    fontSize: 13,
+                                    color: "#444",
+                                    background: "#f9f9f9",
+                                    border: "1px solid #eee",
+                                    borderRadius: 6,
+                                    padding: "6px 10px",
+                                    maxHeight: 72,
+                                    overflowY: "auto",
+                                    whiteSpace: "pre-wrap",
+                                    wordBreak: "break-word",
+                                    lineHeight: "1.5",
+                                    cursor: "default",
+                                  }}
+                                >
+                                  {item.note}
+                                </div>
+                              ) : (
+                                <span style={{ color: "#bbb" }}>-</span>
+                              )}
+                            </td>
+
+                            {/* 🔹 Payment SS column */}
+                            <td style={{ minWidth: 120 }}>
+                              {screenshots.length > 0 ? (
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    gap: 6,
+                                    flexWrap: "wrap",
+                                  }}
+                                >
+                                  {screenshots.map((url, i) => (
+                                    <img
+                                      key={i}
+                                      src={url}
+                                      alt={`ss-${i + 1}`}
+                                      onClick={() => setModalImg(url)}
+                                      style={{
+                                        width: 48,
+                                        height: 48,
+                                        objectFit: "cover",
+                                        borderRadius: 6,
+                                        border: "1px solid #ddd",
+                                        cursor: "zoom-in",
+                                        transition: "transform 0.15s",
+                                      }}
+                                      onMouseEnter={(e) =>
+                                        (e.target.style.transform = "scale(1.12)")
+                                      }
+                                      onMouseLeave={(e) =>
+                                        (e.target.style.transform = "scale(1)")
+                                      }
+                                    />
+                                  ))}
+                                </div>
+                              ) : (
+                                <span style={{ color: "#bbb" }}>-</span>
+                              )}
+                            </td>
+
+                            <td>
+                              <select
+                                value={item.status}
+                                onChange={(e) =>
+                                  updateOrderStatus(item.id, e.target.value)
+                                }
+                                style={{
+                                  color:
+                                    item.status === "PENDING"
+                                      ? "orange"
+                                      : item.status === "INPROGRESS"
+                                      ? "blue"
+                                      : item.status === "DELIVERED"
+                                      ? "green"
+                                      : item.status === "CONFIRM"
+                                      ? "blue"
+                                      : item.status === "ASSIGNED"
+                                      ? "purple"
+                                      : "red",
+                                  minWidth: 110,
+                                  padding: "2px 8px",
+                                  borderRadius: 4,
+                                  border: "1px solid #ccc",
+                                  background: "#fff",
+                                }}
+                              >
+                                <option value="PENDING">PENDING</option>
+                                <option value="CONFIRM">CONFIRM</option>
+                                <option value="ASSIGNED">ASSIGNED</option>
+                                <option value="DELIVERED">DELIVERED</option>
+                                <option value="CANCEL">CANCEL</option>
+                                <option value="CANCEL">RETURNED</option>
+                              </select>
+                            </td>
+                            <td>
+                              <ActionButton>
+                                <ActionButtonMenu
+                                  menuName={"See Details"}
+                                  menuTarget={"#seeDetails" + item.id}
+                                />
+                                <ActionButtonMenu
+                                  menuName={"Edit Status"}
+                                  menuTarget={"#editStatus" + item.id}
+                                />
+                              </ActionButton>
+                            </td>
+                            <EditOrder item={item} getOrders={getOrders} />
+                            <SeeDetails id={item.id} />
+                          </tr>
+                        );
+                      })
                     ) : (
                       <tr className="col-md-12 text-center">
-                        <td colSpan={9}>{message}</td>
+                        <td colSpan={11}>{message}</td>
                       </tr>
                     )}
                   </tbody>
@@ -224,6 +376,8 @@ const OrderList = () => {
                       <th>Phone</th>
                       <th>Address</th>
                       <th>Payment Method</th>
+                      <th>Note</th>
+                      <th>Payment SS</th>
                       <th>Status</th>
                       <th>Action</th>
                     </tr>
