@@ -101,14 +101,23 @@
     "link": "/discounts",
     "icon": "flaticon-381-percentage"
   },
+ 
   {
     "id": 26,
     "name": "Orders",
     "link": "/orders",
-    "icon": "flaticon-381-shopping-bag"
+    "icon": "flaticon-381-notepad"   
   },
-   {
+  {
     "id": 27,
+    "name": "Reviews",
+    "link": "/reviews",
+    "icon": "flaticon-381-star"            
+  },
+
+
+   {
+    "id": 28,
     "name": "Career",
     "link": "/career",
     "icon": "flaticon-381-briefcase"

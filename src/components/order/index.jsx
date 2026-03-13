@@ -355,7 +355,7 @@ const OrderList = () => {
                                 />
                               </ActionButton>
                             </td>
-                            <EditOrder item={item} getOrders={getOrders} />
+                            {/* <EditOrder item={item} getOrders={getOrders} /> */}
                             <SeeDetails id={item.id} />
                           </tr>
                         );
