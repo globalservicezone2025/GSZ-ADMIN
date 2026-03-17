@@ -48,11 +48,7 @@ const createUser = async (
 
     setLoader(false);
     showSuccessToast(message);
-
-    //fetch data
     getUsers();
-
-    //close modal
     modalCloseButton.current.click();
 
     return { success, message };
@@ -73,9 +69,16 @@ const CreateUser = ({ getUsers }) => {
   const [image, setImage] = useState(null);
 
   const modalCloseButton = useRef();
+  const fileInputRef = useRef(); // ✅ file input ref
 
   const handleImageChange = (e) => {
     setImage(e.target.files[0]);
+  };
+
+  // ✅ Image remove handler
+  const handleRemoveImage = () => {
+    setImage(null);
+    fileInputRef.current.value = "";
   };
 
   return (
@@ -130,13 +133,44 @@ const CreateUser = ({ getUsers }) => {
             onChange={(e) => setAddress(e.target.value)}
           />
         </div>
+
         <div className="form-group">
           <label className="text-black font-w500">Image</label>
           <input
             type="file"
             className="form-control"
             onChange={handleImageChange}
+            ref={fileInputRef} // ✅
           />
+          {/* ✅ Image preview with remove button */}
+          {image && (
+            <div style={{ position: "relative", display: "inline-block", marginTop: "10px" }}>
+              <img
+                src={URL.createObjectURL(image)}
+                alt="User"
+                style={{ width: "100px", height: "100px", objectFit: "cover" }}
+              />
+              <button
+                onClick={handleRemoveImage}
+                style={{
+                  position: "absolute",
+                  top: "-8px",
+                  right: "-8px",
+                  background: "red",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "50%",
+                  width: "22px",
+                  height: "22px",
+                  cursor: "pointer",
+                  fontSize: "14px",
+                  lineHeight: "1",
+                }}
+              >
+                &times;
+              </button>
+            </div>
+          )}
         </div>
 
         {loader === true ? (
