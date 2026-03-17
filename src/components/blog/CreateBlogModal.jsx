@@ -5,7 +5,7 @@ import Button from "../global/Button";
 import Loader from "../global/Loader";
 import Modal from "../global/Modal";
 import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css"; // Include styles
+import "react-quill/dist/quill.snow.css";
 import Cookies from "js-cookie";
 
 const createBlog = async (
@@ -67,18 +67,25 @@ const CreateBlogModal = ({ getBlogs }) => {
   });
 
   const modalCloseButton = useRef();
+  const fileInputRef = useRef(); // ✅ file input ref
 
   const authorId = Cookies.get("id");
 
   const handleTagsChange = (e) => {
     const value = e.target.value;
     const tagsArray = value.split(",").map((tag) => tag.trim());
-    setTags(tagsArray.slice(0, 5)); // Limit to 5 tags
+    setTags(tagsArray.slice(0, 5));
   };
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     setImage(file);
+  };
+
+  // ✅ Image remove handler
+  const handleRemoveImage = () => {
+    setImage(null);
+    fileInputRef.current.value = ""; // file input clear করো
   };
 
   const handleSocialMediaChange = (e) => {
@@ -117,13 +124,36 @@ const CreateBlogModal = ({ getBlogs }) => {
             type="file"
             className="form-control"
             onChange={handleImageChange}
+            ref={fileInputRef} // ✅ ref add করো
           />
           {image && (
-            <img
-              src={URL.createObjectURL(image)}
-              alt="Blog"
-              style={{ width: "100px", height: "100px", marginTop: "10px" }}
-            />
+            <div style={{ position: "relative", display: "inline-block", marginTop: "10px" }}>
+              <img
+                src={URL.createObjectURL(image)}
+                alt="Blog"
+                style={{ width: "100px", height: "100px", objectFit: "cover" }}
+              />
+              {/* ✅ Remove button */}
+              <button
+                onClick={handleRemoveImage}
+                style={{
+                  position: "absolute",
+                  top: "-8px",
+                  right: "-8px",
+                  background: "red",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "50%",
+                  width: "22px",
+                  height: "22px",
+                  cursor: "pointer",
+                  fontSize: "14px",
+                  lineHeight: "1",
+                }}
+              >
+                &times;
+              </button>
+            </div>
           )}
         </div>
 
