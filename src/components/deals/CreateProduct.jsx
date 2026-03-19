@@ -6,21 +6,12 @@ import Button from "../global/Button";
 import Loader from "../global/Loader";
 import Modal from "../global/Modal";
 import ReactQuill from "react-quill";
-import "react-quill/dist/quill.snow.css"; // Include styles
+import "react-quill/dist/quill.snow.css";
 
 const createProduct = async (
-  name,
-  isActive,
-  createdBy,
-  mainCategory,
-  tags,
-  image,
-  link,
-  description,
-  price,
-  setLoader,
-  modalCloseButton,
-  getProducts
+  name, isActive, createdBy, mainCategory, tags,
+  image, link, description, price,
+  setLoader, modalCloseButton, getProducts
 ) => {
   setLoader(true);
 
@@ -37,8 +28,6 @@ const createProduct = async (
   formData.append("price", price);
 
   const jsonData = await fetchData("/api/v1/products", "POST", formData, true);
-
-  console.log(jsonData)
 
   const message = jsonData.message;
   const success = jsonData.success;
@@ -65,22 +54,28 @@ const CreateProduct = ({ getProducts, categories, suppliers, brands }) => {
   const [mainCategory, setMainCategory] = useState("");
   const [tags, setTags] = useState([]);
   const [image, setImage] = useState(null);
+  const [imagePreview, setImagePreview] = useState(null); // ✅ preview state
   const [link, setLink] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState(0.0);
 
   const modalCloseButton = useRef();
+  const fileInputRef = useRef(); // ✅ file input ref
 
   const handleImageChange = (e) => {
-    setImage(e.target.files[0]);
+    const file = e.target.files[0];
+    if (file) {
+      setImage(file);
+      setImagePreview(URL.createObjectURL(file)); // ✅ preview URL তৈরি
+    }
   };
 
-  const handleTagsChange = (e) => {
-    const tagsArray = e.target.value.split(",").map(tag => tag.trim());
-    if (tagsArray.length <= 5) {
-      setTags(tagsArray);
-    } else {
-      showErrorToast("You can only add up to 5 tags.");
+  // ✅ image remove করার function
+  const handleRemoveImage = () => {
+    setImage(null);
+    setImagePreview(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ""; // file input reset
     }
   };
 
@@ -101,33 +96,53 @@ const CreateProduct = ({ getProducts, categories, suppliers, brands }) => {
           />
         </div>
 
-        {/* <div className="form-group">
-          <label className="text-black font-w500">Main Category</label>
-          <input
-            type="text"
-            className="form-control"
-            value={mainCategory}
-            onChange={(e) => setMainCategory(e.target.value)}
-          />
-        </div> */}
-
-        {/* <div className="form-group">
-          <label className="text-black font-w500">Tags (separated by commas, max 5)</label>
-          <input
-            type="text"
-            className="form-control"
-            value={tags.join(", ")}
-            onChange={handleTagsChange}
-          />
-        </div> */}
-
         <div className="form-group">
           <label className="text-black font-w500">Image</label>
           <input
             type="file"
             className="form-control"
             onChange={handleImageChange}
+            ref={fileInputRef}
           />
+
+          {/* ✅ Image Preview */}
+          {imagePreview && (
+            <div style={{ position: "relative", display: "inline-block", marginTop: "10px" }}>
+              <img
+                src={imagePreview}
+                alt="Preview"
+                style={{
+                  width: "150px",
+                  height: "150px",
+                  objectFit: "cover",
+                  borderRadius: "8px",
+                  border: "1px solid #ddd",
+                }}
+              />
+              <button
+                onClick={handleRemoveImage}
+                style={{
+                  position: "absolute",
+                  top: "-8px",
+                  right: "-8px",
+                  background: "red",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "50%",
+                  width: "22px",
+                  height: "22px",
+                  cursor: "pointer",
+                  fontSize: "14px",
+                  lineHeight: "1",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                ✕
+              </button>
+            </div>
+          )}
         </div>
 
         <div className="form-group">
@@ -175,18 +190,9 @@ const CreateProduct = ({ getProducts, categories, suppliers, brands }) => {
             <Button
               buttonOnClick={() =>
                 createProduct(
-                  name,
-                  isActive,
-                  createdBy,
-                  mainCategory,
-                  tags,
-                  image,
-                  link,
-                  description,
-                  price,
-                  setLoader,
-                  modalCloseButton,
-                  getProducts
+                  name, isActive, createdBy, mainCategory, tags,
+                  image, link, description, price,
+                  setLoader, modalCloseButton, getProducts
                 )
               }
               buttonText={"Submit"}
